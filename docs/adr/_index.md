@@ -1,0 +1,38 @@
+---
+tags:
+  - index
+index: "[horai documentation](docs/_index.md)"
+aliases:
+  - Architecture decisions
+---
+# Architecture decisions
+
+Records the choices of method that later work on `horai` must respect, so that a reader can judge whether a changed constraint reopens one of them.
+
+> [!IMPORTANT] Form of a decision record
+> Each record states the decision, the constraints that forced it, the options weighed and its consequences. Its frontmatter states its status and its dates. A decision on the software itself may instead follow the [long template](adr-template.md).
+
+## Architecture of the method
+
+- [Three-layer architecture](three-layer-architecture.md): decides how the general method is separated from the values and the processes of a domain
+- [Role and regime as independent dimensions](role-and-regime.md): decides how a kind of work is typed, once work arrives on demand
+- [Extensions of the kernel](kernel-extensions.md): decides how reactive work, external parties, imposed deadlines and quantified cost enter a method for one agent
+
+## Decisions of the first review
+
+> [!NOTE] Vocabulary of these records
+> The five decisions below were taken on the research instance, before the generalization, and keep its vocabulary: the streams P, T, B and L are those of the [research profile](../profiles/research.md), of the roles production, enablement, sensing and capability. Each decision holds for the kernel.
+
+- [Variance classes in place of a Pareto law](variance-classes.md): decides on which work an appetite replaces an estimate
+- [Phase-dependent planning](phase-dependent-planning.md): decides where a plan states milestones and their graph
+- [Constraint logic for enablement](enablement-constraint-logic.md): decides how the time given to means is bounded
+- [Weekly note in place of a milestone invariant](weekly-note.md): decides how the progress of a week is attested
+- [Day theming](day-theming.md): decides the unit of time to which a stream is assigned
+
+## Decisions of the second review
+
+- [Cumulative feasibility of deadlines](cumulative-feasibility.md): decides how several deadlines are tested against one capacity
+- [Valuation at the milestone](milestone-level-valuation.md): decides at which level worth is compared, and how a renewal is judged on worth
+- [Policies and estimates](policies-and-estimates.md): decides which parameters the logs may revise
+- [Minimal core](minimal-core.md): decides how the overhead of the method is bounded
+- [Additional dimensions](additional-dimensions.md): decides which features of the agent and of its relations the kernel represents

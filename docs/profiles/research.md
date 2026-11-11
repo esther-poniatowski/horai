@@ -1,0 +1,64 @@
+---
+tags:
+  - profile
+index: "[Profiles](docs/profiles/_index.md)"
+aliases:
+  - Research profile
+  - Doctoral research
+---
+# Research
+
+> [!QUESTION] Goal: which values configure the kernel for a doctoral researcher who conducts several projects toward publications, builds the tools that they need, and delegates part of the work to automated agents?
+
+## Streams
+
+The shares assume a plannable capacity of about 30 hours a week, and are defaults without a source. ^shares
+
+| Stream | Role | Regime | Capacity | Placement |
+| --- | --- | --- | --- | --- |
+| P, project results | production | `planned` | share of 45% | the longest themes, at the hours of highest energy |
+| T, tools and frameworks | enablement | `pulled` | ceiling of 15% | dedicated themes |
+| L, mathematics | capability | `floor` | floor of 20% | a daily slot at a fixed hour, plus one longer theme |
+| B, bibliography | sensing | `floor` | floor of 10% | two fixed sessions a week |
+| C, supervision and lab meetings | interface | `calendar` | cap of about three hours per meeting | — |
+| M, vault and defects | upkeep | `batched` | slots of low energy | — |
+| R, correspondence and requests | interface | `reactive` | reserve, one window a day | — |
+
+The streams C, M and R share the remaining 10%. The values are [policies](../kernel/foundations/parameters.md#^parameter-kinds): the logs report deviations from them, and only the strategic review changes them.
+
+A framework intended for publication is a [means that is a result](../kernel/objects/stream.md#^means-as-result), and belongs to P.
+
+## Names
+
+| Kernel | Research |
+| --- | --- |
+| Purpose · deliverable | thesis · paper |
+| Exploration · validation · delivery | exploration · understanding · distillation |
+| Strategic horizon | quarter |
+| Cycle | `cycle_length`, synchronized with the meetings with the supervisor |
+| Evidence note | weekly note, read by the supervisor |
+
+## Options
+
+| Option | Setting |
+| --- | --- |
+| Enablement control | on |
+| Milestone graph | on, for the deliverables in distillation |
+| Calibration | on once `calibration_min_samples` entries exist per class |
+| Reactive work | on, light: kinds correspondence and requests of the lab, classes `windowed` and `scheduled`, no `immediate` class |
+| External parties | on: the supervisor is the principal (`reviews`, `imposes`); co-authors (`supplies`, `reviews`); reviewers and editors (`reviews`, with a latency of months) |
+| Delegation | on: automated agents (`delegates`), whose output is reviewed and the review logged |
+| Imposed deadlines | on: submissions to conferences and journals (`hard`), revisions, the thesis (on the purpose) |
+| Committed capacity | off, unless teaching is assigned: then a stream of the role duty under the regime `committed` |
+| Valuation | ordinal |
+
+## Modules
+
+- [Bibliography](../modules/bibliography/_index.md), for the stream B.
+- [Mathematical mastery](../modules/mathematical-mastery/_index.md), for the stream L.
+
+## Notes specific to the domain
+
+- **Delegation to agents.** Automated agents are parties of the relation `delegates`: each delegated task has a brief with a test of acceptance, and the time spent verifying the output is [logged apart](../kernel/processes/feedback.md#^verification-time).
+- **Review loops.** A submission and its revision are two milestones separated by the latency of the reviewers, as [external coordination](../kernel/processes/external-coordination.md) states. The latency is used for another paper.
+- **Choice of problems.** The kernel does not address the choice of a problem. The quarterly review of the ideas file is its place, with the sources that the [phases of research](../references/research-phases.md) cite.
