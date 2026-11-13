@@ -15,7 +15,7 @@ aliases:
 
 - **YAML only.** Every record is a YAML file, a mapping whose first key is `_schema`. It is viewed and edited through the plugin of `horai` or through [Ekphrasis](https://github.com/esther-poniatowski/ekphrasis), which builds a form from the schema of each type.
 - **One file per object.** Each purpose, deliverable, milestone, question, standing parent, cycle, week, appointment, party and wait is its own file, named by its identifier. The tasks are a list in the file of their parent.
-- **Folders by record type.** The parent of a record is a field, and never a path.
+- **Folders by record type.** The parent of a record is a field, and never a path. The decision on [distributed records](distributed-records.md) keeps this rule for the central records, and lets the records of the hierarchy sit beside what they concern.
 - **Logs.** One file per kind of entry and per month.
 - **Capture.** One file each for the inbox, the holding file, the ideas file and the archive.
 - **Notation.** Dates, timestamps and durations follow ISO 8601. References hold logical targets of Anagraphe, with the repository omitted inside one plan.

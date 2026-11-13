@@ -29,7 +29,7 @@ The state of a task is computed from its parent and from the week of its commitm
 
 - **A week ends at the next review.** A task left undone in the state `week` returns to the state `cycle` or `backlog` when the next weekly review is held, unless that review commits it again.
 - **The backlog is hidden by default.** No view displays it outside a planning session, which removes the permanent competition among recorded tasks.
-- **Priority is derived.** The order of the tasks of a week follows from the [selection rule](../processes/task-selection.md#^selection-rule), so a priority assigned by hand has meaning only within the committed week.
+- **Priority is derived.** The order of the tasks of a week follows from the [selection rule](../processes/task-selection.md#^selection-rule), so a priority assigned by hand has meaning only within its parent, as the importance of a task.
 - **The task of the day is a mark, not a state.** The [daily planning](../../procedures/daily-planning.md) marks at most `daily_marks` tasks of the week.
 
 ## Origin

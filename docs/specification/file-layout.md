@@ -13,11 +13,11 @@ aliases:
 
 ## Layout
 
-A plan is a folder of YAML files. Each record type has one place, and the fields of each type are documented in its record note.
+A plan is a set of YAML files, whose fields are documented in the record notes. The records that describe the agent sit in one central folder, at the paths below. The records of the hierarchy and the appointments may also sit beside what they concern, in any folder under the roots that the configuration declares, and are found by their key `_schema`, as the decision on [distributed records](../adr/distributed-records.md) states. The paths below are then their default places.
 
 | Path | Record | Schema |
 | --- | --- | --- |
-| `horai.yml`, by default | configuration of the tool: the paths of the plan and the time zone | `horai:configuration@1` |
+| `horai.yml`, by default | configuration of the tool: the central folder of the plan, the roots under which records are found, and the time zone | `horai:configuration@1` |
 | `profile.yml` | [profile](profile-record.md) | `horai:profile@1` |
 | `availability.yml` | [availability](availability-record.md) | `horai:availability@1` |
 | `plan/purposes/<id>.yml` | a [purpose](milestone-record.md) | `horai:purpose@1` |

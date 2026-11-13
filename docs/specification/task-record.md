@@ -22,13 +22,15 @@ aliases:
 | `today` | set by the daily planning | authored | the date of the day for which the task is marked, followed by `main` for the main objective; at most `daily_marks` tasks bear the same date | [daily planning](../procedures/daily-planning.md) |
 | `completed` | when the task is done | authored | the date of completion | — |
 | `held` | in the holding file | authored | the date at which the task entered the holding file | [orphan rule](../kernel/objects/work-hierarchy.md#^orphan-rule) |
-| `depends_on` | for a local order | authored | identifiers of tasks of the same parent | [dependency](../kernel/objects/dependency.md) |
-| `scheduled` | set by the weekly review | authored | a date within the week | [weekly review](../procedures/weekly-review.md) |
+| `depends_on` | for an order | authored | identifiers of tasks of the plan, in any parent | [dependency](../kernel/objects/dependency.md) |
+| `scheduled` | set by the weekly review | authored | a date within the week; once reached, it makes the task urgent within its parent | [weekly review](../procedures/weekly-review.md) |
 | `waiting` | when the task needs an awaited artifact | authored | the date of the follow-up in the core; the identifier of a wait under the option of external parties | [waiting](../kernel/objects/external-party.md#^waiting) |
 | `releases` | option external parties | authored | a mark on a task that starts the latency of a party | [release key](../kernel/processes/task-selection.md#^release-key) |
 | `prepares` | for a task of a stream of the regime `appointed` | authored | the identifier of the appointment that the task prepares | [appointment](calendar-record.md) |
 | `verifies` | option delegation | authored | the identifier of the wait whose delegated output the task reviews | [delegation](../kernel/processes/external-coordination.md#^delegation-acts) |
 | `non_negotiable` | optional | authored | the date at which the agent set the mark; at most one item of the plan bears it, and `check` reports a second mark | [non-negotiable key](../kernel/processes/task-selection.md#^non-negotiable-key) |
+| `importance` | optional | authored | `highest` · `high` · `medium` · `low` · `lowest`; the first two make the task important within its parent | [selection rule](../kernel/processes/task-selection.md#^selection-rule) |
+| `steps` | optional | authored | the decomposition of the task: a list of steps, each with a title and a mark of completion | — |
 | `risk` | optional | authored | a mark on the riskiest task of its parent | [selection rule](../kernel/processes/task-selection.md#^selection-rule) |
 | `request_kind` | for a task converted from a request | authored | the kind of the request | [request](../kernel/processes/reactive-work.md#^request) |
 

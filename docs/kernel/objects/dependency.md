@@ -16,7 +16,7 @@ aliases:
 A dependency is declared between two [milestones](milestone.md). The **milestone graph** is the directed acyclic graph of these dependencies over the deliverables in a structured [phase](phase.md). ^milestone-graph
 
 - The graph is small enough to be drawn on one canvas.
-- A dependency between two tasks is kept only as a local order within one milestone.
+- A dependency between two tasks orders them, in one parent or across parents: a task is taken only once its predecessors are done. It does not make the milestone of the one depend on the milestone of the other.
 
 ## What the graph computes for one agent
 
