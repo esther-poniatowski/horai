@@ -14,6 +14,7 @@ Gathers the external methodologies and findings on which the method of `horai` d
 - [Shape Up](shape-up.md): fixes the time of a piece of work and lets its scope vary
 - [Kanban and Lean pull](kanban-and-lean-pull.md): separates an inventory from a committed set, and limits the work in progress
 - [Critical path and theory of constraints](critical-path-and-constraints.md): orders a known network of activities, and directs effort to the constraint of a system
+- [Time-management course](time-management-course.md): gathers the operational methods of personal organization taught to doctoral students
 - [Portfolio and phase frameworks](portfolio-and-phase-frameworks.md): allocates resources by class of work, and types a situation by what is known of it
 
 ## Results on ordering and queues

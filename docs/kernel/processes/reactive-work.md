@@ -45,6 +45,8 @@ Each request receives exactly one of four outcomes. ^triage
 3. **Redirect**, to the party that can serve it.
 4. **Decline**, with the reason stated to the requester.
 
+- **No request is served at once for its brevity.** The rule 2-20-2-2 of the [time-management course](../../references/time-management-course.md) serves a request of two minutes at once. The triage departs from that first step, since each interruption restarts the build-up of concentration that the course itself states; only the class `immediate` interrupts a block. The later steps of the rule, to negotiate a deadline or a priority, are the conversion and its feasibility test.
+
 ## Recurrence
 
 A kind of request that reaches `recurrence_threshold` occurrences pulls [tooling](tooling.md#^pull-rule): a documented answer, a template or an automated response. Reactive load is thereby the one source of work that the method aims to reduce.

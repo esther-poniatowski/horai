@@ -42,5 +42,5 @@ $$G(\Delta) = \Pr(T \le t + \Delta \mid T > t)\, V - \kappa\, b\, \mathbb{E}\lef
 - **Calibration.** Each completed item gives a ratio of time consumed to budget, and each stopped or reduced item gives a ratio censored at its value. Per class, the distribution of the logarithm of the ratio is estimated with the censoring taken into account, by a product-limit estimate or a log-normal fit by maximum likelihood. It yields $r_{50}$, $r_q$ at `calibration_quantile`, and $\hat\sigma$. ^calibration
   - The estimates correct the budgets of routine work, set the [buffers](../objects/deadline.md#^buffer), and assign the [class of variance](../objects/appetite.md#^variance-classes) by `variance_threshold`.
   - They never set an appetite, which remains a judgment of worth.
-  - Below `calibration_min_samples` entries in a class, the ratios are not used, and the budgets stand as authored.
+  - Below `calibration_min_samples` entries in a class, prior ratios stand in for the logged ones: a median of 1, and a quantile of `prior_margin` for the class, after the margins of estimation of the [time-management course](../../references/time-management-course.md).
 - **Padding is visible.** A median ratio well below 1 shows padded budgets, which the [feedback process](feedback.md) reports.

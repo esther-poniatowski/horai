@@ -13,10 +13,11 @@ aliases:
 
 ## Metrics
 
-The weekly review reads two core metrics, computed from the [log records](../../specification/log-record.md). ^core-metrics
+The weekly review reads three core metrics, computed from the [log records](../../specification/log-record.md). ^core-metrics
 
 1. **Hours per stream against the allocation**, each compared in the manner that its [form of capacity](capacity-allocation.md#^forms) states, with the time spent verifying delegated output reported apart. ^verification-time
 2. **Ratio of time consumed to budget**, by class of variance, with its median and its quantile.
+3. **Overhead of the method**, the time spent on the planning acts over the week, against `overhead_budget`.
 
 Each option that a profile turns on adds one metric. ^extension-metrics
 

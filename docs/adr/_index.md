@@ -24,6 +24,7 @@ Records the choices of method that later work on `horai` must respect, so that a
 - [Ratified ontology](ratified-ontology.md): records the objects that the software manipulates
 - [Record formats](record-formats.md): decides in which files and notations the records of a plan are stored
 - [Distributed records](distributed-records.md): decides how the records of a plan sit beside the projects and folders that they concern
+- [Alignment with the time-management course](time-management-alignment.md): decides which methods of the course the method takes up, and how its terms relate to theirs
 - [Ratified core rules](ratified-core-rules.md): fixes the rules of the core before the first increment, and ratifies the amendments of its documentation gate
 
 ## Architecture of the method

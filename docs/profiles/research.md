@@ -59,6 +59,7 @@ A framework intended for publication is a [means that is a result](../kernel/obj
 ## Notes specific to the domain
 
 - **Delegation to agents.** Automated agents are parties of the relation `delegates`: each delegated task has a brief with a test of acceptance, and the time spent verifying the output is [logged apart](../kernel/processes/feedback.md#^verification-time).
+- **Margins before calibration.** The prior margin of exploratory work is raised to 4, after the range of 4 to 10 that the [time-management course](../references/time-management-course.md) gives for research.
 - **Teaching.** Assigned teaching is a stream of the role duty under the regime `appointed`.
 - **Review loops.** A submission and its revision are two milestones separated by the latency of the reviewers, as [external coordination](../kernel/processes/external-coordination.md) states. The latency is used for another paper.
 - **Choice of problems.** The kernel does not address the choice of a problem. The quarterly review of the ideas file is its place, with the sources that the [phases of research](../references/research-phases.md) cite.

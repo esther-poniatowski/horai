@@ -56,7 +56,8 @@ A purpose, a deliverable and a milestone may each bear one deadline, with the sa
 | `kind` | always | authored | `milestone` · `question`, in agreement with the schema of the file | [phases](../kernel/objects/phase.md#^phases) |
 | `done` | for a `milestone` | authored | the test that judges completion, or the acceptance by a party | [definition of done](../kernel/objects/milestone.md#^definition-of-done) |
 | `variance` | when selected for a cycle | authored, or computed by threshold | `routine` · `exploratory` | [classes of variance](../kernel/objects/appetite.md#^variance-classes) |
-| `budget` | when selected for a cycle | authored | a duration: an estimate or an appetite | [appetite](../kernel/objects/appetite.md#^appetite) |
+| `budget` | when selected for a cycle | authored, or computed from `estimate` | a duration: an estimate or an appetite | [appetite](../kernel/objects/appetite.md#^appetite) |
+| `estimate` | optional, for a `routine` item without `budget` | authored | three durations, `optimistic`, `probable` and `pessimistic`; the budget is their PERT value, $(T_{opt} + 4\,T_{prob} + T_{pess})/6$ | [buffer](../kernel/objects/deadline.md#^buffer) |
 | `consumed` | always | computed | a duration: the time spent on the item and on its tasks, computed from the clock entries | [log record](log-record.md) |
 | `remaining` | with a budget | computed | a duration: the budget less the time consumed since the budget was set, and zero once the budget is consumed. The budget was set at the start of the cycle that the item records, or at the date of its last decision entry that renewed or reduced it | [worth key](../kernel/processes/task-selection.md#^valuation-key) |
 | `overruns` | always | computed | the number of checkpoints passed | [checkpoint](../kernel/objects/appetite.md#^checkpoint) |
@@ -79,4 +80,5 @@ A purpose, a deliverable and a milestone may each bear one deadline, with the sa
 | `id` | always | authored | the slug of the title, fixed at creation and unique in the plan; it names the file of the record | — |
 | `title` | always | authored | the title, from which the identifier is formed | [file layout](file-layout.md) |
 | `stream` | always | authored | one stream of the regimes `floor`, `appointed`, `batched` or `reactive`, or the register of debt of a tooling stream | [standing parent](../kernel/objects/work-hierarchy.md#^standing-parent) |
+| `overhead` | optional | authored | a mark on the one standing parent whose tasks are the planning acts | [overhead](../kernel/foundations/core-and-options.md#^overhead) |
 | `rank` | always, set at each cycle planning | authored | an integer within the stream and the cycle | [worth key](../kernel/processes/task-selection.md#^valuation-key) |

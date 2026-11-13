@@ -43,6 +43,7 @@ All values are defaults without a source, unless a reference is named. A profile
 | `variance_threshold` | 0.7 | a positive dispersion $\hat\sigma$ of the logarithm of the ratios | [classes of variance](../objects/appetite.md#^variance-classes) |
 | `calibration_quantile` | 0.8 | a probability above 0.5 | [calibration](../processes/uncertainty-control.md#^calibration), [buffer](../objects/deadline.md#^buffer) |
 | `window_quantile` | 0.9 | a probability above 0.5 | [windows](../processes/reactive-work.md#^reserve) |
+| `prior_margin` | `routine` 2, `exploratory` 3 | a ratio of at least 1 per class of variance, used as the quantile ratio before calibration | [calibration](../processes/uncertainty-control.md#^calibration) |
 | `calibration_min_samples` | 8 | an integer of at least 1, in entries per class | [calibration](../processes/uncertainty-control.md#^calibration) |
 | `latency_min_samples` | 5 | an integer of at least 1, in responses per party | [latency](../objects/external-party.md#^latency) |
 | `ritual_durations` | `strategic_review` 120 min, `cycle_planning` 60 min, `weekly_review` 45 min, `daily_planning` 5 min | a duration per ritual: per strategic horizon, per cycle, per week and per day | [planning](../processes/planning-horizons.md) |

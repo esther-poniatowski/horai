@@ -19,6 +19,7 @@ Directs a reader of `horai` to the folder that serves one task: understanding th
 > - **Tags.** `index` · `theory` · `definition` · `procedure` · `specification` · `profile` · `module` · `decision` · `reference` · `wip`.
 > - **Goal.** Each note other than an index or a reference opens with the question that it answers.
 > - **Anchors.** A defining sentence ends with a block anchor (`^name`), by which other notes cite it.
+> - **Terms.** A term of a reference method is adopted when the concept is the same and the term is free in `horai`. Otherwise `horai` keeps its term, and the reference note states the correspondence.
 > - **One home per fact.** A concept is stated in the kernel, its values in a profile, its steps in a procedure, its fields in the specification, and its external grounds in a reference. Other notes link to that home and do not restate it.
 > - **Reading marks.** In a list of sources, ✓ marks a source consulted during the [review of 2026-11-11](kernel/foundations/evidence-status.md), and ○ marks a source cited without being consulted.
 

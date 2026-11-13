@@ -51,4 +51,5 @@ The core costs about $45 + 5 \times 5 + 60/6 + 120/13 + 5 \times 3 \approx 105$ 
 - **Options add their own time.** The feasibility test, the review of waits and the reading of buffers add about 10 to 20 minutes a week each when their option is on. A full configuration, such as the [consultant profile](../../profiles/consultant.md) as an example, reaches about 2.5 hours a week.
 - **Work is not overhead.** The triage of a request is reactive work and is charged to the reserve. The checkpoint of an item is charged to the item.
 - **Tooling removes the rest.** The computation of the views, the metrics, the percentiles, the timestamps of requests and the feasibility test is done by `horai`, and not by hand.
+- **The overhead is measured.** The planning acts are the tasks of the standing parent that bears the mark `overhead`, and their time is clocked like any work.
 - **An overrun of the budget is a deviation.** When the planning acts exceed `overhead_budget` over a cycle, an option is turned off or a ritual shortened.

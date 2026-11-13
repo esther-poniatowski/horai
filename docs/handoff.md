@@ -35,4 +35,4 @@ The author decided to apply horai in the research workspace Geonexus, whose fold
 
 ## Decision log
 
-The decisions of the author are recorded in the accepted records of the [decision index](adr/_index.md): scope, constraints of the software, architecture, commitments, ontology, record formats and core rules. Two later choices are recorded in the notes that they changed: weekends are planned as ordinary blocks, and the streams of the research profile are identified by slugs.
+The decisions of the author are recorded in the accepted records of the [decision index](adr/_index.md): scope, constraints of the software, architecture, commitments, ontology, record formats and core rules. The alignment with the [time-management course](references/time-management-course.md) is recorded in its own accepted record. Two later choices are recorded in the notes that they changed: weekends are planned as ordinary blocks, and the streams of the research profile are identified by slugs.
