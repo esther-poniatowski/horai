@@ -22,19 +22,21 @@ Organizes tasks, priorities and schedules across the time scales of complex proj
 
 ## Overview
 
-Horai is intended to record the tasks of complex projects, their priorities and their organization, and to schedule them across nested time horizons. Tasks and schedules are stored as plain-text files in the project folder, so they remain editable by hand and versioned with git.
+Horai records the tasks of complex projects, their priorities and their organization, and plans them across nested time horizons, by the method stated in [docs/](docs/_index.md). A plan is a folder of YAML records, which remain editable by hand and may be kept under version control.
 
 > [!NOTE]
-> The repository is initialized from the Keystone template. No feature is implemented yet: the package exposes only the `info` command and the `--version` option.
+> The first increment reads and checks a plan, selects the next task, prints the view of the week, and records the time spent through start and stop marks.
 
 ---
 
 ## Features
 
-- [ ] **Task records:** plain-text records of tasks, read and validated by the tool.
-- [ ] **Priorities:** ordering of tasks by importance and urgency.
-- [ ] **Organization:** grouping of tasks by project and decomposition into subtasks.
-- [ ] **Multi-scale scheduling:** plans at several time horizons, kept consistent with one another.
+- [x] **Checked records:** each file of a plan is validated against its schema, and the references between records are checked.
+- [x] **Selection of the next task:** the selection rule orders the committed tasks, and reports ties.
+- [x] **View of the week:** the calendar, the committed tasks with the remaining work of each item, and the follow-ups due.
+- [x] **Time spent:** start and stop marks, from which the time spent and the remaining work are computed.
+- [ ] **Planning sessions:** capture, weekly commitment, cycle planning and checkpoint decisions written by the tool.
+- [ ] **Obsidian plugin:** live views and forms over the same records.
 
 ---
 
@@ -42,9 +44,16 @@ Horai is intended to record the tasks of complex projects, their priorities and 
 
 ### CLI
 
+Run from the folder of a plan, the four commands below check the records, print the next task of the stream `P`, print the view of the week, and mark the start of work on a task:
+
 ```sh
-horai --help
+horai check
+horai next --stream P
+horai view week
+horai start fit-gating-model
 ```
+
+The options and exit statuses of every command are listed in the [CLI reference](docs/guide/cli-reference.md).
 
 ### Application Programming Interface
 
