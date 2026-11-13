@@ -5,6 +5,9 @@
 *.tmp
 *.temp
 
+## Agent task workspace
+.agent-tmp/
+
 ## Credentials
 .git-credentials
 
