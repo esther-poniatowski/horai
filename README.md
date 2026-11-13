@@ -74,6 +74,7 @@ horai.info()
 | [CLI Reference](docs/guide/cli-reference.md) | Full command registry and options |
 | [Configuration](docs/guide/configuration.md) | Configuration files, environment variables, precedence |
 | [Architecture](docs/internals/architecture.md) | Design strategy, module organization, layers |
+| [Roadmap](TODO.md) | Increments, their steps and their state |
 
 Full API documentation and rendered guides are also available at
 [esther-poniatowski.github.io/horai](https://esther-poniatowski.github.io/horai/).

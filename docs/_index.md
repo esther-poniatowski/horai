@@ -41,6 +41,10 @@ Directs a reader of `horai` to the folder that serves one task: understanding th
 
 - [Architecture decisions](adr/_index.md): records the choices of method that later work must respect
 
+## Continue the development
+
+- [Handoff](handoff.md): carries the state of the development from one session to the next
+
 ## Consult the external literature
 
 - [References](references/_index.md): states on their own terms the methodologies and the findings on which the method draws
