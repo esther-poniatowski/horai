@@ -44,11 +44,11 @@ Horai records the tasks of complex projects, their priorities and their organiza
 
 ### CLI
 
-Run from the folder of a plan, the four commands below check the records, print the next task of the stream `P`, print the view of the week, and mark the start of work on a task:
+Run from the folder of a plan, the four commands below check the records, print the next task of the stream `inquiry`, print the view of the week, and mark the start of work on a task:
 
 ```sh
 horai check
-horai next --stream P
+horai next --stream inquiry
 horai view week
 horai start fit-gating-model
 ```

@@ -1,6 +1,6 @@
 _schema: horai:standing@1
 title: Mathematics floor
-stream: L
+stream: training
 rank: 1
 tasks:
   - id: chapter-3-exercises

@@ -1,7 +1,7 @@
 _schema: horai:milestone@1
 title: Rank bound for context-gated readouts
 deliverable: ctx-geometry
-stream: P
+stream: inquiry
 kind: milestone
 done: the bound is proved and checked on the small cases
 status: open

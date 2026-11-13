@@ -143,3 +143,11 @@ def test_invalid_configuration_is_an_error(plan_folder: Path, content: str) -> N
 def test_named_configuration_must_exist(plan_folder: Path) -> None:
     with pytest.raises(ConfigurationError, match="not found"):
         resolve_configuration(None, plan_folder / "absent.yml", {}, plan_folder)
+
+
+def test_stream_identifier_must_be_a_slug(plan_folder: Path, schemas: SchemaSet) -> None:
+    path = plan_folder / "profile.yml"
+    path.write_text(path.read_text().replace("{id: tools,", "{id: T,"))
+    _, issues = load_plan(plan_folder, schemas)
+    assert [issue.rule for issue in issues] == ["schema/invalid"]
+    assert "streams/1/id: 'T' is not a slug" in issues[0].message

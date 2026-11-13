@@ -52,14 +52,16 @@ def test_wrong_configuration_exits_two(plan_folder: Path) -> None:
 
 
 def test_next_prints_the_tiers(plan_folder: Path) -> None:
-    result = runner.invoke(app, ["next", "--stream", "P", "--root", str(plan_folder), *DAY])
+    result = runner.invoke(app, ["next", "--stream", "inquiry", "--root", str(plan_folder), *DAY])
     assert result.exit_code == 0
     assert result.stdout.index("fit-gating-model") < result.stdout.index("prove-rank-bound")
 
 
 def test_next_rejects_an_unknown_stream(plan_folder: Path) -> None:
     assert (
-        runner.invoke(app, ["next", "--stream", "Z", "--root", str(plan_folder), *DAY]).exit_code
+        runner.invoke(
+            app, ["next", "--stream", "absent", "--root", str(plan_folder), *DAY]
+        ).exit_code
         == 2
     )
 

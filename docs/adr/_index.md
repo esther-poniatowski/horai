@@ -34,7 +34,7 @@ Records the choices of method that later work on `horai` must respect, so that a
 ## Decisions of the first review
 
 > [!NOTE] Vocabulary of these records
-> The five decisions below were taken on the research instance, before the generalization, and keep its vocabulary: the streams P, T, B and L are those of the [research profile](../profiles/research.md), of the roles production, enablement, sensing and capability. Each decision holds for the kernel.
+> The five decisions below were taken on the research instance, before the generalization, and keep its vocabulary: the streams P, T, B and L are those of the [research profile](../profiles/research.md), now identified as `inquiry`, `tools`, `bibliography` and `training`, of the roles production, tooling, survey and training. Each decision holds for the kernel.
 
 - [Variance classes in place of a Pareto law](variance-classes.md): decides on which work an appetite replaces an estimate
 - [Phase-dependent planning](phase-dependent-planning.md): decides where a plan states milestones and their graph

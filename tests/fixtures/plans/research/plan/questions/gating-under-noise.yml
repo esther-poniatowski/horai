@@ -1,7 +1,7 @@
 _schema: horai:question@1
 title: Does gating survive input noise
 deliverable: ctx-geometry
-stream: P
+stream: inquiry
 kind: question
 status: open
 variance: exploratory

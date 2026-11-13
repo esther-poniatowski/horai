@@ -7,9 +7,8 @@ $defs:
     type: string
     pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
   stream_id:
-    description: the identifier of a stream, as the profile declares it
-    type: string
-    pattern: '^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$'
+    description: the identifier of a stream, a slug declared by the profile
+    $ref: '#/$defs/identifier'
   date:
     description: a date in ISO 8601
     type: string

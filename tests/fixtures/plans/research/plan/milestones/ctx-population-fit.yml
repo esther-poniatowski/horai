@@ -1,7 +1,7 @@
 _schema: horai:milestone@1
 title: Fit of the gating model to the recorded population
 deliverable: ctx-geometry
-stream: P
+stream: inquiry
 kind: milestone
 done: the fitted model reproduces the three recorded geometries within the noise
 status: open

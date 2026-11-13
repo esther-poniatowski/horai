@@ -16,15 +16,15 @@ The shares assume a plannable capacity of about 30 hours a week, and are default
 
 | Stream | Role | Regime | Capacity | Placement |
 | --- | --- | --- | --- | --- |
-| P, project results | production | `planned` | share of 45% | the longest blocks, at the hours of highest energy |
-| T, tools and frameworks | tooling | `pulled` | ceiling of 15% | dedicated blocks |
-| L, mathematics | training | `floor` | floor of 20% | a daily slot at a fixed hour, plus one longer block |
-| B, bibliography | survey | `floor` | floor of 10% | two fixed sessions a week |
-| C, supervision and lab meetings | exchange | `appointed` | a share of preparation, and a cap of about three hours per meeting | — |
-| M, vault and defects | upkeep | `batched` | slots of low energy | — |
-| R, correspondence and requests | exchange | `reactive` | reserve, one window a day | — |
+| `inquiry`: project results | production | `planned` | share of 45% | the longest blocks, at the hours of highest energy |
+| `tools`: tools and frameworks | tooling | `pulled` | ceiling of 15% | dedicated blocks |
+| `training`: mathematics | training | `floor` | floor of 20% | a daily slot at a fixed hour, plus one longer block |
+| `bibliography`: bibliography | survey | `floor` | floor of 10% | two fixed sessions a week |
+| `meetings`: supervision and lab meetings | exchange | `appointed` | a share of preparation, and a cap of about three hours per meeting | — |
+| `upkeep`: vault and defects | upkeep | `batched` | slots of low energy | — |
+| `requests`: correspondence and requests | exchange | `reactive` | reserve, one window a day | — |
 
-The streams C, M and R share the remaining 10%. The values are [policies](../kernel/foundations/parameters.md#^parameter-kinds): the logs report deviations from them, and only the strategic review changes them.
+The streams `meetings`, `upkeep` and `requests` share the remaining 10%. The values are [policies](../kernel/foundations/parameters.md#^parameter-kinds): the logs report deviations from them, and only the strategic review changes them.
 
 A framework intended for publication is a [means that is a result](../kernel/objects/stream.md#^means-as-result), and belongs to P.
 
@@ -52,8 +52,8 @@ A framework intended for publication is a [means that is a result](../kernel/obj
 
 ## Modules
 
-- [Bibliography](../modules/bibliography/_index.md), for the stream B.
-- [Mathematical mastery](../modules/mathematical-mastery/_index.md), for the stream L.
+- [Bibliography](../modules/bibliography/_index.md), for the stream `bibliography`.
+- [Mathematical mastery](../modules/mathematical-mastery/_index.md), for the stream `training`.
 - Four further modules are proposed for this profile, as the [index of modules](../modules/_index.md) lists.
 
 ## Notes specific to the domain

@@ -119,7 +119,7 @@ def test_excluded_cycle_makes_the_status_undefined(plan: Plan) -> None:
 # --- Selection ------------------------------------------------------------------------------------
 
 
-def _first_tier_ids(plan: Plan, stream: str | None = "P") -> list[str]:
+def _first_tier_ids(plan: Plan, stream: str | None = "inquiry") -> list[str]:
     selection = select(plan, DAY, stream, spans(plan.clock))
     return [[c.task.id for c in tier] for tier in selection.tiers]
 
@@ -141,19 +141,21 @@ def test_unranked_items_tie_after_the_ranked_ones(plan: Plan) -> None:
 
 def test_exhausted_budget_leaves_the_candidates(plan: Plan) -> None:
     _replace_item(plan, "ctx-rank-bound", budget=timedelta(hours=1))
-    selection = select(plan, DAY, "P", spans(plan.clock))
+    selection = select(plan, DAY, "inquiry", spans(plan.clock))
     assert "prove-rank-bound" not in {c.task.id for tier in selection.tiers for c in tier}
     assert any("awaits a checkpoint" in note for note in selection.notes)
 
 
 def test_non_negotiable_item_takes_every_stream(plan: Plan) -> None:
     _replace_item(plan, "gating-under-noise", non_negotiable=DAY)
-    selection = select(plan, DAY, "L", spans(plan.clock))
-    assert selection.marked is not None and _first_tier_ids(plan, "L") == [["simulate-noise"]]
+    selection = select(plan, DAY, "training", spans(plan.clock))
+    assert selection.marked is not None and _first_tier_ids(plan, "training") == [
+        ["simulate-noise"]
+    ]
 
 
 def test_selection_counts_a_standing_parent(plan: Plan) -> None:
-    assert _first_tier_ids(plan, "L") == [["chapter-3-exercises"]]
+    assert _first_tier_ids(plan, "training") == [["chapter-3-exercises"]]
 
 
 # --- Checks ---------------------------------------------------------------------------------------
@@ -207,5 +209,5 @@ def test_held_task_needs_its_date_and_stop_needs_a_start(plan: Plan) -> None:
 
 
 def test_item_appears_in_an_unknown_stream(plan: Plan) -> None:
-    plan.items["stray"] = Item("stray", "standing", "Stray", "Z", rank=1)
+    plan.items["stray"] = Item("stray", "standing", "Stray", "absent", rank=1)
     assert "reference/stream" in _rules(plan)
