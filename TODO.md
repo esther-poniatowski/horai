@@ -18,9 +18,9 @@ The roadmap of horai lists the steps of each increment, with the state of each s
 
 - [x] **Assessment**: measure the task lists of Geonexus against the records of horai. (2026-11-13)
 - [x] **Gate**: decide the placement of distributed records, the standing parent of each folder, steps, dependencies across parents, the quadrant of importance and urgency within a parent, and due dates as deadlines of the parent. (2026-11-13)
-- [ ] **Loading**: declare the roots in the configuration, and discover the records of the hierarchy by their key `_schema` under them.
-- [ ] **Records**: add the fields `importance` and `steps` to the task, and admit dependencies across parents in the schema, the checks and the selection.
-- [ ] **Selection**: order the tasks of one parent by quadrant, then by importance, then by the riskiest mark.
+- [x] **Loading**: declare the roots in the configuration, and discover the records of the hierarchy by their key `_schema` under them. (2026-11-13)
+- [x] **Records**: add the fields `importance` and `steps` to the task, and admit dependencies across parents in the schema, the checks and the selection. (2026-11-13)
+- [x] **Selection**: order the tasks of one parent by quadrant, then by importance, then by the riskiest mark. (2026-11-13)
 - [ ] **Geonexus rule**: amend the rule on task tracking of Geonexus for the areas that horai covers, under its instructions for agents and its commit gate.
 - [ ] **Pilot**: migrate the task list of `lexicon/` into a standing parent of its own.
 

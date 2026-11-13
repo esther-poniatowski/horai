@@ -26,6 +26,8 @@ A plan is loaded in three steps, and a file that fails one of them is excluded:
 2. the key `_schema` must name the type that the folder of the file expects, and the content must satisfy that schema;
 3. the name of the file must agree with the layout: a slug for a titled record, the opening date for a week, the month for a log.
 
+The central folder is read at the paths of the layout. Under the roots that the configuration declares, a file is read only when its first lines name a schema of `horai`, so that the other YAML records of a workspace are not parsed. A record of the hierarchy found there is loaded as if it sat in its default folder; a central record found there is reported as misplaced.
+
 The identifier of an excluded file joins the set `Plan.excluded`. A check reports a reference to it as excluded rather than missing, and a computation that needs it reports itself undefined.
 
 ## Rules

@@ -15,6 +15,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from collections.abc import Iterator
 from datetime import date
+from graphlib import CycleError, TopologicalSorter
 
 from ..domain.records import Plan, Task
 from ..issues import Issue, Severity
@@ -81,17 +82,23 @@ def _check_hierarchy(plan: Plan) -> Iterator[Issue]:
 
 
 def _check_tasks(plan: Plan) -> Iterator[Issue]:
-    """A task names predecessors of its own parent, and an opened week."""
+    """A task names existing predecessors, in any parent, without a cycle, and an opened week."""
+    graph = {task.id: set(task.depends_on) for task in _all_tasks(plan)}
     for item in plan.items.values():
-        siblings = {task.id for task in item.tasks}
         for task in item.tasks:
             for predecessor in task.depends_on:
-                if predecessor not in siblings:
-                    message = f"the predecessor {predecessor} is not a task of {item.id}"
+                if predecessor not in graph:
+                    message = f"no task named {predecessor} precedes {task.id}"
                     yield _issue(plan, "reference/task", message, task.id)
             if task.committed_week is not None and task.committed_week not in plan.weeks:
                 message = f"no week opened on {task.committed_week}"
                 yield _issue(plan, "reference/week", message, task.id)
+    try:
+        TopologicalSorter({k: v & graph.keys() for k, v in graph.items()}).prepare()
+    except CycleError as error:
+        cycle = list(dict.fromkeys(error.args[1]))
+        message = "the dependencies form a cycle: " + " -> ".join(cycle)
+        yield _issue(plan, "reference/cycle", message, cycle[0])
 
 
 def _check_calendar(plan: Plan) -> Iterator[Issue]:

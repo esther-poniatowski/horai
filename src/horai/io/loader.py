@@ -14,9 +14,10 @@ load_plan(folder, schemas) -> tuple[Plan, list[Issue]]
 
 from __future__ import annotations
 
+import os
 import re
-from collections.abc import Callable
-from pathlib import Path
+from collections.abc import Callable, Sequence
+from pathlib import Path, PurePath
 from typing import Any
 
 import yaml
@@ -222,51 +223,120 @@ def _name_issues(folder: str, stem: str, relative: str, data: dict[str, Any]) ->
     return []
 
 
-def load_plan(folder: Path, schemas: SchemaSet) -> tuple[Plan, list[Issue]]:
-    """Load every file of the plan in `folder`.
+DISTRIBUTED: dict[str, str] = {
+    schema_id: folder for folder, schema_id in FOLDERS.items() if folder in _TITLED
+}
+_SCHEMA_LINE = re.compile(r"^_schema:\s*['\"]?(horai:[a-z-]+@\d+)", re.MULTILINE)
+
+
+def _skipped(relative: PurePath, exclude: Sequence[str]) -> bool:
+    """Whether a path under a root lies in a hidden folder or matches an excluded pattern."""
+    if any(part.startswith(".") for part in relative.parts[:-1]):
+        return True
+    posix = relative.as_posix()
+    return any(
+        relative.match(pattern) or posix.startswith(pattern.rstrip("/") + "/")
+        for pattern in exclude
+    )
+
+
+class _Loader:
+    """The state of one loading: the plan built so far, its issues, and the files already read."""
+
+    def __init__(self, schemas: SchemaSet) -> None:
+        self.schemas = schemas
+        self.plan = Plan()
+        self.issues: list[Issue] = []
+        self.loaded: set[Path] = set()
+
+    def single_file(self, path: Path, relative: str, schema_id: str) -> None:
+        """Load one central file of a single record."""
+        self.loaded.add(path.resolve())
+        data, problems = _read(path, relative, schema_id, self.schemas)
+        self.issues += problems
+        if data is not None:
+            _store_single(self.plan, relative, data)
+
+    def folder_file(self, path: Path, sub: str, relative: str) -> None:
+        """Load one file of the kind that the folder `sub` holds, or record why it is excluded."""
+        self.loaded.add(path.resolve())
+        stem = path.stem
+        data, problems = _read(path, relative, FOLDERS[sub], self.schemas)
+        if data is not None:
+            problems += _name_issues(sub, stem, relative, data)
+        self.issues += problems
+        if problems or data is None:
+            self.plan.excluded.add(stem)
+            return
+        _store(self.plan, sub, stem, data)
+        self.plan.sources[stem] = relative
+        for task in data.get("tasks", ()):
+            self.plan.sources.setdefault(task["id"], relative)
+
+    def discover(self, roots: Sequence[Path], exclude: Sequence[str], base: Path) -> None:
+        """Load the records of the hierarchy found by their `_schema` under the roots."""
+        for root in roots:
+            for path in sorted(root.rglob("*.yml")):
+                if path.resolve() in self.loaded or _skipped(path.relative_to(root), exclude):
+                    continue
+                try:
+                    match = _SCHEMA_LINE.search(path.read_text(encoding="utf-8")[:2048])
+                except (OSError, UnicodeDecodeError):
+                    continue
+                if match is None:
+                    continue
+                relative = os.path.relpath(path, base)
+                schema_id = match.group(1)
+                if schema_id in DISTRIBUTED:
+                    self.folder_file(path, DISTRIBUTED[schema_id], relative)
+                elif schema_id in FOLDERS.values() or schema_id in SINGLE_FILES.values():
+                    self.loaded.add(path.resolve())
+                    message = f"a record {schema_id} belongs to the central folder of the plan"
+                    self.issues.append(Issue("placement/central", message, relative))
+
+
+def load_plan(
+    folder: Path,
+    schemas: SchemaSet,
+    roots: Sequence[Path] = (),
+    exclude: Sequence[str] = (),
+    base: Path | None = None,
+) -> tuple[Plan, list[Issue]]:
+    """Load the central folder of a plan, then the records found under its roots.
 
     Parameters
     ----------
     folder : Path
-        Folder of the plan.
+        Central folder of the plan.
     schemas : SchemaSet
         Validators of the record types.
+    roots : Sequence[Path]
+        Folders under which the records of the hierarchy are found by their key `_schema`.
+    exclude : Sequence[str]
+        Patterns of paths, relative to a root, under which no record is sought.
+    base : Path | None
+        Folder against which the paths of the distributed records are reported; `folder` by default.
 
     Returns
     -------
     tuple[Plan, list[Issue]]
         The records of the valid files, and the issues of the invalid ones.
     """
-    plan, issues = Plan(), []
+    loading = _Loader(schemas)
     for relative, schema_id in SINGLE_FILES.items():
         path = folder / relative
-        if not path.is_file():
-            if relative == "profile.yml":
-                issues.append(
-                    Issue("plan/profile-missing", "the plan has no profile.yml", relative)
-                )
-            continue
-        data, problems = _read(path, relative, schema_id, schemas)
-        issues += problems
-        if data is not None:
-            _store_single(plan, relative, data)
-    for sub, schema_id in FOLDERS.items():
+        if path.is_file():
+            loading.single_file(path, relative, schema_id)
+        elif relative == "profile.yml":
+            loading.issues.append(
+                Issue("plan/profile-missing", "the plan has no profile.yml", relative)
+            )
+    for sub in FOLDERS:
         directory = folder / sub
-        if not directory.is_dir():
-            continue
-        for path in sorted(directory.glob("*.yml")):
-            relative, stem = f"{sub}/{path.name}", path.stem
-            data, problems = _read(path, relative, schema_id, schemas)
-            if data is not None:
-                problems += _name_issues(sub, stem, relative, data)
-            issues += problems
-            if problems or data is None:
-                plan.excluded.add(stem)
-                continue
-            _store(plan, sub, stem, data)
-            plan.sources[stem] = relative
-            for task in data.get("tasks", ()):
-                plan.sources.setdefault(task["id"], relative)
-    for task in plan.holding:
-        plan.sources.setdefault(task.id, "capture/holding.yml")
-    return plan, issues
+        if directory.is_dir():
+            for path in sorted(directory.glob("*.yml")):
+                loading.folder_file(path, sub, f"{sub}/{path.name}")
+    loading.discover(roots, exclude, base or folder)
+    for task in loading.plan.holding:
+        loading.plan.sources.setdefault(task.id, "capture/holding.yml")
+    return loading.plan, loading.issues

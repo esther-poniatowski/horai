@@ -103,6 +103,19 @@ $defs:
           - {$ref: '#/$defs/identifier'}
       releases: {type: boolean}
       risk: {type: boolean}
+      importance:
+        description: the importance of the task within its parent
+        enum: [highest, high, medium, low, lowest]
+      steps:
+        description: the decomposition of the task, each step with a title and a mark of completion
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required: [title]
+          properties:
+            title: {type: string, minLength: 1}
+            done: {type: boolean}
       request_kind: {type: string}
       prepares: {$ref: '#/$defs/identifier'}
       verifies: {$ref: '#/$defs/identifier'}

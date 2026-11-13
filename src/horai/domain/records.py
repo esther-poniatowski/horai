@@ -155,9 +155,12 @@ class Task:
     completed: date | None = None
     held: date | None = None
     depends_on: tuple[str, ...] = ()
+    scheduled: date | None = None
     waiting: date | str | None = None
     releases: bool = False
     risk: bool = False
+    importance: str | None = None
+    steps: tuple[tuple[str, bool], ...] = ()
     request_kind: str | None = None
     prepares: str | None = None
     verifies: str | None = None
@@ -185,9 +188,12 @@ class Task:
             completed=_date_or_none(data.get("completed")),
             held=_date_or_none(data.get("held")),
             depends_on=tuple(data.get("depends_on", ())),
+            scheduled=_date_or_none(data.get("scheduled")),
             waiting=waiting,
             releases=data.get("releases", False),
             risk=data.get("risk", False),
+            importance=data.get("importance"),
+            steps=tuple((step["title"], step.get("done", False)) for step in data.get("steps", ())),
             request_kind=data.get("request_kind"),
             prepares=data.get("prepares"),
             verifies=data.get("verifies"),

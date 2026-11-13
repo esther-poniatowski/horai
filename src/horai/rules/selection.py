@@ -39,6 +39,16 @@ from .budgets import budget_status
 from .state import task_state
 from .time_spent import Span
 
+IMPORTANT = {"highest", "high"}
+IMPORTANCE_ORDER: dict[str | None, int] = {
+    "highest": 0,
+    "high": 1,
+    "medium": 2,
+    None: 3,
+    "low": 4,
+    "lowest": 5,
+}
+
 _UNIMPLEMENTED_KEYS = {
     "imposed_deadlines": "the deadline key is not computed yet",
     "milestone_graph": "the unblocking key is not computed yet",
@@ -109,34 +119,62 @@ def _pool(
     ]
 
 
-def _admit(plan: Plan, item: Item, task: Task, work: Sequence[Span], notes: list[str]) -> bool:
+@dataclass(frozen=True)
+class _Context:
+    """What the admission of a candidate reads: the plan, the work, the done tasks, the notes."""
+
+    plan: Plan
+    work: Sequence[Span]
+    done: set[str]
+    notes: list[str]
+
+
+def _admit(item: Item, task: Task, context: _Context) -> bool:
     """Whether a task of the pool is a candidate; record in `notes` why an item is excluded."""
     if not task.is_open or not item.is_open or task.waiting is not None:
         return False
+    plan, notes = context.plan, context.notes
     dependency = _blocked_by_dependency(plan, item)
     if dependency is not None:
         notes.append(f"{item.id}: waits for the milestone {dependency}")
         return False
-    status = budget_status(plan, item, work)
+    status = budget_status(plan, item, context.work)
     if status.undefined:
         notes.append(f"{item.id}: the remaining work is undefined: {status.undefined}")
     elif status.exhausted:
         notes.append(f"{item.id}: the budget is consumed and awaits a checkpoint decision")
         return False
-    done = {other.id for other in item.tasks if not other.is_open}
-    return all(predecessor in done for predecessor in task.depends_on)
+    return all(predecessor in context.done for predecessor in task.depends_on)
 
 
-def _tiers(candidates: list[Candidate], release_key: bool) -> list[list[Candidate]]:
+def quadrant(task: Task, day: date) -> int:
+    """Return the quadrant of a task within its parent: 0 important and urgent, 1 important,
+    2 urgent, 3 neither. A task is important at the levels highest and high, and urgent once its
+    scheduled date is reached.
+
+    Examples
+    --------
+    >>> task = Task("a", "A", None, importance="high", scheduled=date(2026, 11, 1))
+    >>> quadrant(task, date(2026, 11, 2))
+    0
+    """
+    important = task.importance in IMPORTANT
+    urgent = task.scheduled is not None and task.scheduled <= day
+    return (0 if urgent else 1) if important else (2 if urgent else 3)
+
+
+def _tiers(candidates: list[Candidate], release_key: bool, day: date) -> list[list[Candidate]]:
     """Order the candidates by the keys, and group the tied ones into tiers."""
     releasing = {c.item.id for c in candidates if c.task.releases} if release_key else set()
 
-    def key(candidate: Candidate) -> tuple[int, float, int, int]:
+    def key(candidate: Candidate) -> tuple[int, float, int, int, int, int]:
         item, task = candidate.item, candidate.task
         return (
             0 if item.id in releasing else 1,
             item.rank if item.rank is not None else math.inf,
             0 if release_key and task.releases else 1,
+            quadrant(task, day),
+            IMPORTANCE_ORDER.get(task.importance, IMPORTANCE_ORDER[None]),
             0 if task.risk else 1,
         )
 
@@ -165,12 +203,12 @@ def select(plan: Plan, day: date, stream: str | None, work: Sequence[Span]) -> S
     selection = Selection()
     options = plan.profile.options if plan.profile else {}
     selection.notes += [note for name, note in _UNIMPLEMENTED_KEYS.items() if name in options]
-    notes: list[str] = []
+    context = _Context(plan, work, {task.id for _, task in plan.tasks() if not task.is_open}, [])
     candidates = [
         Candidate(item, task)
         for item, task in _pool(plan, day, stream, selection)
-        if _admit(plan, item, task, work, notes)
+        if _admit(item, task, context)
     ]
-    selection.notes += list(dict.fromkeys(notes))
-    selection.tiers = _tiers(candidates, "external_parties" in options)
+    selection.notes += list(dict.fromkeys(context.notes))
+    selection.tiers = _tiers(candidates, "external_parties" in options, day)
     return selection

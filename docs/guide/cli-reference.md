@@ -23,7 +23,24 @@ The commands that read a plan accept three common options:
 | `--config`, `-c` | Configuration file at any path. | the environment variable `HORAI_CONFIG`, then `config/tools/horai.yml` or `horai.yml` under the root |
 | `--date` | Day of the computation, in ISO 8601; `start` and `stop` take the moment `--at` instead. | today, in the time zone of the configuration |
 
-The configuration file states the folder of the plan (key `plan`, relative to the root) and the time zone of the agent (key `timezone`, an IANA name). Without a configuration file, the plan is the root folder and the time zone is the local one.
+The configuration file states four keys, each optional:
+
+| Key | Value | Default |
+| --- | --- | --- |
+| `plan` | the central folder of the plan, relative to the root | the root |
+| `roots` | the folders, relative to the root, under which the records of the hierarchy are found by their key `_schema`, beside what they concern | none |
+| `exclude` | the patterns of paths, relative to a root, under which no record is sought; hidden folders are always skipped | none |
+| `timezone` | the time zone of the agent, an IANA name | the local zone |
+
+The configuration below serves a workspace whose central folder is `planning/`, and whose folders each ship their own records:
+
+```yaml
+_schema: horai:configuration@1
+plan: planning
+roots: [.]
+exclude: [archive, templates]
+timezone: Europe/Paris
+```
 
 ## Exit Statuses
 

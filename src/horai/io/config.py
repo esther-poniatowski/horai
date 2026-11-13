@@ -53,12 +53,18 @@ class Configuration:
         Time zone of the agent, or None for the local zone of the machine.
     path : Path | None
         Configuration file read, or None when the built-in defaults apply.
+    roots : tuple[Path, ...]
+        Folders under which the records of the hierarchy are found by their key `_schema`.
+    exclude : tuple[str, ...]
+        Patterns of paths, relative to a root, under which no record is sought.
     """
 
     root: Path
     plan: Path
     timezone: ZoneInfo | None
     path: Path | None
+    roots: tuple[Path, ...] = ()
+    exclude: tuple[str, ...] = ()
 
 
 def _candidates(folder: Path) -> list[Path]:
@@ -74,6 +80,56 @@ def _find_root(cwd: Path) -> Path:
         if _candidates(folder):
             return folder
     return cwd
+
+
+def _config_path(
+    config: Path | None, environ: Mapping[str, str], cwd: Path, root: Path
+) -> Path | None:
+    """Return the configuration file named by the option or the variable, or found at the root."""
+    named = config
+    if named is None and environ.get(CONFIG_VARIABLE):
+        named = Path(environ[CONFIG_VARIABLE])
+    if named is not None:
+        path = (named if named.is_absolute() else cwd / named).resolve()
+        if not path.is_file():
+            raise ConfigurationError(f"configuration file not found: {path}")
+        return path
+    found = _candidates(root)
+    if len(found) > 1:
+        raise ConfigurationError(f"two configuration files compete: {found[0]} and {found[1]}")
+    return found[0] if found else None
+
+
+def _read_config(path: Path | None) -> dict[str, Any]:
+    """Read and validate the configuration file; without one, the built-in defaults apply."""
+    if path is None:
+        return {}
+    data = load_yaml(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(data, dict) or data.get("_schema") != CONFIG_SCHEMA:
+        raise ConfigurationError(f"{path}: the key _schema must hold {CONFIG_SCHEMA}")
+    problems = list(SchemaSet.load().errors(CONFIG_SCHEMA, data))
+    if problems:
+        raise ConfigurationError(f"{path}: " + "; ".join(problems))
+    return data
+
+
+def _timezone(data: dict[str, Any]) -> ZoneInfo | None:
+    """Return the configured time zone, or None for the local zone."""
+    if "timezone" not in data:
+        return None
+    zone = data["timezone"]
+    try:
+        return ZoneInfo(zone)
+    except ZoneInfoNotFoundError as error:
+        raise ConfigurationError(f"unknown time zone: {zone}") from error
+
+
+def _folder(path: Path, what: str) -> Path:
+    """Return `path` resolved, or raise when it is not a folder."""
+    resolved = path.resolve()
+    if not resolved.is_dir():
+        raise ConfigurationError(f"{what} not found: {resolved}")
+    return resolved
 
 
 def resolve_configuration(
@@ -108,40 +164,15 @@ def resolve_configuration(
     if root is None and environ.get(ROOT_VARIABLE):
         root = Path(environ[ROOT_VARIABLE])
     resolved_root = (root if root is not None else _find_root(cwd)).resolve()
-
-    named = (
-        config
-        if config is not None
-        else (Path(environ[CONFIG_VARIABLE]) if environ.get(CONFIG_VARIABLE) else None)
+    path = _config_path(config, environ, cwd, resolved_root)
+    data = _read_config(path)
+    return Configuration(
+        root=resolved_root,
+        plan=_folder(resolved_root / data.get("plan", "."), "folder of the plan"),
+        timezone=_timezone(data),
+        path=path,
+        roots=tuple(
+            _folder(resolved_root / entry, "root of the plan") for entry in data.get("roots", ())
+        ),
+        exclude=tuple(data.get("exclude", ())),
     )
-    path: Path | None
-    if named is not None:
-        path = (named if named.is_absolute() else cwd / named).resolve()
-        if not path.is_file():
-            raise ConfigurationError(f"configuration file not found: {path}")
-    else:
-        found = _candidates(resolved_root)
-        if len(found) > 1:
-            raise ConfigurationError(f"two configuration files compete: {found[0]} and {found[1]}")
-        path = found[0] if found else None
-
-    data: dict[str, Any] = {}
-    if path is not None:
-        data = load_yaml(path.read_text(encoding="utf-8")) or {}
-        if not isinstance(data, dict) or data.get("_schema") != CONFIG_SCHEMA:
-            raise ConfigurationError(f"{path}: the key _schema must hold {CONFIG_SCHEMA}")
-        problems = list(SchemaSet.load().errors(CONFIG_SCHEMA, data))
-        if problems:
-            raise ConfigurationError(f"{path}: " + "; ".join(problems))
-
-    timezone = None
-    if "timezone" in data:
-        try:
-            timezone = ZoneInfo(data["timezone"])
-        except ZoneInfoNotFoundError as error:
-            zone = data["timezone"]
-            raise ConfigurationError(f"unknown time zone: {zone}") from error
-    plan = (resolved_root / data.get("plan", ".")).resolve()
-    if not plan.is_dir():
-        raise ConfigurationError(f"folder of the plan not found: {plan}")
-    return Configuration(root=resolved_root, plan=plan, timezone=timezone, path=path)

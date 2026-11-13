@@ -49,6 +49,8 @@ def render_selection(selection: Selection, stream: str | None) -> str:
         for candidate in tier:
             rank = f", rank {candidate.item.rank}" if candidate.item.rank is not None else ""
             risk = ", riskiest" if candidate.task.risk else ""
+            if candidate.task.importance:
+                risk += f", {candidate.task.importance}"
             lines.append(
                 f"  {number}. {candidate.task.title} [{candidate.task.id}] "
                 f"— {candidate.item.title}{rank}{risk}{tied}"

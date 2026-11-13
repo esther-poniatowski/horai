@@ -88,7 +88,13 @@ def _day(value: str | None, configuration: Configuration) -> date:
 
 def _load(configuration: Configuration) -> tuple[Plan, list[Issue]]:
     """Load the plan named by the configuration."""
-    return load_plan(configuration.plan, SchemaSet.load())
+    return load_plan(
+        configuration.plan,
+        SchemaSet.load(),
+        roots=configuration.roots,
+        exclude=configuration.exclude,
+        base=configuration.root,
+    )
 
 
 @app.command("check")

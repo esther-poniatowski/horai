@@ -237,3 +237,31 @@ def test_estimate_defects(plan: Plan) -> None:
 def test_second_overhead_parent(plan: Plan) -> None:
     _replace_item(plan, "mathematics-floor", overhead=True)
     assert "mark/overhead" in _rules(plan)
+
+
+# --- Order within a parent and dependencies across parents ------------------------------------------
+
+
+def test_quadrant_orders_the_tasks_of_one_parent(plan: Plan) -> None:
+    _replace_task(plan, "fit-gating-model", risk=False)
+    _replace_task(plan, "compare-geometries", depends_on=())
+    _replace_task(plan, "fit-gating-model", importance="low", scheduled=DAY)
+    _replace_task(plan, "compare-geometries", importance="highest")
+    tiers = _first_tier_ids(plan)
+    assert tiers[:2] == [["compare-geometries"], ["fit-gating-model"]]
+    _replace_task(plan, "fit-gating-model", importance="high")
+    assert _first_tier_ids(plan)[:2] == [["fit-gating-model"], ["compare-geometries"]]
+
+
+def test_dependency_across_parents(plan: Plan) -> None:
+    _replace_task(plan, "prove-rank-bound", depends_on=("simulate-noise",))
+    assert "prove-rank-bound" not in {t for tier in _first_tier_ids(plan) for t in tier}
+    assert check_plan(plan, DAY) == []
+    _replace_task(plan, "simulate-noise", completed=DAY)
+    assert "prove-rank-bound" in {t for tier in _first_tier_ids(plan) for t in tier}
+
+
+def test_dependency_cycle_and_missing_predecessor(plan: Plan) -> None:
+    _replace_task(plan, "prove-rank-bound", depends_on=("simulate-noise",))
+    _replace_task(plan, "simulate-noise", depends_on=("prove-rank-bound", "absent-task"))
+    assert {"reference/cycle", "reference/task"} <= _rules(plan)

@@ -9,6 +9,14 @@ properties:
   plan:
     description: folder of the plan, relative to the root
     type: string
+  roots:
+    description: folders, relative to the root, under which the records of the hierarchy are found
+    type: array
+    items: {type: string}
+  exclude:
+    description: patterns of paths, relative to a root, under which no record is sought
+    type: array
+    items: {type: string}
   timezone:
     description: IANA name of the time zone of the agent; the local zone when absent
     type: string

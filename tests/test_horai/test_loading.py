@@ -152,3 +152,87 @@ def test_stream_identifier_must_be_a_slug(plan_folder: Path, schemas: SchemaSet)
     _, issues = load_plan(plan_folder, schemas)
     assert [issue.rule for issue in issues] == ["schema/invalid"]
     assert "streams/1/id: 'T' is not a slug" in issues[0].message
+
+
+# --- Distributed records ----------------------------------------------------------------------------
+
+UPKEEP = """_schema: horai:standing@1
+title: Lexicon upkeep
+stream: upkeep
+rank: 2
+tasks:
+  - id: glossary-skeleton
+    title: Stabilize the glossary skeleton
+    importance: high
+    steps:
+      - {title: draft the fields, done: true}
+      - {title: bind the schema}
+"""
+
+
+def _workspace(plan_folder: Path) -> Path:
+    """A workspace holding the plan as its central folder, beside a folder that ships its own list."""
+    workspace = plan_folder.parent / "workspace"
+    plan_folder.rename(workspace)
+    (workspace / "lexicon").mkdir()
+    (workspace / "lexicon" / "lexicon-upkeep.yml").write_text(UPKEEP)
+    (workspace / "lexicon" / "notes.yml").write_text(
+        "_schema: other:record@1\ntitle: not a horai record\n"
+    )
+    return workspace
+
+
+def test_records_are_found_beside_their_folder(plan_folder: Path, schemas: SchemaSet) -> None:
+    workspace = _workspace(plan_folder)
+    plan, issues = load_plan(workspace, schemas, roots=[workspace], base=workspace)
+    assert issues == []
+    item = plan.items["lexicon-upkeep"]
+    assert (
+        item.kind == "standing"
+        and plan.sources["glossary-skeleton"] == "lexicon/lexicon-upkeep.yml"
+    )
+    assert item.tasks[0].importance == "high"
+    assert item.tasks[0].steps == (("draft the fields", True), ("bind the schema", False))
+
+
+def test_hidden_and_excluded_folders_are_skipped(plan_folder: Path, schemas: SchemaSet) -> None:
+    workspace = _workspace(plan_folder)
+    (workspace / ".hidden").mkdir()
+    (workspace / ".hidden" / "copy.yml").write_text(UPKEEP)
+    (workspace / "archive").mkdir()
+    (workspace / "archive" / "old-upkeep.yml").write_text(
+        UPKEEP.replace("glossary-skeleton", "old-task")
+    )
+    plan, issues = load_plan(
+        workspace, schemas, roots=[workspace], exclude=["archive"], base=workspace
+    )
+    assert issues == [] and "old-upkeep" not in plan.items and "copy" not in plan.items
+
+
+def test_central_record_outside_the_central_folder(plan_folder: Path, schemas: SchemaSet) -> None:
+    workspace = _workspace(plan_folder)
+    (workspace / "lexicon" / "2026-c7.yml").write_text(
+        "_schema: horai:cycle@1\nstart: 2026-12-14\nend: 2027-01-22\n"
+    )
+    _, issues = load_plan(workspace, schemas, roots=[workspace], base=workspace)
+    assert [(i.rule, i.path) for i in issues] == [("placement/central", "lexicon/2026-c7.yml")]
+
+
+def test_no_root_finds_no_distributed_record(plan_folder: Path, schemas: SchemaSet) -> None:
+    workspace = _workspace(plan_folder)
+    plan, _ = load_plan(workspace, schemas)
+    assert "lexicon-upkeep" not in plan.items
+
+
+def test_configuration_declares_the_roots(plan_folder: Path) -> None:
+    workspace = _workspace(plan_folder)
+    (workspace / "horai.yml").write_text(
+        "_schema: horai:configuration@1\nroots: [lexicon]\nexclude: [archive]\n"
+    )
+    configuration = resolve_configuration(None, None, {}, workspace)
+    assert configuration.roots == (
+        (workspace / "lexicon").resolve(),
+    ) and configuration.exclude == ("archive",)
+    (workspace / "horai.yml").write_text("_schema: horai:configuration@1\nroots: [absent]\n")
+    with pytest.raises(ConfigurationError, match="root of the plan not found"):
+        resolve_configuration(None, None, {}, workspace)
