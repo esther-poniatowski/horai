@@ -21,7 +21,7 @@ Two neighboring heuristics of software practice bear on the same question. The *
 ## Bearing on `horai`
 
 - The [commitment states](../kernel/objects/commitment-state.md) apply the commitment point.
-- The [pull rule](../kernel/processes/enablement.md#^pull-rule), the manual route and the thin slice apply pull, the rule of three and the walking skeleton to enablement.
+- The [pull rule](../kernel/processes/tooling.md#^pull-rule) and the thin slice apply pull and the walking skeleton to tooling.
 - The limit of three papers in the [reading pipeline](../modules/bibliography/reading-pipeline.md#^pipeline) is a limit on work in progress. The review of 2026-11-11 found no controlled evidence on such limits for one person, so the value is a default.
 
 ## Sources

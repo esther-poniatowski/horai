@@ -13,7 +13,7 @@ Defines the objects that a plan states. Each later note uses the notes listed be
 
 - [Stream and role](stream.md): types each piece of work by its relation to value, so that capacity is allocated before tasks are compared
 - [Regime](regime.md): types each stream by what triggers its work and by the form of its capacity
-- [Availability](availability.md): states how much time the agent has, how predictably, and in which blocks
+- [Availability](availability.md): states how much time the agent has, how predictably, and in which spans
 
 ## Results and their structure
 

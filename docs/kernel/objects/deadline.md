@@ -18,9 +18,8 @@ A **deadline** is a date that the agent cannot move alone, because missing it im
 
 | Kind | After the date | Moved by |
 | --- | --- | --- |
-| `hard` | the result loses its value, or incurs a penalty | nobody, or a party by exception |
+| `hard` | the result loses its value, or incurs a penalty | nobody, or a party by exception; the date of exhaustion of a resource is re-estimated |
 | `soft` | the value of the result decays with the delay | negotiation with the party |
-| `resource` | a resource on which the work depends is exhausted, such as funds | the rate of consumption of the resource, or its replenishment |
 
 A deadline attaches to the level that it concerns: a purpose, a deliverable or a milestone. Its **work** $w$ is the sum of the remaining budgets of the items below it.
 
@@ -51,9 +50,9 @@ The buffer is **running ahead** when $\beta_j > p_j$: the margin is spent faster
 
 When a slack is negative, the variables are adjusted in a fixed order: ^adjustment-order
 
-1. the scope of the result;
+1. the scope of the result, except for a [non-negotiable](../foundations/commitments.md#^c-non-negotiable) item, whose scope is reduced only by an explicit decision of the agent;
 2. the capacity, taken from the other streams of the regimes `planned` and `pulled`, as the exception of the second [commitment](../foundations/commitments.md#^c-capacity) admits;
-3. the date, by negotiation with the party; for a deadline of the kind `resource`, the resource, by reducing its consumption or replenishing it, levers that lie outside the allocation of attention and are recorded as such;
+3. the date, by negotiation with the party; for a deadline set by the exhaustion of a resource, the resource itself, by reducing its consumption or replenishing it, levers that lie outside the allocation of attention and are recorded as such;
 4. the floors, suspended for a stated period, as a recorded exception.
 
 The process that applies this order is the [test of imposed deadlines](../processes/imposed-deadlines.md).

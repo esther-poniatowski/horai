@@ -20,11 +20,11 @@ The core holds what is needed to answer the control questions of classification,
 | Element | Objects and rules |
 | --- | --- |
 | Separation of inventory and commitment | the states `backlog`, `cycle` and `week`, with a hidden backlog |
-| Allocation by stream | streams of the regimes `planned`, `floor`, `calendar` and `batched`, placed in themes |
+| Allocation by stream | streams of the regimes `planned`, `floor`, `appointed` and `batched`, placed in blocks |
 | Results | milestones with a definition of done, questions in exploration |
-| Termination | appetite, checkpoint and stop by default for exploratory items |
+| Termination | appetites for exploratory items, estimates for routine ones, a checkpoint at any consumed budget, and the stop by default |
 | Waits | a waiting flag with a date of follow-up |
-| Observation | one time entry per parent and per day, and the evidence note |
+| Observation | the clock entries on tasks, from which the time spent is computed, the decision entries, and the deviation entries |
 | Rituals | strategic review, cycle planning, weekly review, daily planning |
 
 ## Options
@@ -33,7 +33,7 @@ Each option adds objects, fields, a procedure and at most one metric. A profile 
 
 | Option | Turned on when | Adds |
 | --- | --- | --- |
-| Enablement control | the agent builds its means | the regime `pulled`, the enablement register, the [enablement request](../../procedures/enablement-request.md) |
+| Tooling control | the agent builds its means | the regime `pulled`, the tooling register, the [tooling request](../../procedures/tooling-request.md) |
 | Milestone graph | dependencies between milestones matter | the graph, the unblocking key of the selection rule |
 | Calibration | a reference class has enough entries | estimates of ratios, the class of variance by threshold |
 | Reactive work | requests arrive with an expected time of response | the reserve, windows, the [triage](../../procedures/request-triage.md), the request log |
@@ -41,15 +41,14 @@ Each option adds objects, fields, a procedure and at most one metric. A profile 
 | Delegation | the agent hands its own work to others | the relation `delegates`, the logged verification |
 | Imposed deadlines | dates are fixed from outside | the [feasibility test](../processes/imposed-deadlines.md), buffers |
 | Quantified valuation | worths can be stated in a unit | values, costs of delay, the stop by value |
-| Committed capacity | time is sold, rostered or owed | the regime `committed`, its blocks in the calendar |
-| Availability model | the time is fragmented or variable | the distribution of capacity, slots shorter than a theme |
+| Availability model | the time is fragmented or variable | the distribution of capacity, slots shorter than a block |
 | Modules | a role needs a process of its own | the procedures of the module |
 
 ## Overhead
 
-The core costs about $45 + 5 \times 5 + 60/6 + 120/13 + 5 \times 3 \approx 105$ minutes a week: the weekly review, five daily plannings, the cycle planning and the strategic review spread over their periods, and the daily time entries. ^overhead
+The core costs about $45 + 5 \times 5 + 60/6 + 120/13 + 5 \times 3 \approx 105$ minutes a week: the weekly review, five daily plannings, the cycle planning and the strategic review spread over their periods, and the close of each day. ^overhead
 
 - **Options add their own time.** The feasibility test, the review of waits and the reading of buffers add about 10 to 20 minutes a week each when their option is on. A full configuration, such as the [consultant profile](../../profiles/consultant.md) as an example, reaches about 2.5 hours a week.
 - **Work is not overhead.** The triage of a request is reactive work and is charged to the reserve. The checkpoint of an item is charged to the item.
 - **Tooling removes the rest.** The computation of the views, the metrics, the percentiles, the timestamps of requests and the feasibility test is done by `horai`, and not by hand.
-- **An overrun of the budget is a finding.** When the planning acts exceed `overhead_budget` over a cycle, an option is turned off or a ritual shortened.
+- **An overrun of the budget is a deviation.** When the planning acts exceed `overhead_budget` over a cycle, an option is turned off or a ritual shortened.

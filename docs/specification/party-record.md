@@ -17,7 +17,8 @@ Both records are required only when the profile turns the option of external par
 
 | Field | When it is required | Kind | Values | Source |
 | --- | --- | --- | --- | --- |
-| `id` | always | authored | an identifier unique in the plan | — |
+| `title` | always | authored | the name of the party, or the title of the wait | — |
+| `id` | always | authored | the slug of the title, fixed at creation and unique in the plan; it names the file of the record | — |
 | `relations` | always | authored | one or several of `supplies` · `delegates` · `consumes` · `reviews` · `imposes` · `requests` | [relations](../kernel/objects/external-party.md#^relations) |
 | `class_of_service` | for the relation `requests`, optional | authored | per kind of request, a class that overrides the class of the profile for this party | [classes of service](../kernel/processes/reactive-work.md#^classes-of-service) |
 | `latency` | computed | computed | the median and the quantile of the logged latencies, with the number of samples | [latency](../kernel/objects/external-party.md#^latency) |
@@ -26,9 +27,11 @@ Both records are required only when the profile turns the option of external par
 
 | Field | When it is required | Kind | Values | Source |
 | --- | --- | --- | --- | --- |
-| `tasks` | always | authored | the tasks that need the awaited artifact | [waiting](../kernel/objects/external-party.md#^waiting) |
+| `title` | always | authored | the name of the party, or the title of the wait | — |
+| `id` | always | authored | the slug of the title, fixed at creation and unique in the plan; it names the file of the record | — |
+| `tasks` | always | computed | the tasks whose field `waiting` cites the wait | [waiting](../kernel/objects/external-party.md#^waiting) |
 | `party` | always | authored | the identifier of the party | — |
-| `relation` | always | authored | `supplies` · `delegates` · `reviews` | [relations](../kernel/objects/external-party.md#^relations) |
+| `relation` | always | authored | `supplies` · `delegates` · `reviews`, among the relations of the party | [relations](../kernel/objects/external-party.md#^relations) |
 | `requested` | always | authored | the date of the request | [external request](../procedures/external-request.md) |
 | `expected` | always | computed, or authored below `latency_min_samples` | the date at which the response is expected | [latency](../kernel/objects/external-party.md#^latency) |
 | `follow_up` | always | computed | the date of the follow-up | — |

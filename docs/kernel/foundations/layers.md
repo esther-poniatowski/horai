@@ -18,7 +18,7 @@ The method is stated in three layers, as the decision on the [three-layer archit
 | Profile | values of the parameters for one domain | the statement is a value of a parameter that the kernel declares |
 | Module | a process attached to one role | the process exists only for that role, and only in some domains |
 
-*Example*: "work on means is pulled by a result that consumes its output" is a statement of the kernel. "The stream of tools receives a ceiling of 15%" is a value of a profile. "A text is read at one of three depths" belongs to a module of the role sensing.
+*Example*: "work on means is pulled by a result that consumes its output" is a statement of the kernel. "The stream of tools receives a ceiling of 15%" is a value of a profile. "A text is read at one of three depths" belongs to a module of the role survey.
 
 ## Numbers in the kernel
 

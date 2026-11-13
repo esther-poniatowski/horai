@@ -26,7 +26,7 @@ The theory of constraints of Goldratt holds that the output of a system is limit
 
 - The [milestone graph](../kernel/objects/dependency.md#^graph-uses) serves precedence, unblocking and external latencies, and not the longest path, since one agent is one resource.
 - The [cumulative test](../kernel/processes/imposed-deadlines.md#^feasibility-test) applies the condition of earliest deadline first.
-- The [constraint rule](../kernel/processes/enablement.md#^constraint-rule) applies the steps of exploitation and subordination to a blocking tool.
+- The [constraint rule](../kernel/processes/tooling.md#^constraint-rule) applies the steps of exploitation and subordination to a blocking tool.
 - The [buffer](../kernel/objects/deadline.md#^buffer) of an imposed deadline applies the critical chain: one margin per deliverable, whose consumption is the signal of its health.
 
 ## Sources

@@ -17,7 +17,7 @@ The worth of a result is stated on one of two scales, which a profile declares. 
 
 | Scale | Statement | Use |
 | --- | --- | --- |
-| Ordinal | a **rank** of each milestone of the cycle within its stream, set at the cycle planning | the last key of the [selection rule](../processes/task-selection.md#^valuation-key) |
+| Ordinal | a **rank** of each milestone of the cycle and of each standing parent within its stream, set at the cycle planning | the last key of the [selection rule](../processes/task-selection.md#^valuation-key) |
 | Quantified | amounts in a unit, such as a currency | the three quantities below |
 
 ## Quantities
@@ -32,7 +32,7 @@ Where the scale is quantified, a milestone can state three quantities. ^quantiti
 
 - **Ordering.** Within one stream, milestones are ordered by the ratio of $\gamma$ to their remaining work, as the [selection rule](../processes/task-selection.md#^valuation-key) states. Tasks are then ordered within the chosen milestone.
 - **Termination.** At a checkpoint, the expected worth of one more interval is compared with its expected cost, as the [stop by value](../processes/uncertainty-control.md#^stop-by-value) states.
-- **Make or obtain.** For an [enablement](../processes/enablement.md), the cost of building a means is compared with the cost of obtaining it from outside.
+- **Make or obtain.** For [tooling](../processes/tooling.md), the cost of building a means is compared with the cost of obtaining it from outside.
 
 ## Limits
 

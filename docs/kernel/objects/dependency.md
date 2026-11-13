@@ -30,7 +30,7 @@ The critical path method gives the duration of a project whose activities run in
 
 A milestone depends on an **artifact**, and not on the means that generates it. ^artifact-dependency
 
-The statement "the work is blocked by the missing means" therefore names the wrong dependency. The artifact can be produced by hand, by a means made for the occasion, or obtained from outside, which unblocks the work and reveals what a durable means must do. The rules that follow are stated in the process of [enablement](../processes/enablement.md).
+The statement "the work is blocked by the missing means" therefore names the wrong dependency. The artifact can be produced by hand, by a means made for the occasion, or obtained from outside, which unblocks the work and reveals what a durable means must do. The rules that follow are stated in the process of [tooling](../processes/tooling.md).
 
 ## A milestone can depend on an external party
 

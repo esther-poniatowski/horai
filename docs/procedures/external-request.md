@@ -18,5 +18,5 @@ The procedure applies the rules of [external coordination](../kernel/processes/e
 3. **Latest date.** Under a deadline, compute the latest date of the request and of the response, as the [three acts](../kernel/processes/external-coordination.md#^three-acts) state.
 4. **Fallback.** Under a deadline, or for the milestone of largest successor work, state the fallback.
 5. **Send.** Send the request as soon as its content is stated, in the next window if need be.
-6. **Mark.** Create the wait record, attached to the tasks that need the artifact.
-7. **Close.** At the response, record its date, and create the tasks of revision if work was done on an assumption. For a delegation, review the output against its test, and log the time of review as verification.
+6. **Mark.** Create the wait record, and set the field `waiting` of each task that needs the artifact to that wait.
+7. **Close.** At the response, record its date, and create the tasks of revision if work was done on an assumption. For a delegation, review the output against its test, in a task that bears the field `verifies`, so that its time counts as verification.

@@ -1,7 +1,7 @@
 ---
 tags:
   - decision
-status: accepted
+status: proposed
 created: 2026-11-11
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
@@ -15,7 +15,7 @@ The first statement of the method capped all tool work at 20% of the week.
 
 ## Decision
 
-Tool work is divided by its effect on the projects, under the [constraint rule](../kernel/processes/enablement.md#^constraint-rule). A tool that blocks the critical result of a project is driven to a thin slice under an appetite charged to the consuming milestone. The ceiling of the stream T applies to the other tool work. A tool that is a research contribution is planned in the stream P.
+Tool work is divided by its effect on the projects, under the [constraint rule](../kernel/processes/tooling.md#^constraint-rule). A tool that blocks the critical result of a project is driven to a thin slice under an appetite charged to the consuming milestone. The ceiling of the stream T applies to the other tool work. A tool that is a research contribution is planned in the stream P.
 
 ## Constraints that decide the rule
 

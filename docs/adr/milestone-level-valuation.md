@@ -1,7 +1,7 @@
 ---
 tags:
   - decision
-status: accepted
+status: proposed
 created: 2026-11-11
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
@@ -21,7 +21,7 @@ The first statement of the extension ordered tasks by the ratio of the cost of d
 ## Constraints that decide the level
 
 - **Finishing a task stops no cost of delay.** Ordering tasks by an inherited ratio interleaves milestones and delays the completion of each.
-- **The task record has no reliable duration,** whereas the remaining work of a milestone is the sum of the budgets of its open tasks.
+- **A task has no reliable duration,** whereas a milestone has a budget that the calibration corrects. Therefore, the remaining work is defined at the milestone, as the [level records](../specification/milestone-record.md) state.
 - **Stopping now is not the only alternative to finishing.** The option of a further checkpoint has value. At $\sigma = 1$, $t = 1$ and $V = 1.5\,\kappa b$, the former rule stops, whereas a renewal of one budget has a positive expected worth of about $0.06\,\kappa b$, a value verified numerically.
 
 ## Options weighed

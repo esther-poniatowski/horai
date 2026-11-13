@@ -1,7 +1,7 @@
 ---
 tags:
   - decision
-status: accepted
+status: proposed
 created: 2026-11-11
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
@@ -32,4 +32,4 @@ The method is installed as a [minimal core](../kernel/foundations/core-and-optio
 ## Consequences
 
 - Each option declares its fields, its procedure and at most one metric.
-- An overrun of the overhead budget over a cycle is a finding, answered by turning an option off or shortening a ritual.
+- An overrun of the overhead budget over a cycle is a deviation, answered by turning an option off or shortening a ritual.

@@ -33,7 +33,7 @@ With the budget at the median ($\mu = 0$), the expected remainder is:
 
 ## Rules
 
-- **Stop by default.** At the `stop_overruns`-th consecutive overrun of the same work, the outcome of the checkpoint is the stop, unless a written justification states what has changed. ^stop-default
+- **Stop by default.** At the `stop_overruns`-th consecutive overrun of the same work, the outcome of the checkpoint is the stop, unless a written rationale states what has changed. A [non-negotiable](../foundations/commitments.md#^c-non-negotiable) item has no default outcome: its checkpoint requires an explicit decision. ^stop-default
 - **Stop by value.** Where the [value](../objects/value.md) is quantified, the checkpoint at elapsed time $t$, for an item of budget $b$ hours, compares renewals of length $\Delta$, in budget units, by their expected net worth ^stop-by-value
 
 $$G(\Delta) = \Pr(T \le t + \Delta \mid T > t)\, V - \kappa\, b\, \mathbb{E}\left[\min(T - t, \Delta) \mid T > t\right].$$

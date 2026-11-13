@@ -20,8 +20,8 @@ A profile declares the class of service of each kind of request, optionally per 
 
 | Class | Served | Effect on the plan |
 | --- | --- | --- |
-| `immediate` | at once | interrupts the current theme; the interruption is logged and counted in the reactive load |
-| `windowed` | in the next [window](../objects/horizon.md#^window) | none on the themes |
+| `immediate` | at once | interrupts the current block; the interruption is logged and counted in the reactive load |
+| `windowed` | in the next [window](../objects/horizon.md#^window) | none on the blocks |
 | `scheduled` | as planned work | enters the inbox, then a plan through the weekly review |
 
 The class `immediate` is the one exception to the seventh [commitment](../foundations/commitments.md#^c-reserve). It is kept for the requests whose delay harms a party beyond repair within a day.
@@ -34,19 +34,19 @@ The reserve is the time of the windows. A person who serves requests only in win
 - **Placement.** The windows are placed so that the gap between two windows is shorter than the time of response of the class `windowed`.
 - **Stability.** The weekly reserve $r$ exceeds the mean weekly load $\ell$, so that $\rho = \ell / r < 1$. Above it, the backlog of requests grows without bound, as [queueing theory](../../references/queueing-and-reactive-work.md) shows. This is a necessary condition, not a rule of sizing.
 - **An unused window returns to the plan.** The reserve is therefore a bound and not a cost. Its time also serves the tasks that [release a wait](task-selection.md#^release-key).
-- **Discretion.** When the reserve and the committed blocks leave less than `discretion_min` of the capacity, the method degrades as the [boundaries of the class](../foundations/problem-class.md) state.
+- **Discretion.** When the reserve and the appointed blocks leave less than `discretion_min` of the capacity, the method degrades as the [boundaries of the class](../foundations/problem-class.md) state.
 
 ## Triage
 
 Each request receives exactly one of four outcomes. ^triage
 
 1. **Respond**, within its class of service, when the response fits in a window.
-2. **Convert**, when the response exceeds a window: the request becomes a task or a milestone of the stream that the profile declares for its kind, and enters a plan with the origin `request`. Its time is drawn from that stream. Conversions that persist over a cycle are a finding for the strategic review, which may change the allocation.
+2. **Convert**, when the response exceeds a window: the request becomes a task or a milestone of the stream that the profile declares for its kind, and enters a plan with the origin `request`. Its time is drawn from that stream. Conversions that persist over a cycle are a deviation for the strategic review, which may change the allocation.
 3. **Redirect**, to the party that can serve it.
 4. **Decline**, with the reason stated to the requester.
 
 ## Recurrence
 
-A kind of request that reaches `recurrence_threshold` occurrences pulls an [enablement](enablement.md#^manual-first): a documented answer, a template or an automated response. Reactive load is thereby the one source of work that the method aims to reduce.
+A kind of request that reaches `recurrence_threshold` occurrences pulls [tooling](tooling.md#^pull-rule): a documented answer, a template or an automated response. Reactive load is thereby the one source of work that the method aims to reduce.
 
 The steps are given in the [triage procedure](../../procedures/request-triage.md).

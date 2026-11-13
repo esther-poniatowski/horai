@@ -19,4 +19,4 @@ The triage applies the rules of [reactive work](../kernel/processes/reactive-wor
    - **Redirect**, and tell the requester to whom.
    - **Decline**, and tell the requester why.
 4. **Acknowledge.** For a conversion, tell the requester the date at which the response will come.
-5. **Count.** The request entry is logged. When the kind reaches `recurrence_threshold` occurrences, open an [enablement request](enablement-request.md).
+5. **Count.** The request entry is logged. When the kind reaches `recurrence_threshold` occurrences, open a [tooling request](tooling-request.md).

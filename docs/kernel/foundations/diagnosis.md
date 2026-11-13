@@ -18,7 +18,7 @@ Five structural defects follow. ^defects
 | --- | --- | --- |
 | Inventory and commitment are conflated | every recorded task competes permanently for attention | priorities and due dates inflate until many tasks are urgent and high |
 | Dependencies sit at the grain of the task | the graph has hundreds of nodes, spread over local items | the structure of the work stays implicit, and no roadmap can be read |
-| Heterogeneous work is ranked on one scale | work whose payoff is deferred loses every comparison | the capability and the knowledge of the environment decay |
+| Heterogeneous work is ranked on one scale | work whose payoff is deferred loses every comparison | the training and the knowledge of the environment decay |
 | Arrivals and plans share one list | each request competes with the planned work at the moment it arrives | the plan is displaced by whatever arrived last |
 | Waits are invisible | an item that awaits another party looks like an item that awaits the agent | the item is forgotten, or occupies attention to no effect |
 

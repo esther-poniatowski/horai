@@ -18,9 +18,16 @@ Each task bears one of three **commitment states**. ^states
 | State | Meaning | Entered at |
 | --- | --- | --- |
 | `backlog` | recorded, with no promise | capture |
-| `cycle` | serves a milestone or a question selected for the current cycle | [cycle planning](../../procedures/cycle-planning.md) |
+| `cycle` | serves a milestone or a question selected for the current cycle, or a standing parent | [cycle planning](../../procedures/cycle-planning.md) |
 | `week` | committed for the current week | [weekly review](../../procedures/weekly-review.md), or one of the [lateral entries](../processes/planning-horizons.md#^lateral-entries) |
 
+The state of a task is computed from its parent and from the week of its commitment. The task records that week by the date of the weekly review that opened it. ^state-rule
+
+1. A task is in the state `week` when its field `committed_week` bears the date of the review that opened the current week, the latest week of the [calendar record](../../specification/calendar-record.md). A lateral entry bears the same date.
+2. Otherwise, a task is in the state `cycle` when its parent is selected for the current cycle, or is a standing parent.
+3. Any other task is in the state `backlog`.
+
+- **A week ends at the next review.** A task left undone in the state `week` returns to the state `cycle` or `backlog` when the next weekly review is held, unless that review commits it again.
 - **The backlog is hidden by default.** No view displays it outside a planning session, which removes the permanent competition among recorded tasks.
 - **Priority is derived.** The order of the tasks of a week follows from the [selection rule](../processes/task-selection.md#^selection-rule), so a priority assigned by hand has meaning only within the committed week.
 - **The task of the day is a mark, not a state.** The [daily planning](../../procedures/daily-planning.md) marks at most `daily_marks` tasks of the week.

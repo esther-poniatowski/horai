@@ -30,7 +30,7 @@ A server that attends a queue only at set times is a *polling* or *vacation* sys
 
 - A person who serves requests in windows is a polling system. The [reserve](../kernel/processes/reactive-work.md#^reserve) is therefore sized on a quantile of the load per window, and the condition $\rho < 1$ is kept only as the condition of stability.
 - The three [classes of service](../kernel/processes/reactive-work.md#^classes-of-service) of the kernel reduce the classes of Kanban to what one agent needs.
-- The [windows](../kernel/objects/horizon.md#^window) between themes apply the maker's schedule to requests: arrivals are batched so that a theme is not cut.
+- The [windows](../kernel/objects/horizon.md#^window) between blocks apply the maker's schedule to requests: arrivals are batched so that a block is not cut.
 - The assumptions of the model are rough for one person: the service is not exponential, and the arrivals are not independent. The result is used for its direction, not for its values.
 
 ## Sources

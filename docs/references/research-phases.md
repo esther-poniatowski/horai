@@ -21,7 +21,7 @@ Two further sources address the choice of a problem, which precedes these phases
 ## Bearing on `horai`
 
 - The three [phases](../kernel/objects/phase.md#^phases) of the kernel generalize this account, whose names the research profile keeps, and the decision on [phase-dependent planning](../adr/phase-dependent-planning.md) restricts milestones to the last two.
-- The weight given to tooling in exploration supports the [constraint rule](../kernel/processes/enablement.md#^constraint-rule) for a blocking tool.
+- The weight given to tooling in exploration supports the [constraint rule](../kernel/processes/tooling.md#^constraint-rule) for a blocking tool.
 - The method does not address the choice of a problem. The strategic review of the ideas file is the place where the two further sources would apply.
 
 ## Sources

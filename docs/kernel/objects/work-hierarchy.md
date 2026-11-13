@@ -20,7 +20,7 @@ Work is ordered on four levels, which a profile names in the terms of its domain
 
 A task has no independent existence: it serves one parent of level 3, or a standing parent. ^parent-rule
 
-- **An orphan task is not a commitment.** A task without a parent is placed in a holding file, and is archived when `orphan_cycles` cycles pass without its selection. ^orphan-rule
+- **An orphan task is not a commitment.** A task without a parent is placed in a holding file. The task is archived at the `orphan_cycles`-th cycle planning held since its entry into that file, unless that planning selects it. ^orphan-rule
 - **An idea is not a task.** An idea of a possible deliverable is recorded in an ideas file, which is reviewed at the strategic horizon and never archived, since an idea can mature over years. ^ideas-file
-- **Recurring work has a standing parent.** A **standing parent** is a permanent parent of level 3 for one stream of the regimes `floor`, `calendar`, `batched`, `reactive` or `committed`, so that the rule above holds without invented milestones. The register of debt of an enablement stream is a standing parent of that stream. ^standing-parent
+- **Recurring work has a standing parent.** A **standing parent** is a permanent parent of level 3 for one stream of the regimes `floor`, `appointed`, `batched` or `reactive`, so that the rule above holds without invented milestones. The register of debt of a tooling stream is a standing parent of that stream. ^standing-parent
 - **A deadline can attach at any level.** A purpose, a deliverable or a milestone can bear a [deadline](deadline.md). The work that the deadline covers is the remaining work of the items below it.

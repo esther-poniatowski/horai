@@ -32,13 +32,13 @@ Each adjustment is recorded with what it displaces, so that the cost of the dead
 ## Particular cases
 
 - **Exploration gives no estimate.** A deliverable in [exploration](../objects/phase.md) has no estimate of its remaining work. Its demand is the appetite of its exploration, and the plan states the date at which it must have left that phase. The test reports the deadline as a risk until then.
-- **A deadline of the kind `resource` moves.** Its date is a projection, the resource divided by its rate of consumption, and it is recomputed at each cycle planning.
+- **A deadline set by a resource is re-estimated.** The exhaustion of a resource, such as funds, is a `hard` deadline. The agent re-estimates its date, which no party can move, at each cycle planning, from the quantity left and its rate of consumption.
 - **External dependencies give latest dates.** The [latest date of each request](external-coordination.md#^three-acts) is computed with the test, and a request whose latest date has passed opens its fallback.
 
 ## Guards
 
 - **Only dates that the agent cannot move alone are deadlines.** A date set for oneself [is not one](../objects/deadline.md#^no-self-deadline), which prevents the inflation of dates that the [diagnosis](../foundations/diagnosis.md) describes. A date proposed to a party passes the test first.
 - **A deadline does not cancel a checkpoint.** An exploratory item under a deadline keeps its appetite, which is part of the demand that the test checks.
-- **Repeated suspension of the floors is a finding.** It shows that the commitments accepted exceed the capacity, which the [admission](planning-horizons.md#^admission) corrects.
+- **Repeated suspension of the floors is a deviation.** It shows that the commitments accepted exceed the capacity, which the [admission](planning-horizons.md#^admission) corrects.
 
 The steps are given in the [procedure for a deadline](../../procedures/deadline-feasibility.md).

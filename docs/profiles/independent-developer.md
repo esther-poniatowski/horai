@@ -18,10 +18,10 @@ aliases:
 | Stream | Role | Regime | Capacity |
 | --- | --- | --- | --- |
 | Features | production | `planned` | share |
-| Build and infrastructure | enablement | `pulled` | ceiling |
-| Ecosystem watch | sensing | `floor` | floor |
-| Techniques | capability | `floor` | floor |
-| Releases and community | interface | `calendar` | cap per release |
+| Build and infrastructure | tooling | `pulled` | ceiling |
+| Ecosystem watch | survey | `floor` | floor |
+| Techniques | training | `floor` | floor |
+| Releases and community | exchange | `appointed` | cap per release |
 | Dependencies and debt | upkeep | `batched` | slots, and the cool-down |
 | Issues and contributions | upkeep | `reactive` | reserve, the largest of the profiles |
 
@@ -32,7 +32,6 @@ aliases:
 | Purpose · deliverable | project vision · release |
 | Exploration · validation · delivery | prototype · stabilization · release |
 | Cycle | the release cycle |
-| Evidence note | the entry of the changelog, with what was tried and dropped |
 
 ## Options
 
@@ -48,5 +47,5 @@ aliases:
 - **The queue is not the roadmap.** A feature request is of the class `scheduled`: it enters the backlog, and the [commitment states](../kernel/objects/commitment-state.md) keep it out of sight until a planning selects it.
 - **A release date set by the maintainer is not a deadline,** by the [guard on self-set dates](../kernel/objects/deadline.md#^no-self-deadline), unless users rely on it once announced.
 - **A contribution inverts the wait.** The contributor awaits a review by the agent, so the review is a request under a class of service, and its delay is a latency that the agent imposes on a party.
-- **Recurrent issues pull enablement:** documentation, a template of issue, an automated check.
-- **Degraded mode.** When the reserve leaves less than `discretion_min` of the week, the profile runs in the [degraded mode](../kernel/foundations/problem-class.md): floors and windows are kept, features are suspended, and the finding goes to the strategic review, which may restrict what is accepted or seek co-maintainers.
+- **Recurrent issues pull tooling:** documentation, a template of issue, an automated check.
+- **Degraded mode.** When the reserve leaves less than `discretion_min` of the week, the profile runs in the [degraded mode](../kernel/foundations/problem-class.md): floors and windows are kept, features are suspended, and the deviation goes to the strategic review, which may restrict what is accepted or seek co-maintainers.

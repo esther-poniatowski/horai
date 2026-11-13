@@ -5,7 +5,7 @@ index: "[Processes](docs/kernel/processes/_index.md)"
 aliases:
   - Feedback
   - Metrics of the method
-  - Evidence note
+  - Weekly report
 ---
 # Feedback
 
@@ -31,15 +31,15 @@ Each option that a profile turns on adds one metric. ^extension-metrics
 The observations are used differently according to the [kind of parameter](../foundations/parameters.md#^parameter-kinds) that they concern. ^two-revisions
 
 - **Estimates are revised at each cycle,** without a decision: the ratios, the latencies, the reactive load and the availability are recomputed from the logs.
-- **A deviation from a policy is a finding,** listed for the strategic review. It is never corrected by changing the policy to match the logs: an under-spent floor calls for its protection, or for a recorded decision to lower it. A deviation calls for no additional effort either.
+- **A deviation from a policy is recorded as a deviation entry,** listed for the strategic review. It is never corrected by changing the policy to match the logs: an under-spent floor calls for its protection, or for a recorded decision to lower it. A deviation calls for no additional effort either.
 
-## Evidence note
+## Weekly report
 
-Each week ends with a written note that states, for each active deliverable, what was learned, ruled out or delivered. With one principal, the note is shown to it. With several, one note is written per principal, and covers only the deliverables of that principal. ^evidence-note
+Each week, a report is computed from the decision entries and the completed tasks of the week. For each active deliverable, it states what was decided, with the rationale of each decision, and what was completed. The report serves the agent, and any reader to whom the agent shows it, such as a principal; it can be restricted to the deliverables of one principal. ^weekly-report
 
-The note replaces a rule that required one milestone to advance each week. Such a rule can be met by slicing milestones, whereas a statement of what was ruled out is hard to produce without work, as the decision on the [weekly note](../../adr/weekly-note.md) records.
+The report replaces a written evidence note, which the [ratified ontology](../../adr/ratified-ontology.md) judged redundant with the decision entries. A week without a decision shows only its completed tasks.
 
 ## Limits
 
 - **Perceived speed is not evidence.** The speedup attributed to delegation is measured from the logs, since the perception of it is [unreliable](../../references/ai-delegation.md).
-- **Few instruments.** The method starts with its [minimal core](../foundations/core-and-options.md#^core) and three [views](../../specification/views.md). An instrument is added only when a decision lacked the information that it would give.
+- **Few instruments.** The method starts with its [minimal core](../foundations/core-and-options.md#^core) and four [views](../../specification/views.md). An instrument is added only when a decision lacked the information that it would give.

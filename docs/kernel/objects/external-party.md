@@ -36,13 +36,13 @@ A party bears one or several relations to the work. ^relations
 A **principal** is a party to whom the agent answers for a deliverable: it usually reviews, imposes, and fixes dates of synchronization. Each deliverable has at most one principal, and the agent may have several principals across its deliverables. ^principal
 
 - **With one principal,** its dates of synchronization bound the [cycle](horizon.md#^cycle).
-- **With several principals,** the cycle follows the cadence of the agent, and the dates of each principal enter the plan as milestones of the interface stream. The [evidence note](../processes/feedback.md#^evidence-note) is written per principal, and covers only the deliverables of that principal.
+- **With several principals,** the cycle follows the cadence of the agent, and the dates of each principal enter the plan as milestones of the exchange stream. The [weekly report](../processes/feedback.md#^weekly-report) can be restricted to the deliverables of each principal.
 
 ## Waiting
 
-An item is **waiting** when its next act belongs to a party. The condition records the party, the date of the request, the date at which a response is expected, and the date of the follow-up. ^waiting
+An item is **waiting** when its next act belongs to a party. In the core, the condition records the date of the follow-up. Under the option of external parties, it also records the party, the date of the request, and the date at which a response is expected. ^waiting
 
-- **The wait attaches to the tasks that need the artifact.** These tasks leave the candidates of the selection until the response arrives. The other tasks of the same milestone remain candidates. A milestone is shown as waiting when its next task by the selection rule waits.
+- **The wait attaches to the tasks that need the artifact.** These tasks leave the candidates of the selection until the response arrives. The other tasks of the same milestone remain candidates. A milestone is shown as waiting when it holds an open waiting task, and each of its open tasks waits or follows a waiting task in its local order.
 - **The follow-up is a task of the agent.** It is dated at the moment of the request, and appears in the week in which it falls.
 - **Waiting is a condition, not a commitment state.** An item keeps its [commitment state](commitment-state.md) while it waits.
 

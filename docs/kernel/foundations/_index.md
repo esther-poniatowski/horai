@@ -25,5 +25,5 @@ States what the method is about and what it presupposes.
 
 ## The grounds
 
-- [Commitments of the method](commitments.md): states the ten commitments from which the rules of the method follow
+- [Commitments of the method](commitments.md): states the commitments from which the rules of the method follow
 - [Status of the evidence](evidence-status.md): rates the support of each mechanism, and separates a tested claim from a default parameter

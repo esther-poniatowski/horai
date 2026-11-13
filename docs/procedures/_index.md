@@ -16,13 +16,13 @@ Guides the performance of each recurring act of the kernel, once the [rule](../k
 ## Planning
 
 - [Cycle planning](cycle-planning.md): selects the milestones and the questions of a cycle, and assigns their budgets
-- [Weekly review](weekly-review.md): reads the metrics, writes the evidence note and commits the tasks of the week
+- [Weekly review](weekly-review.md): closes a week and commits the next one
 - [Daily planning](daily-planning.md): fixes the objectives of a day from the committed week
 
 ## Decisions during the work
 
-- [Checkpoint decision](checkpoint-decision.md): decides the fate of a piece of work whose appetite is consumed
-- [Enablement request](enablement-request.md): decides whether and how far a means is built when the work appears blocked
+- [Checkpoint decision](checkpoint-decision.md): decides the fate of a piece of work whose budget is consumed
+- [Tooling request](tooling-request.md): decides whether and how far a means is built when the work appears blocked
 
 ## Coordination
 

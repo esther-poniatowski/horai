@@ -20,7 +20,7 @@ Work is assigned to one of two classes, since the argument for an appetite holds
 
 | Class | Typical work | Time control |
 | --- | --- | --- |
-| `routine` | a kind of work already done several times | an estimate, corrected by the logged ratios of the class |
+| `routine` | a kind of work already done several times | an estimate, corrected by the logged ratios of the class, and a checkpoint when it is consumed |
 | `exploratory` | an attempt whose outcome is open, a new method, a question of an exploration | an appetite and a checkpoint |
 
 - **Assignment by threshold.** Where the [calibration](../processes/uncertainty-control.md#^calibration) is on, a kind of work is `exploratory` when the estimated dispersion $\hat\sigma$ of the logarithm of its ratios exceeds `variance_threshold`. Otherwise, and for a kind of work never logged, the agent assigns the class, and a kind never done is `exploratory`.
@@ -28,7 +28,7 @@ Work is assigned to one of two classes, since the argument for an appetite holds
 
 ## Checkpoint
 
-A **checkpoint** is the decision taken when an appetite is consumed. Exactly one of three outcomes is recorded: a new budget with a written justification, a reduction of scope, or a stop. ^checkpoint
+A **checkpoint** is the decision taken when a budget is consumed: the appetite of an `exploratory` item, or the estimate of a `routine` one. Exactly one of three outcomes is recorded: a new budget with a written rationale, a reduction of scope, or a stop. For a `routine` item, the new budget is a new estimate. ^checkpoint
 
 Continuation without a decision is excluded. At the `stop_overruns`-th consecutive overrun of the same work, the default outcome is the stop, as the process of [uncertainty control](../processes/uncertainty-control.md#^stop-default) states. The steps are given in the [checkpoint procedure](../../procedures/checkpoint-decision.md).
 

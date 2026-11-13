@@ -1,7 +1,7 @@
 ---
 tags:
   - decision
-status: accepted
+status: proposed
 created: 2026-11-11
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
@@ -20,7 +20,7 @@ The four features are [modulators](../kernel/foundations/problem-class.md#^modul
 
 | Extension | Principle adopted |
 | --- | --- |
-| Reactive work | a [reserve](../kernel/processes/reactive-work.md#^reserve) sized above the load, classes of service, and windows between the themes |
+| Reactive work | a [reserve](../kernel/processes/reactive-work.md#^reserve) sized above the load, classes of service, and windows between the blocks |
 | External parties | a party is [never scheduled](../kernel/foundations/commitments.md#^c-own-acts): each relation is reduced to acts of the agent, and a wait is an explicit condition |
 | Imposed deadlines | a deadline is the imposed counterpart of an appetite, with a [feasibility test](../kernel/processes/imposed-deadlines.md#^feasibility-test), one buffer and a fixed order of adjustments |
 | Quantified cost | a cost of delay [orders within a stream](../kernel/foundations/commitments.md#^c-valuation), bounds an appetite, and never moves capacity between streams |

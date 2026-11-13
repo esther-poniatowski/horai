@@ -18,7 +18,7 @@ The stable result across both reports is the gap between the perceived and the m
 ## Bearing on `horai`
 
 - The time spent verifying the output of agents is [logged apart](../kernel/processes/feedback.md#^verification-time), so that the effect of delegation is measured and not perceived.
-- Delegation lowers the cost of building a tool, and leaves the costs of verification and of maintenance, which the [recurrence test](../procedures/enablement-request.md) weighs.
+- Delegation lowers the cost of building a tool, and leaves the costs of verification and of maintenance, which the choice of [route](../procedures/tooling-request.md) in a tooling request weighs.
 - The trials concern software development. Their transfer to mathematical derivation and to the triage of literature is an assumption.
 
 ## Sources

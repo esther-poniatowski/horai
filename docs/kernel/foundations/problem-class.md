@@ -30,14 +30,14 @@ The other features vary across the instances. Each activates an object or an opt
 
 | Modulator | Question that it raises | Object or option |
 | --- | --- | --- |
-| Endogenous means | does the agent build part of the means on which its results depend? | [enablement](../processes/enablement.md) |
+| Endogenous means | does the agent build part of the means on which its results depend? | [tooling](../processes/tooling.md) |
 | Structural uncertainty | are some results unknown until explored? | [phase](../objects/phase.md) |
 | Reactive load | how much work arrives unplanned, with an expected time of response? | [reactive work](../processes/reactive-work.md) |
 | External dependence | on whom does the work wait, and who waits on it? | [external parties](../objects/external-party.md), [coordination](../processes/external-coordination.md) |
 | Delegation | does the agent hand part of its own work to others? | the relation [`delegates`](../objects/external-party.md#^relations) |
 | Several principals | does the agent answer to more than one party? | the [principal](../objects/external-party.md#^principal) per deliverable |
 | Imposed deadlines | which dates are fixed from outside? | [deadlines](../objects/deadline.md), [their test](../processes/imposed-deadlines.md) |
-| Committed capacity | is part of the time sold, rostered or owed in advance? | the regime [`committed`](../objects/regime.md#^regimes) |
+| Appointed time | is part of the time fixed by parties, or sold, rostered or owed in advance? | the regime [`appointed`](../objects/regime.md#^regimes) |
 | Fragmented availability | is the time available in short, unpredictable pieces? | [availability](../objects/availability.md) |
 | Quantifiable cost | can the value of a result, or the cost of its delay, be stated in a unit? | [value](../objects/value.md) |
 
@@ -47,5 +47,5 @@ The [comparison of instances](../../profiles/comparison.md) places each profile 
 
 - **Homogeneous queue.** Work of one kind that arrives as a stream of similar items fails condition 1, and needs only the control of a flow.
 - **Fully structured project.** A project whose network of activities is known, and whose means are given, needs only the scheduling of its activities.
-- **Insufficient discretion.** When the reactive load and the committed capacity leave less than `discretion_min`, the method degrades to its [minimal core](core-and-options.md): the floors and the reserve are kept, the remainder is served as it arrives, and the excess is a finding for the [admission of deliverables](control-questions.md#^nine-questions).
+- **Insufficient discretion.** When the reactive load and the appointed blocks leave less than `discretion_min`, the method degrades to its [minimal core](core-and-options.md): the floors and the reserve are kept, the remainder is served as it arrives, and the excess is a deviation for the [admission of deliverables](control-questions.md#^nine-questions).
 - **Direction of others.** The agent may delegate work and await its output. The allocation of the work of a team, and the balance of its loads, are outside the kernel: other persons enter a plan as [external parties](../objects/external-party.md), which the agent does not schedule.

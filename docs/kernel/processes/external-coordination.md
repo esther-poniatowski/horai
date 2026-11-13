@@ -43,6 +43,6 @@ A delegated task adds two acts to the three above. ^delegation-acts
 
 ## Synchronization
 
-The recurring meetings with each [principal](../objects/external-party.md#^principal) are milestones of the interface stream, and the meetings of a single principal bound the cycles, as the [planning process](planning-horizons.md) states. Between two meetings, the questions for a principal are batched, unless one of them releases a wait under a deadline.
+The recurring meetings with each [principal](../objects/external-party.md#^principal) are milestones of the exchange stream, and the meetings of a single principal bound the cycles, as the [planning process](planning-horizons.md) states. Between two meetings, the questions for a principal are batched, unless one of them releases a wait under a deadline.
 
 The steps are given in the [procedure for an external request](../../procedures/external-request.md).

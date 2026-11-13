@@ -18,11 +18,11 @@ Defines the rules that govern the objects of a plan. Each process answers one or
 ## Termination and adaptation
 
 - [Control of uncertainty](uncertainty-control.md): justifies budgets and checkpoints from the distribution of durations
-- [Feedback](feedback.md): tunes the parameters of the method from a small set of metrics and a periodic note
+- [Feedback](feedback.md): tunes the parameters of the method from a small set of metrics and the weekly report
 
 ## Means and ends
 
-- [Enablement](enablement.md): bounds the work on means by the results that consume them
+- [Tooling](tooling.md): bounds the work on means by the results that consume them
 
 ## Coordination
 

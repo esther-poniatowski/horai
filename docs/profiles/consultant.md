@@ -18,11 +18,11 @@ aliases:
 | Stream | Role | Regime | Capacity |
 | --- | --- | --- | --- |
 | Engagements sold by result | production | `planned` | share |
-| Engagements sold by time | production | `committed` | blocks agreed with each client |
-| Templates and process | enablement | `pulled` | ceiling |
-| Market watch | sensing | `floor` | floor |
-| Upskilling | capability | `floor` | floor |
-| Proposals and client meetings | interface | `calendar` | cap per meeting |
+| Engagements sold by time | production | `appointed` | blocks agreed with each client |
+| Templates and process | tooling | `pulled` | ceiling |
+| Market watch | survey | `floor` | floor |
+| Upskilling | training | `floor` | floor |
+| Proposals and client meetings | exchange | `appointed` | cap per meeting |
 | Accounting | upkeep | `batched` | slots |
 | Client requests | production | `reactive` | reserve, with the classes of service that each contract states |
 
@@ -32,8 +32,7 @@ aliases:
 | --- | --- |
 | Purpose · deliverable | practice · engagement |
 | Exploration · validation · delivery | scoping · proposal · delivery |
-| Cycle | the cadence of the consultant, with the steering meetings of each client as milestones of interface |
-| Evidence note | the status report to each client, covering only its engagement |
+| Cycle | the cadence of the consultant, with the steering meetings of each client as milestones of exchange |
 
 ## Options
 
@@ -42,7 +41,6 @@ aliases:
 | Reactive work | on, medium to heavy |
 | External parties | on: each client is the principal of its engagement (`imposes`, `consumes`, `reviews`, `requests`); subcontractors (`delegates`) |
 | Imposed deadlines | on, dominant: contractual dates, `hard` where a penalty applies |
-| Committed capacity | on: retainers and time sold by the day |
 | Valuation | quantified: fees for the value, penalties for the cost of delay, the daily rate for the cost of capacity |
 
 ## Notes specific to the domain

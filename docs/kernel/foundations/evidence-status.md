@@ -24,7 +24,7 @@ The method was submitted on 2026-11-11 to two adversarial reviews. The first tra
 | Roles and allocation by class | [strategic buckets](../../references/portfolio-and-phase-frameworks.md) | P |
 | Milestone graph for precedence and latency | [critical path and constraints](../../references/critical-path-and-constraints.md) | P |
 | Pull rule, artifact dependency | [Lean pull](../../references/kanban-and-lean-pull.md) | P |
-| Constraint logic for blocking enablement | [theory of constraints](../../references/critical-path-and-constraints.md) | P |
+| Constraint logic for blocking tooling | [theory of constraints](../../references/critical-path-and-constraints.md) | P |
 | Appetite, checkpoint, cool-down | [Shape Up](../../references/shape-up.md) | P, anecdotal |
 | Unreliable estimates of exploratory work | [distributions of duration](../../references/duration-distributions.md) | E for the bias and the heavy tail |
 | Mean residual life of a log-normal law | [control of uncertainty](../processes/uncertainty-control.md#^mrl) | M, verified numerically |

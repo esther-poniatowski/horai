@@ -1,7 +1,7 @@
 ---
 tags:
   - decision
-status: accepted
+status: proposed
 created: 2026-11-11
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
@@ -15,7 +15,7 @@ The first statement of the feedback held that a deviation persisting over a cycl
 
 ## Decision
 
-Every number of the kernel is a [parameter](../kernel/foundations/parameters.md) of one of three kinds. An **estimate**, a quantity of the world, is recomputed from the logs at each cycle. A **policy**, a rule of conduct, changes only by a recorded decision at the strategic review. An **authored** quantity is a judgment on one item. A deviation from a policy is recorded as a finding.
+Every number of the kernel is a [parameter](../kernel/foundations/parameters.md) of one of three kinds. An **estimate**, a quantity of the world, is recomputed from the logs at each cycle. A **policy**, a rule of conduct, changes only by a recorded decision at the strategic review. An **authored** quantity is a judgment on one item. A deviation from a policy is recorded as a deviation entry.
 
 ## Constraints that decide the split
 
@@ -31,5 +31,5 @@ Every number of the kernel is a [parameter](../kernel/foundations/parameters.md)
 ## Consequences
 
 - The [parameter table](../kernel/foundations/parameters.md#^parameter-table) lists every policy with its default, and the profile record can override each.
-- The weekly review records findings, and the strategic review closes them.
+- The weekly review records deviations, and the strategic review closes them.
 - The layer test now forbids a number in the kernel other than a named default.

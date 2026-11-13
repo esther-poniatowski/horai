@@ -18,12 +18,12 @@ aliases:
 | Stream | Role | Regime | Capacity |
 | --- | --- | --- | --- |
 | Manuscript | production | `planned` | share, the largest of the profiles |
-| Note system and toolchain | enablement | `pulled` | ceiling, low |
-| Source reading | sensing | `floor` | floor |
-| Craft | capability | `floor` | floor |
-| Editor and publicity | interface | `calendar` | cap |
+| Note system and toolchain | tooling | `pulled` | ceiling, low |
+| Source reading | survey | `floor` | floor |
+| Craft | training | `floor` | floor |
+| Editor and publicity | exchange | `appointed` | cap |
 | Administration | upkeep | `batched` | slots |
-| Correspondence | interface | `reactive` | reserve, small |
+| Correspondence | exchange | `reactive` | reserve, small |
 
 ## Names
 
@@ -32,7 +32,6 @@ aliases:
 | Purpose · deliverable | book · part or chapter |
 | Exploration · validation · delivery | research · argument · drafting and revision |
 | Cycle | synchronized with the deliveries to the editor |
-| Evidence note | a note to the editor, with what was cut and why |
 
 ## Options
 

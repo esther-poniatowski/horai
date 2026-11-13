@@ -12,6 +12,19 @@ Records the choices of method that later work on `horai` must respect, so that a
 > [!IMPORTANT] Form of a decision record
 > Each record states the decision, the constraints that forced it, the options weighed and its consequences. Its frontmatter states its status and its dates. A decision on the software itself may instead follow the [long template](adr-template.md).
 
+## Ratified foundation
+
+> [!IMPORTANT] Status of the records
+> A record of status `accepted` was ratified by the author, and a record of status `superseded` was replaced by a ratified one. Every other record is a proposal.
+
+- [Kernel with research first](kernel-with-research-first.md): decides for which agents the software is built first
+- [Constraints of the software](software-constraints.md): decides the constraints that every part of the software respects
+- [Python core and Obsidian plugin](python-core-and-plugin.md): decides where a plan lives and where its rules are computed
+- [Ratified commitments](ratified-commitments.md): records which commitments of the method the author ratified, and the non-negotiable mark
+- [Ratified ontology](ratified-ontology.md): records the objects that the software manipulates
+- [Record formats](record-formats.md): decides in which files and notations the records of a plan are stored
+- [Ratified core rules](ratified-core-rules.md): fixes the rules of the core before the first increment, and ratifies the amendments of its documentation gate
+
 ## Architecture of the method
 
 - [Three-layer architecture](three-layer-architecture.md): decides how the general method is separated from the values and the processes of a domain
