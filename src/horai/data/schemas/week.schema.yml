@@ -1,0 +1,11 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:week:1
+title: Week
+type: object
+additionalProperties: false
+required: [_schema, opened]
+properties:
+  _schema: {const: 'horai:week@1'}
+  opened: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+  blocks: {type: array, items: {$ref: 'urn:horai:schema:common:1#/$defs/block'}}
+  windows: {type: array, items: {$ref: 'urn:horai:schema:common:1#/$defs/window'}}

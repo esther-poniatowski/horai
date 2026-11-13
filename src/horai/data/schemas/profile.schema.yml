@@ -1,0 +1,78 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:profile:1
+title: Profile
+type: object
+additionalProperties: false
+required: [_schema, name, streams, valuation]
+properties:
+  _schema: {const: 'horai:profile@1'}
+  name: {type: string}
+  streams:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      additionalProperties: false
+      required: [id, name, role, regime, capacity]
+      properties:
+        id: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
+        name: {type: string}
+        role: {enum: [production, tooling, survey, training, exchange, upkeep, duty]}
+        regime: {enum: [planned, pulled, floor, appointed, batched, reactive]}
+        capacity:
+          type: object
+          additionalProperties: false
+          minProperties: 1
+          properties:
+            share: {type: number, exclusiveMinimum: 0, maximum: 1}
+            ceiling: {type: number, exclusiveMinimum: 0, maximum: 1}
+            floor: {type: number, exclusiveMinimum: 0, maximum: 1}
+            reserve: {type: number, exclusiveMinimum: 0, maximum: 1}
+            cap: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}
+            slots: {type: boolean}
+  levels:
+    type: object
+    additionalProperties: false
+    properties:
+      purpose: {type: string}
+      deliverable: {type: string}
+  phases:
+    type: object
+    additionalProperties: false
+    properties:
+      exploration: {type: string}
+      validation: {type: string}
+      delivery: {type: string}
+  options:
+    description: the options turned on, each with its settings
+    type: object
+    propertyNames:
+      enum: [tooling_control, milestone_graph, calibration, reactive_work, external_parties, delegation, imposed_deadlines, quantified_valuation, availability_model, modules]
+    additionalProperties: {type: object}
+  valuation:
+    type: object
+    additionalProperties: false
+    required: [scale]
+    properties:
+      scale: {enum: [ordinal, quantified]}
+      unit: {type: string}
+      cost_of_capacity: {type: number, exclusiveMinimum: 0}
+  modules:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [name, stream]
+      properties:
+        name: {type: string}
+        stream: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
+  parameters:
+    description: overrides of the policies of the kernel, each with its reason
+    type: object
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [value, reason]
+      properties:
+        value: {}
+        reason: {type: string, minLength: 1}

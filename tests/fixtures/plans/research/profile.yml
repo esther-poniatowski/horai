@@ -1,0 +1,14 @@
+_schema: horai:profile@1
+name: research
+streams:
+  - {id: P, name: project results, role: production, regime: planned, capacity: {share: 0.45}}
+  - {id: T, name: tools and frameworks, role: tooling, regime: pulled, capacity: {ceiling: 0.15}}
+  - {id: L, name: mathematics, role: training, regime: floor, capacity: {floor: 0.2}}
+  - {id: B, name: bibliography, role: survey, regime: floor, capacity: {floor: 0.1}}
+  - {id: C, name: supervision and lab meetings, role: exchange, regime: appointed, capacity: {share: 0.04, cap: PT3H}}
+  - {id: M, name: vault and defects, role: upkeep, regime: batched, capacity: {slots: true}}
+  - {id: R, name: correspondence and requests, role: exchange, regime: reactive, capacity: {reserve: 0.03}}
+levels: {purpose: thesis, deliverable: paper}
+phases: {exploration: exploration, validation: understanding, delivery: distillation}
+options: {}
+valuation: {scale: ordinal}

@@ -1,0 +1,14 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:configuration:1
+title: Configuration of horai
+type: object
+additionalProperties: false
+required: [_schema]
+properties:
+  _schema: {const: 'horai:configuration@1'}
+  plan:
+    description: folder of the plan, relative to the root
+    type: string
+  timezone:
+    description: IANA name of the time zone of the agent; the local zone when absent
+    type: string

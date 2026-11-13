@@ -1,0 +1,8 @@
+_schema: horai:standing@1
+title: Mathematics floor
+stream: L
+rank: 1
+tasks:
+  - id: chapter-3-exercises
+    title: Work the exercises of chapter 3
+    committed_week: 2026-11-09

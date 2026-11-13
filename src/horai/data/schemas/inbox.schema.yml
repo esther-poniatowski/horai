@@ -1,0 +1,9 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:inbox:1
+title: Inbox
+type: object
+additionalProperties: false
+required: [_schema, entries]
+properties:
+  _schema: {const: 'horai:inbox@1'}
+  entries: {$ref: 'urn:horai:schema:common:1#/$defs/entries_of_text'}

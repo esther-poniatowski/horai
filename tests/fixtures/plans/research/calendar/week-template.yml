@@ -1,0 +1,14 @@
+_schema: horai:week-template@1
+blocks:
+  - {day: mon, start: "09:00", length: PT3H30M, stream: P}
+  - {day: tue, start: "09:00", length: PT3H30M, stream: P}
+  - {day: wed, start: "09:00", length: PT3H30M, stream: P}
+  - {day: thu, start: "09:00", length: PT3H30M, stream: P}
+  - {day: fri, start: "09:00", length: PT1H, stream: P}
+  - {day: mon, start: "13:30", length: PT1H, stream: L}
+  - {day: fri, start: "13:30", length: PT1H, stream: L}
+  - {day: thu, start: "14:00", length: PT2H, stream: B}
+windows:
+  - {day: mon, start: "12:30", length: PT30M}
+appointed:
+  - {day: fri, start: "10:00", length: PT1H, stream: C, party: lab}

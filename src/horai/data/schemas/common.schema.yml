@@ -1,0 +1,116 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:common:1
+title: Definitions shared by the records of horai
+$defs:
+  identifier:
+    description: a slug, in lowercase words joined by hyphens, fixed at creation and unique in the plan
+    type: string
+    pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
+  stream_id:
+    description: the identifier of a stream, as the profile declares it
+    type: string
+    pattern: '^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$'
+  date:
+    description: a date in ISO 8601
+    type: string
+    pattern: '^\d{4}-\d{2}-\d{2}$'
+    format: date
+  month:
+    description: a month in ISO 8601
+    type: string
+    pattern: '^\d{4}-\d{2}$'
+  timestamp:
+    description: a date and an hour in ISO 8601, with the offset of the time zone
+    type: string
+    pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)$'
+  time:
+    description: an hour of the day
+    type: string
+    pattern: '^([01]\d|2[0-3]):[0-5]\d$'
+  duration:
+    description: a duration in ISO 8601, in days, hours and minutes
+    type: string
+    pattern: '^P(?=\d|T\d)(\d+D)?(T(?=\d)(\d+H)?(\d+M)?)?$'
+  day:
+    description: a day of the week
+    enum: [mon, tue, wed, thu, fri, sat, sun]
+  origin:
+    description: origin of a commitment; chosen when absent
+    enum: [chosen, imposed, request]
+  deadline:
+    description: a date that a party relies on
+    type: object
+    additionalProperties: false
+    required: [date, kind]
+    properties:
+      date: {$ref: '#/$defs/date'}
+      kind: {enum: [hard, soft]}
+      party: {type: string}
+  block:
+    description: a block of the week template, assigned to one stream
+    type: object
+    additionalProperties: false
+    required: [day, start, length, stream]
+    properties:
+      day: {$ref: '#/$defs/day'}
+      start: {$ref: '#/$defs/time'}
+      length: {$ref: '#/$defs/duration'}
+      stream: {$ref: '#/$defs/stream_id'}
+  window:
+    description: a short slot between two blocks, for requests and releasing tasks
+    type: object
+    additionalProperties: false
+    required: [day, start, length]
+    properties:
+      day: {$ref: '#/$defs/day'}
+      start: {$ref: '#/$defs/time'}
+      length: {$ref: '#/$defs/duration'}
+  appointed_block:
+    description: a recurring block fixed by a party
+    type: object
+    additionalProperties: false
+    required: [day, start, length, stream, party]
+    properties:
+      day: {$ref: '#/$defs/day'}
+      start: {$ref: '#/$defs/time'}
+      length: {$ref: '#/$defs/duration'}
+      stream: {$ref: '#/$defs/stream_id'}
+      party: {type: string}
+  task:
+    description: a task, held in the file of its parent or in the holding file
+    type: object
+    additionalProperties: false
+    required: [id, title]
+    properties:
+      id: {$ref: '#/$defs/identifier'}
+      title: {type: string, minLength: 1}
+      committed_week: {$ref: '#/$defs/date'}
+      origin: {$ref: '#/$defs/origin'}
+      budget: {$ref: '#/$defs/duration'}
+      today:
+        description: the date for which the task is marked, followed by main for the main objective
+        type: string
+        pattern: '^\d{4}-\d{2}-\d{2}( main)?$'
+      completed: {$ref: '#/$defs/date'}
+      held: {$ref: '#/$defs/date'}
+      depends_on:
+        type: array
+        items: {$ref: '#/$defs/identifier'}
+      scheduled: {$ref: '#/$defs/date'}
+      waiting:
+        description: the date of the follow-up in the core, or the identifier of a wait
+        anyOf:
+          - {$ref: '#/$defs/date'}
+          - {$ref: '#/$defs/identifier'}
+      releases: {type: boolean}
+      risk: {type: boolean}
+      request_kind: {type: string}
+      prepares: {$ref: '#/$defs/identifier'}
+      verifies: {$ref: '#/$defs/identifier'}
+      non_negotiable: {$ref: '#/$defs/date'}
+  tasks:
+    type: array
+    items: {$ref: '#/$defs/task'}
+  entries_of_text:
+    type: array
+    items: {type: string, minLength: 1}

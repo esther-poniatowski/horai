@@ -1,0 +1,22 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:decision-log:1
+title: Decision entries of one month
+type: object
+additionalProperties: false
+required: [_schema, month, entries]
+properties:
+  _schema: {const: 'horai:decision-log@1'}
+  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  entries:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [date, milestone, decision]
+      properties:
+        date: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+        milestone: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+        decision: {enum: [done, stop, reduce, renew]}
+        rationale: {type: string, minLength: 1}
+      if: {properties: {decision: {enum: [stop, reduce, renew]}}}
+      then: {required: [rationale]}

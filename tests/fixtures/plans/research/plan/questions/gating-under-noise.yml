@@ -1,0 +1,14 @@
+_schema: horai:question@1
+title: Does gating survive input noise
+deliverable: ctx-geometry
+stream: P
+kind: question
+status: open
+variance: exploratory
+budget: PT8H
+cycle: 2026-c6
+rank: 3
+tasks:
+  - id: simulate-noise
+    title: Simulate the gated network under input noise
+    committed_week: 2026-11-09

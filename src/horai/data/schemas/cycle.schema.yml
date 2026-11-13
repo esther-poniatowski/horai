@@ -1,0 +1,15 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:cycle:1
+title: Cycle
+type: object
+additionalProperties: false
+required: [_schema, start, end]
+properties:
+  _schema: {const: 'horai:cycle@1'}
+  start: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+  end: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+  cool_down:
+    type: array
+    minItems: 2
+    maxItems: 2
+    items: {$ref: 'urn:horai:schema:common:1#/$defs/date'}

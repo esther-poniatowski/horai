@@ -1,0 +1,22 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:clock-log:1
+title: Clock entries of one month
+type: object
+additionalProperties: false
+required: [_schema, month, entries]
+properties:
+  _schema: {const: 'horai:clock-log@1'}
+  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  entries:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [at, event]
+      properties:
+        at: {$ref: 'urn:horai:schema:common:1#/$defs/timestamp'}
+        event: {enum: [start, stop]}
+        task: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+        assigned: {type: boolean}
+      if: {properties: {event: {const: start}}}
+      then: {required: [task]}

@@ -1,0 +1,15 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:appointment:1
+title: Appointment
+type: object
+additionalProperties: false
+required: [_schema, title, date, start, length, stream, party]
+properties:
+  _schema: {const: 'horai:appointment@1'}
+  title: {type: string, minLength: 1}
+  date: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+  start: {$ref: 'urn:horai:schema:common:1#/$defs/time'}
+  length: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}
+  stream: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
+  party: {type: string, minLength: 1}
+  cap: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}

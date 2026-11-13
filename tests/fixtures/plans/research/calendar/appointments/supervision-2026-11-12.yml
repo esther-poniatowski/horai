@@ -1,0 +1,8 @@
+_schema: horai:appointment@1
+title: Supervision meeting
+date: 2026-11-12
+start: "16:00"
+length: PT1H
+stream: C
+party: supervisor
+cap: PT2H

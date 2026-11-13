@@ -1,0 +1,23 @@
+_schema: horai:milestone@1
+title: Fit of the gating model to the recorded population
+deliverable: ctx-geometry
+stream: P
+kind: milestone
+done: the fitted model reproduces the three recorded geometries within the noise
+status: open
+variance: exploratory
+budget: PT12H
+cycle: 2026-c6
+rank: 1
+tasks:
+  - id: fit-gating-model
+    title: Fit the gating model to the recordings
+    committed_week: 2026-11-09
+    risk: true
+    today: 2026-11-13 main
+  - id: compare-geometries
+    title: Compare fitted and recorded geometries
+    committed_week: 2026-11-09
+    depends_on: [fit-gating-model]
+  - id: write-methods-paragraph
+    title: Write the methods paragraph of the fit

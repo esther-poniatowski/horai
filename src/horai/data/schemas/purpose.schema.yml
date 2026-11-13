@@ -1,0 +1,10 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:purpose:1
+title: Purpose
+type: object
+additionalProperties: false
+required: [_schema, title]
+properties:
+  _schema: {const: 'horai:purpose@1'}
+  title: {type: string, minLength: 1}
+  deadline: {$ref: 'urn:horai:schema:common:1#/$defs/deadline'}

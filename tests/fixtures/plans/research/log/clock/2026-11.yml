@@ -1,0 +1,8 @@
+_schema: horai:clock-log@1
+month: 2026-11
+entries:
+  - {at: 2026-11-12T09:02+01:00, event: start, task: fit-gating-model}
+  - {at: 2026-11-12T10:47+01:00, event: start, task: prove-rank-bound}
+  - {at: 2026-11-12T12:30+01:00, event: stop}
+  - {at: 2026-11-12T13:30+01:00, event: start, task: chapter-3-exercises, assigned: true}
+  - {at: 2026-11-12T14:30+01:00, event: stop, assigned: true}

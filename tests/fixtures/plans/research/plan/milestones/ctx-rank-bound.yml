@@ -1,0 +1,19 @@
+_schema: horai:milestone@1
+title: Rank bound for context-gated readouts
+deliverable: ctx-geometry
+stream: P
+kind: milestone
+done: the bound is proved and checked on the small cases
+status: open
+variance: routine
+budget: PT6H
+cycle: 2026-c6
+rank: 2
+tasks:
+  - id: prove-rank-bound
+    title: Prove the rank bound
+    committed_week: 2026-11-09
+  - id: check-small-cases
+    title: Check the bound on the small cases with the recordings of co-author A
+    committed_week: 2026-11-09
+    waiting: 2026-11-16

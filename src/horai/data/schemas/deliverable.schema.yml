@@ -1,0 +1,14 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:deliverable:1
+title: Deliverable
+type: object
+additionalProperties: false
+required: [_schema, title, purpose, phase, status]
+properties:
+  _schema: {const: 'horai:deliverable@1'}
+  title: {type: string, minLength: 1}
+  purpose: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+  phase: {enum: [exploration, validation, delivery]}
+  status: {enum: [active, waiting-admission, stopped, done]}
+  principal: {type: string}
+  deadline: {$ref: 'urn:horai:schema:common:1#/$defs/deadline'}

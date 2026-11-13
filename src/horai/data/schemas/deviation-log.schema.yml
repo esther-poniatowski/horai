@@ -1,0 +1,20 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:deviation-log:1
+title: Deviation entries of one month
+type: object
+additionalProperties: false
+required: [_schema, month, entries]
+properties:
+  _schema: {const: 'horai:deviation-log@1'}
+  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  entries:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [date, policy, deviation]
+      properties:
+        date: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+        policy: {type: string, minLength: 1}
+        deviation: {type: string, minLength: 1}
+        cycle: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
