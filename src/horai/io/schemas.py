@@ -17,8 +17,7 @@ from collections.abc import Iterator
 from importlib.resources import files
 from typing import Any
 
-# The stubs of jsonschema are not installed in the environment; the import is typed as Any.
-from jsonschema import Draft202012Validator, FormatChecker  # type: ignore[import-untyped]
+from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry
 from referencing.jsonschema import DRAFT202012
 
