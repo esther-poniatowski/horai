@@ -211,3 +211,29 @@ def test_held_task_needs_its_date_and_stop_needs_a_start(plan: Plan) -> None:
 def test_item_appears_in_an_unknown_stream(plan: Plan) -> None:
     plan.items["stray"] = Item("stray", "standing", "Stray", "absent", rank=1)
     assert "reference/stream" in _rules(plan)
+
+
+# --- Estimates and overhead -------------------------------------------------------------------------
+
+
+def test_three_durations_give_a_pert_budget(plan: Plan) -> None:
+    estimate = (timedelta(hours=4), timedelta(hours=5), timedelta(hours=12))
+    _replace_item(plan, "ctx-rank-bound", budget=None, estimate=estimate)
+    item = plan.items["ctx-rank-bound"]
+    assert item.planned_budget == timedelta(hours=6)
+    assert budget_status(plan, item, spans(plan.clock)).remaining == timedelta(hours=4, minutes=17)
+    assert check_plan(plan, DAY) == []
+
+
+def test_estimate_defects(plan: Plan) -> None:
+    disordered = (timedelta(hours=5), timedelta(hours=4), timedelta(hours=12))
+    _replace_item(plan, "ctx-rank-bound", estimate=disordered)
+    _replace_item(plan, "gating-under-noise", estimate=(timedelta(hours=1),) * 3)
+    messages = [i.message for i in check_plan(plan, DAY) if i.rule == "field/estimate"]
+    assert len(messages) == 4  # rank bound: budget and order; question: budget and exploratory
+    assert any("either a budget" in m for m in messages) and any("appetite" in m for m in messages)
+
+
+def test_second_overhead_parent(plan: Plan) -> None:
+    _replace_item(plan, "mathematics-floor", overhead=True)
+    assert "mark/overhead" in _rules(plan)

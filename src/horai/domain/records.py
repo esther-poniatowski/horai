@@ -28,11 +28,12 @@ from datetime import date, datetime, time, timedelta
 import re
 from typing import Any, Literal
 
-from .time import parse_date, parse_duration, parse_time, parse_timestamp
+from .time import parse_date, parse_duration, parse_time, parse_timestamp, pert
 
 ItemKind = Literal["milestone", "question", "standing"]
 
 DEFAULT_DAILY_MARKS = 3
+DEFAULT_OVERHEAD_BUDGET = timedelta(minutes=105)
 
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 
@@ -43,6 +44,17 @@ def _date_or_none(value: str | None) -> date | None:
 
 def _duration_or_none(value: str | None) -> timedelta | None:
     return parse_duration(value) if value else None
+
+
+def _estimate(data: dict[str, str] | None) -> tuple[timedelta, timedelta, timedelta] | None:
+    """Return the three durations of an estimate, or None."""
+    if data is None:
+        return None
+    return (
+        parse_duration(data["optimistic"]),
+        parse_duration(data["probable"]),
+        parse_duration(data["pessimistic"]),
+    )
 
 
 # --- Configuration --------------------------------------------------------------------------------
@@ -91,6 +103,12 @@ class Profile:
     def daily_marks(self) -> int:
         """Maximum number of tasks marked for one day."""
         return int(self.parameters.get("daily_marks", DEFAULT_DAILY_MARKS))
+
+    @property
+    def overhead_budget(self) -> timedelta:
+        """Weekly budget of the planning acts, as an ISO 8601 duration when overridden."""
+        value = self.parameters.get("overhead_budget")
+        return parse_duration(value) if isinstance(value, str) else DEFAULT_OVERHEAD_BUDGET
 
 
 @dataclass(frozen=True)
@@ -204,6 +222,8 @@ class Item:
     origin: str = "chosen"
     non_negotiable: date | None = None
     depends_on: tuple[str, ...] = ()
+    estimate: tuple[timedelta, timedelta, timedelta] | None = None
+    overhead: bool = False
 
     @classmethod
     def from_data(cls, identifier: str, kind: ItemKind, data: dict[str, Any]) -> Item:
@@ -224,7 +244,16 @@ class Item:
             origin=data.get("origin", "chosen"),
             non_negotiable=_date_or_none(data.get("non_negotiable")),
             depends_on=tuple(data.get("depends_on", ())),
+            estimate=_estimate(data.get("estimate")),
+            overhead=data.get("overhead", False),
         )
+
+    @property
+    def planned_budget(self) -> timedelta | None:
+        """Return the authored budget, or else the PERT value of the three durations, or None."""
+        if self.budget is not None or self.estimate is None:
+            return self.budget
+        return pert(*self.estimate)
 
     @property
     def is_open(self) -> bool:

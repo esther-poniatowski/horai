@@ -70,6 +70,7 @@ def test_view_week(plan_folder: Path) -> None:
     result = runner.invoke(app, ["view", "week", "--root", str(plan_folder), *DAY])
     assert result.exit_code == 0
     assert "Week opened 2026-11-09" in result.stdout and "remaining PT10H15M" in result.stdout
+    assert "Overhead of the method: PT45M of PT1H45M" in result.stdout
 
 
 def test_start_and_stop_append_clock_entries(plan_folder: Path) -> None:

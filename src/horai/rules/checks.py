@@ -176,7 +176,7 @@ def check_selection(plan: Plan, day: date) -> Iterator[Issue]:
             continue
         if cycle is None or item.cycle != cycle.id or not item.is_open:
             continue
-        if item.budget is None:
+        if item.planned_budget is None:
             yield _issue(
                 plan,
                 "field/budget",
@@ -190,6 +190,33 @@ def check_selection(plan: Plan, day: date) -> Iterator[Issue]:
                 f"selected for the cycle {cycle.id}, the item states no rank",
                 item.id,
             )
+
+
+def check_estimates(plan: Plan) -> Iterator[Issue]:
+    """Three durations replace the budget of a routine item, in increasing order."""
+    for item in plan.items.values():
+        if item.estimate is None:
+            continue
+        if item.budget is not None:
+            yield _issue(
+                plan, "field/estimate", "an item states either a budget or three durations", item.id
+            )
+        if item.variance == "exploratory":
+            message = "an exploratory item receives an appetite, not three durations"
+            yield _issue(plan, "field/estimate", message, item.id)
+        optimistic, probable, pessimistic = item.estimate
+        if not optimistic <= probable <= pessimistic:
+            message = "the durations must increase from optimistic to pessimistic"
+            yield _issue(plan, "field/estimate", message, item.id)
+
+
+def check_overhead(plan: Plan) -> Iterator[Issue]:
+    """At most one standing parent holds the planning acts."""
+    marked = [item.id for item in plan.items.values() if item.overhead]
+    if len(marked) > 1:
+        for name in marked:
+            message = "more than one standing parent bears the mark overhead: " + ", ".join(marked)
+            yield _issue(plan, "mark/overhead", message, name)
 
 
 def check_holding(plan: Plan) -> Iterator[Issue]:
@@ -225,6 +252,8 @@ def check_plan(plan: Plan, day: date) -> list[Issue]:
         *check_references(plan),
         *check_marks(plan),
         *check_selection(plan, day),
+        *check_estimates(plan),
+        *check_overhead(plan),
         *check_holding(plan),
         *check_clock(plan),
     ]

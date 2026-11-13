@@ -20,7 +20,7 @@ from ..issues import Issue
 from ..rules.budgets import budget_status
 from ..rules.selection import Selection
 from ..rules.state import current_cycle, current_week, task_state
-from ..rules.time_spent import Span
+from ..rules.time_spent import Span, time_on
 
 
 def render_issues(issues: Sequence[Issue]) -> str:
@@ -147,6 +147,19 @@ def _follow_ups(plan: Plan, end: date) -> list[str]:
     return [f"  {when}: {task.title} [{task.id}]" for when, task in due] or ["  none"]
 
 
+def _overhead(plan: Plan, opened: date, work: Sequence[Span]) -> list[str]:
+    """State the time spent on the planning acts of the week, against the overhead budget."""
+    parent = next((item for item in plan.items.values() if item.overhead), None)
+    if parent is None or plan.profile is None:
+        return []
+    spent = time_on(
+        work, {parent.id, *(t.id for t in parent.tasks)}, opened, opened + timedelta(days=6)
+    )
+    budget = plan.profile.overhead_budget
+    over = " (over budget)" if spent > budget else ""
+    return [f"Overhead of the method: {format_duration(spent)} of {format_duration(budget)}{over}"]
+
+
 def render_week(plan: Plan, day: date, work: Sequence[Span]) -> str:
     """Write the week view: the calendar, the committed tasks by stream, and the follow-ups due."""
     week = current_week(plan, day)
@@ -157,6 +170,7 @@ def render_week(plan: Plan, day: date, work: Sequence[Span]) -> str:
     lines = [f"Week opened {week.opened}{cycle_text}", "Calendar:", *_calendar(plan, week.opened)]
     lines += ["Committed tasks:", *_committed(plan, day, work)]
     lines += ["Follow-ups due:", *_follow_ups(plan, week.opened + timedelta(days=6))]
+    lines += _overhead(plan, week.opened, work)
     running = [span for span in work if span.running]
     if running:
         lines.append(f"Running: {running[-1].task} since {running[-1].start:%H:%M}")

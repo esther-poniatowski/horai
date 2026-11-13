@@ -44,9 +44,10 @@ def test_fixture_loads_without_issue(plan_folder: Path, schemas: SchemaSet) -> N
         "ctx-rank-bound",
         "gating-under-noise",
         "mathematics-floor",
+        "planning",
     }
     assert plan.items["gating-under-noise"].kind == "question"
-    assert len(plan.clock) == 5
+    assert len(plan.clock) == 7
 
 
 def test_invalid_file_is_reported_and_excluded(plan_folder: Path, schemas: SchemaSet) -> None:

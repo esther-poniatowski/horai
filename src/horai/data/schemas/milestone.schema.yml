@@ -14,6 +14,7 @@ properties:
   status: {enum: [open, done, reduced, stopped]}
   variance: {enum: [routine, exploratory]}
   budget: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}
+  estimate: {$ref: 'urn:horai:schema:common:1#/$defs/estimate'}
   cycle: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
   rank: {type: integer, minimum: 1}
   origin: {$ref: 'urn:horai:schema:common:1#/$defs/origin'}

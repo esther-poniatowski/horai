@@ -9,4 +9,5 @@ properties:
   title: {type: string, minLength: 1}
   stream: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
   rank: {type: integer, minimum: 1}
+  overhead: {type: boolean}
   tasks: {$ref: 'urn:horai:schema:common:1#/$defs/tasks'}

@@ -16,6 +16,8 @@ parse_time(text) -> time
     Convert an hour of the day.
 parse_timestamp(text) -> datetime
     Convert an ISO 8601 timestamp, which must carry its offset.
+pert(optimistic, probable, pessimistic) -> timedelta
+    Compute the PERT value of three durations.
 """
 
 from __future__ import annotations
@@ -100,3 +102,14 @@ def parse_timestamp(text: str) -> datetime:
     if value.tzinfo is None:
         raise ValueError(f"timestamp without the offset of its time zone: {text!r}")
     return value
+
+
+def pert(optimistic: timedelta, probable: timedelta, pessimistic: timedelta) -> timedelta:
+    """Compute the PERT value of three durations, (optimistic + 4 probable + pessimistic) / 6.
+
+    Examples
+    --------
+    >>> pert(timedelta(hours=4), timedelta(hours=5), timedelta(hours=12))
+    datetime.timedelta(seconds=21600)
+    """
+    return (optimistic + 4 * probable + pessimistic) / 6

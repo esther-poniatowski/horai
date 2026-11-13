@@ -68,8 +68,9 @@ def budget_status(plan: Plan, item: Item, work: Sequence[Span]) -> BudgetStatus:
         if entry.milestone == item.id and entry.decision in ("renew", "reduce")
     ]
     since = max(dates) if dates else None
-    if item.budget is None:
+    budget = item.planned_budget
+    if budget is None:
         return BudgetStatus(consumed, since, None, False)
     spent = time_on(work, identifiers, since)
-    remaining = max(item.budget - spent, timedelta(0))
-    return BudgetStatus(consumed, since, remaining, spent >= item.budget)
+    remaining = max(budget - spent, timedelta(0))
+    return BudgetStatus(consumed, since, remaining, spent >= budget)

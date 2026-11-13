@@ -89,12 +89,17 @@ def time_by_task_and_day(work: Iterable[Span]) -> dict[tuple[str, date], timedel
     return dict(totals)
 
 
-def time_on(work: Iterable[Span], identifiers: set[str], since: date | None = None) -> timedelta:
-    """Sum the time spent on the tasks or parents named in `identifiers`, from the day `since`."""
+def time_on(
+    work: Iterable[Span],
+    identifiers: set[str],
+    since: date | None = None,
+    until: date | None = None,
+) -> timedelta:
+    """Sum the time spent on the tasks or parents in `identifiers`, from `since` to `until`."""
     total = timedelta(0)
     for span in work:
         if span.task in identifiers:
             for day, length in _split_by_day(span):
-                if since is None or day >= since:
+                if (since is None or day >= since) and (until is None or day <= until):
                     total += length
     return total

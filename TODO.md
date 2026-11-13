@@ -24,6 +24,13 @@ The roadmap of horai lists the steps of each increment, with the state of each s
 - [ ] **Geonexus rule**: amend the rule on task tracking of Geonexus for the areas that horai covers, under its instructions for agents and its commit gate.
 - [ ] **Pilot**: migrate the task list of `lexicon/` into a standing parent of its own.
 
+## Alignment with the time-management course
+
+- [x] **Assessment**: compare the operational methods of the course with the mechanisms of horai, in a reference note with the correspondence of each method. (2026-11-13)
+- [x] **Gate**: decide the prior margins, the PERT estimate, the retroplanning, the measured overhead and the rule of terms. (2026-11-13)
+- [x] **PERT**: three durations of a routine item, whose PERT value is its budget, with their checks. (2026-11-13)
+- [x] **Overhead**: the standing parent marked `overhead`, whose time the week view compares with `overhead_budget`. (2026-11-13)
+
 ## Increment 2: write side
 
 - [ ] **Commands**: capture into the inbox, mark the day, complete a task, commit the week, and record a decision entry.
@@ -42,7 +49,7 @@ The roadmap of horai lists the steps of each increment, with the state of each s
 
 ## Later increments
 
-- [ ] **Imposed deadlines and calibration**: the deadline key, the feasibility test and the buffers; the estimates of the ratios.
+- [ ] **Imposed deadlines and calibration**: the deadline key, the feasibility test and the buffers, with the share of a PERT item; the retroplanning, latest starts by default and the full retroplanning on demand; the estimates of the ratios, with the prior margins before calibration.
 - [ ] **External parties and delegation**: party and wait records, latencies, the release key.
 - [ ] **Tooling control and milestone graph**: the tooling register, the unblocking key.
 - [ ] **Reactive work**: requests, triage and windows.

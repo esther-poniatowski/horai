@@ -107,6 +107,15 @@ $defs:
       prepares: {$ref: '#/$defs/identifier'}
       verifies: {$ref: '#/$defs/identifier'}
       non_negotiable: {$ref: '#/$defs/date'}
+  estimate:
+    description: three durations of a routine item, whose PERT value is its budget
+    type: object
+    additionalProperties: false
+    required: [optimistic, probable, pessimistic]
+    properties:
+      optimistic: {$ref: '#/$defs/duration'}
+      probable: {$ref: '#/$defs/duration'}
+      pessimistic: {$ref: '#/$defs/duration'}
   tasks:
     type: array
     items: {$ref: '#/$defs/task'}
