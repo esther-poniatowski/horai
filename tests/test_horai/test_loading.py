@@ -62,6 +62,18 @@ def test_stream_yields_several_outcomes(plan_folder: Path, schemas: SchemaSet) -
     assert [issue.rule for issue in issues] == ["schema/invalid"]
 
 
+def test_named_rule_cannot_shadow_a_default(plan_folder: Path, schemas: SchemaSet) -> None:
+    path = plan_folder / "settings" / "profile.yml"
+    original = path.read_text()
+    path.write_text(original + "recurrences: {quarterly: P3M, strategic: P2C}\n")
+    plan, issues = load_plan(plan_folder, schemas)
+    assert issues == [] and plan.profile is not None
+    assert plan.profile.recurrences == {"quarterly": "P3M", "strategic": "P2C"}
+    path.write_text(original + "recurrences: {weekly: P2W}\n")
+    _, issues = load_plan(plan_folder, schemas)
+    assert [issue.rule for issue in issues] == ["schema/invalid"]
+
+
 def test_fixture_loads_without_issue(plan_folder: Path, schemas: SchemaSet) -> None:
     plan, issues = load_plan(plan_folder, schemas)
     assert issues == []

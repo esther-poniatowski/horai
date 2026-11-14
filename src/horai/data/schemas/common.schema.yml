@@ -83,6 +83,10 @@ $defs:
       places:
         description: the identifier of the unplaced appointment of the typical week that this appointment places
         $ref: '#/$defs/identifier'
+  recurrence_period:
+    description: a number of periods, of days (D), weeks of commitment (W), months (M) or cycles (C), the one designator that horai adds to ISO 8601
+    type: string
+    pattern: '^P[1-9][0-9]*[DWMC]$'
   recurring_appointment:
     description: an appointment of the typical week, held on its weekday every week, every few weeks, or on some occurrences of the weekday in each month
     allOf:
@@ -128,8 +132,11 @@ $defs:
         description: the date of the weekly review that committed the task for its week
         $ref: '#/$defs/date'
       recurs:
-        description: the period with which a loose task recurs; it reopens at the start of each period
-        enum: [daily, weekly, cycle]
+        description: the rule by which a loose task recurs, a default rule (daily, weekly, cycle), a rule of the profile, or a period such as P2W or P2C; the task reopens once that many periods have begun since its last completion
+        type: string
+        anyOf:
+          - {$ref: '#/$defs/recurrence_period'}
+          - {$ref: '#/$defs/identifier'}
       origin: {$ref: '#/$defs/origin'}
       budget: {$ref: '#/$defs/duration'}
       marked_for:

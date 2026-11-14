@@ -32,6 +32,7 @@ Records the choices of method that later work on `horai` must respect, so that a
 - [Properties apart from the trigger](properties-apart-from-the-trigger.md): decides which properties of a stream govern the checks of energy, the overrun and the appointments
 - [Dates, reviews and recurring tasks](dates-reviews-and-recurring-tasks.md): decides which records hold the departures of dates, the start of each week of commitment, and recurring work
 - [Request windows and stages](request-windows-and-stages.md): decides how request windows are placed, and how a stage of a deliverable becomes a milestone
+- [Strategic review and recurrence rules](strategic-review-and-recurrence-rules.md): decides the procedure of the strategic review, and the rules by which a task recurs
 - [Settings and yields](settings-and-yields.md): decides where the settings of a plan sit, and which outcomes a stream yields
 - [Parties, derived deliverables and the lifetimes of the profile](parties-and-derived-deliverables.md): decides where a party is described, how a derived deliverable counts under the cap, and whether the situation carries a date
 - [Uniform selection and recurrence](uniform-selection-and-recurrence.md): decides the single rule by which a cycle selects its items, the time of every stream with committed work, and the periods of appointments

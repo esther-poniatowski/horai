@@ -38,6 +38,7 @@ The roadmap of horai lists the steps of each increment, with the state of each s
 - [x] **Uniform selection and recurrence**: implement the decision on [uniform selection and recurrence](docs/adr/uniform-selection-and-recurrence.md). (2026-11-14)
 - [x] **Parties and derived deliverables**: implement the decision on [parties, derived deliverables and the lifetimes of the profile](docs/adr/parties-and-derived-deliverables.md), which closes the findings of the adversarial review. (2026-11-14)
 - [x] **Settings and yields**: implement the decision on [settings and yields](docs/adr/settings-and-yields.md): the folder `settings/`, and `yields` as a list of nine values. (2026-11-14)
+- [x] **Strategic review and recurrence rules**: write the procedure of the strategic review, and implement the periods and the named rules of `recurs`. (2026-11-14)
 - [ ] **Suggested blocks**: compute the blocks of a typical week from the allocation of the streams, the spans, the appointments and the energy hours, as a proposal that the author edits.
 - [ ] **Forms**: publish the schemas of horai as a registry of Kleisis, and pin horai in the schema resources of Geonexus, so that Ekphrasis renders the records.
 - [ ] **Migration**: carry the plan of the author in Geonexus to the new formats, and settle the placeholders with the author.

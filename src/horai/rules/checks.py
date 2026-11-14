@@ -22,7 +22,7 @@ from ..issues import Issue, Severity
 from .budgets import budget_status
 from .calendar_checks import appointment_ids, check_calendar
 from .stages import check_stages
-from .state import current_cycle, current_week, task_state
+from .state import current_cycle, current_week, recurrence_rule, task_state
 from .time_spent import spans
 
 
@@ -302,6 +302,17 @@ def check_selection(plan: Plan, day: date) -> Iterator[Issue]:
             )
 
 
+def check_recurrences(plan: Plan) -> Iterator[Issue]:
+    """A recurring task names a default rule, a rule of the profile, or a period."""
+    for task in plan.loose:
+        if task.recurs is not None and recurrence_rule(plan, task.recurs) is None:
+            message = (
+                f"the task {task.id} recurs by the rule {task.recurs}, which is neither a default "
+                "rule, a rule of the profile, nor a period such as P2W"
+            )
+            yield _issue(plan, "reference/recurrence", message, task.id)
+
+
 def check_committed_streams(plan: Plan, day: date) -> Iterator[Issue]:
     """A stream that holds committed work states how it receives its time.
 
@@ -401,6 +412,7 @@ def check_plan(plan: Plan, day: date) -> list[Issue]:
         *check_selection(plan, day),
         *check_reviews(plan, day),
         *check_committed_streams(plan, day),
+        *check_recurrences(plan),
         *check_estimates(plan),
         *check_holding(plan),
         *check_clock(plan),

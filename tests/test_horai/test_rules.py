@@ -216,6 +216,31 @@ def _located(plan: Plan) -> set[tuple[str, str]]:
     return _located_on(plan, DAY)
 
 
+def test_custom_rule_reopens_after_its_periods(plan: Plan) -> None:
+    review = dataclasses.replace(plan.loose[0], recurs="P2C", completed=date(2026, 11, 3))
+    plan.cycles["2026-c7"] = Cycle("2026-c7", date(2026, 12, 14), date(2027, 1, 22))
+    assert not is_open_on(plan, review, date(2026, 12, 20))
+    plan.cycles["2026-c8"] = Cycle("2026-c8", date(2027, 1, 25), date(2027, 3, 5))
+    assert is_open_on(plan, review, date(2027, 1, 25))
+    quarterly = dataclasses.replace(review, recurs="P3M", completed=date(2026, 11, 20))
+    assert not is_open_on(plan, quarterly, date(2027, 1, 31))
+    assert is_open_on(plan, quarterly, date(2027, 2, 1))
+
+
+def test_named_rule_of_the_profile(plan: Plan) -> None:
+    assert plan.profile is not None
+    plan.profile = dataclasses.replace(plan.profile, recurrences={"fortnightly": "P2W"})
+    task = dataclasses.replace(plan.loose[0], recurs="fortnightly", completed=date(2026, 11, 9))
+    plan.loose = (*plan.loose[1:], task)
+    plan.reviews = (*plan.reviews, date(2026, 11, 16))
+    assert not is_open_on(plan, task, date(2026, 11, 16))
+    plan.reviews = (*plan.reviews, date(2026, 11, 23))
+    assert is_open_on(plan, task, date(2026, 11, 23))
+    assert "reference/recurrence" not in _rules(plan)
+    plan.loose = (*plan.loose[:-1], dataclasses.replace(task, recurs="biweekly"))
+    assert "reference/recurrence" in _rules(plan)
+
+
 def test_stream_with_committed_work_states_an_allocation(plan: Plan) -> None:
     _replace_item(plan, "ctx-population-fit", stream="upkeep")
     assert ("profile/allocation", "upkeep") in _located(plan)

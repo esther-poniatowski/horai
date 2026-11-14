@@ -17,6 +17,9 @@ The record of a week held two objects with different calendars. It bounded the c
 
 The loose tasks showed two further defects. A recurring act, such as the weekly review, and a one-off task shared one form, whose single date of completion closed the recurring act for good. A loose task was in the state `cycle` as soon as it named its stream, so it could not wait in the backlog.
 
+> [!WARNING] Partly replaced
+> The decision on [the strategic review and the recurrence rules](strategic-review-and-recurrence-rules.md) extends `recurs` with periods, named rules and a count since the last completion.
+
 ## Decision
 
 - **Calendar of dates.** The departures of single dates are recorded in a calendar of dates, one file per month, `calendar/dates/<month>.yml`, of type `horai:dates@1`. A range of whole dates on which the agent is unavailable is stated once, under `unavailable`, by its first date, its last date and its reason, in the file of the month of its first date.

@@ -23,7 +23,7 @@ aliases:
 | `marked_for` | set by the daily planning | authored | the date of the day for which the task is marked; at most `daily_marks` tasks bear the same date | [daily planning](../procedures/daily-planning.md) |
 | `main_objective` | set by the daily planning | authored | a mark on the one task marked for a day that is its main objective | [daily planning](../procedures/daily-planning.md) |
 | `completed` | when the task is done | authored | the date of completion; for a recurring task, the date of its last completion | — |
-| `recurs` | for a recurring loose task | authored | `daily` · `weekly` · `cycle`: the period at the start of which the task is open again; the task is always in the state `week` | [recurring tasks](../adr/dates-reviews-and-recurring-tasks.md) |
+| `recurs` | for a recurring loose task | authored | its rule of recurrence: a default rule, `daily` · `weekly` · `cycle`, a rule named in the `recurrences` of the profile, or a period such as `P2W` or `P2C`, counting days (D), weeks of commitment (W), months (M) or cycles (C); the task is always in the state `week`, and is open again once that many periods have begun since its last completion | [recurrence rules](../adr/strategic-review-and-recurrence-rules.md) |
 | `held_since` | in the holding file | authored | the date at which the task entered the holding file | [orphan rule](../kernel/objects/work-hierarchy.md#^orphan-rule) |
 | `depends_on` | for an order | authored | identifiers of tasks of the plan, in any parent | [dependency](../kernel/objects/dependency.md) |
 | `scheduled` | set by the weekly review | authored | a date within the week; once reached, it makes the task urgent within its parent | [weekly review](../procedures/weekly-review.md) |

@@ -15,7 +15,7 @@ Each [horizon](../objects/horizon.md) has one act of planning, which draws on th
 
 | Horizon | Act | Duration | Output |
 | --- | --- | --- | --- |
-| Strategic | strategic review | `ritual_durations.strategic_review` | admission of deliverables, their phases and deadlines, decisions on policies, the review of the ideas file |
+| Strategic | [strategic review](../../procedures/strategic-review.md) | `ritual_durations.strategic_review` | admission of deliverables, their phases and deadlines, decisions on policies, the review of the ideas file |
 | Cycle | [cycle planning](../../procedures/cycle-planning.md) | `ritual_durations.cycle_planning` | milestones with budgets and ranks, questions with time boxes, the feasibility of the deadlines |
 | Week | [weekly review](../../procedures/weekly-review.md) | `ritual_durations.weekly_review` | committed tasks, blocks and request windows, due follow-ups |
 | Day | [daily planning](../../procedures/daily-planning.md) | `ritual_durations.daily_planning` | one main objective, and the other marks |

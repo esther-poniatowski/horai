@@ -224,6 +224,7 @@ class Profile:
     worth_scale: str
     parameters: dict[str, Any]
     energy: dict[str, tuple[tuple[int, int], ...]] = field(default_factory=dict)
+    recurrences: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def from_data(cls, data: dict[str, Any]) -> Profile:
@@ -239,6 +240,7 @@ class Profile:
             worth_scale=data["worth"]["scale"],
             parameters=overrides,
             energy=_energy(data.get("energy")),
+            recurrences=dict(data.get("recurrences", {})),
         )
 
     @property
@@ -261,8 +263,8 @@ class Task:
 
     The attribute `parent` is the identifier of the milestone or the question that holds the task,
     or None. A loose task has no parent and names its `stream`; a task of the holding file has
-    neither. A loose task that recurs, daily, weekly or per cycle, holds in `completed` the date of
-    its last completion, and reopens with its next period.
+    neither. A loose task that recurs names its rule in `recurs`, holds in `completed` the date of
+    its last completion, and reopens once its rule counts enough periods begun since then.
     """
 
     id: str
@@ -288,7 +290,7 @@ class Task:
     prepares: str | None = None
     verifies: str | None = None
     non_negotiable: date | None = None
-    recurs: Literal["daily", "weekly", "cycle"] | None = None
+    recurs: str | None = None
 
     @classmethod
     def from_data(cls, data: dict[str, Any], parent: str | None) -> Task:

@@ -77,6 +77,14 @@ properties:
     if: {properties: {scale: {const: cardinal}}}
     then: {required: [unit, worth_per_hour]}
   energy: {$ref: 'urn:horai:schema:common:1#/$defs/energy'}
+  recurrences:
+    description: the named rules of recurrence that tasks may cite in `recurs`, beside the default rules daily, weekly and cycle
+    type: object
+    propertyNames:
+      allOf:
+        - {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+        - not: {enum: [daily, weekly, cycle]}
+    additionalProperties: {$ref: 'urn:horai:schema:common:1#/$defs/recurrence_period'}
   modules:
     type: array
     items:

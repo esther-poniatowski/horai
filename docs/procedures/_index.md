@@ -15,6 +15,7 @@ Guides the performance of each recurring act of the kernel, once the [rule](../k
 
 ## Planning
 
+- [Strategic review](strategic-review.md): decides the active deliverables and the policies for the coming cycles
 - [Cycle planning](cycle-planning.md): selects the milestones and the questions of a cycle, and assigns their budgets
 - [Weekly review](weekly-review.md): closes a week and commits the next one
 - [Daily planning](daily-planning.md): fixes the objectives of a day from the committed week
