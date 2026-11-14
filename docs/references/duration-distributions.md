@@ -26,9 +26,9 @@ The values of the log-normal case at $\sigma = 0.5$ and $\sigma = 1$ are tabulat
 
 ## Bearing on `horai`
 
-- The two [classes of variance](../kernel/objects/appetite.md#^variance-classes) follow from the dependence of $m(t)$ on $\sigma$.
-- The log-normal law holds per kind of work, not for the pooled log, whose tail is heavier. The [calibration](../kernel/processes/uncertainty-control.md#^calibration) is therefore made per class.
-- At $\sigma \approx 1.09$, ordinary software tasks of the dataset would fall in the class `exploratory` under the default `variance_threshold`. The threshold is a policy, to be judged against the logs of each agent.
+- The two values of the [predictability](../kernel/objects/appetite.md#^variance-classes) follow from the dependence of $m(t)$ on $\sigma$.
+- The log-normal law holds per kind of work, not for the pooled log, whose tail is heavier. The [calibration](../kernel/processes/uncertainty-control.md#^calibration) is therefore made per type of deliverable, and separately for routine and for exploratory work.
+- At $\sigma \approx 1.09$, ordinary software tasks of the dataset would fall in the predictability `exploratory` under the default `variance_threshold`. The threshold is a policy, to be judged against the logs of each agent.
 - [Calibration](../kernel/processes/uncertainty-control.md#^calibration) from logged ratios is a form of reference-class forecasting, with the past work of the researcher as the class.
 - The log-normal law was observed on software tasks. Its transfer to mathematical research is an assumption, which the logs can test.
 

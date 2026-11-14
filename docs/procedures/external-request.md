@@ -17,6 +17,6 @@ The procedure applies the rules of [external coordination](../kernel/processes/e
 2. **Expected date.** Read the latency of the party at `calibration_quantile`. Below `latency_min_samples` responses, ask the party for a date, or judge one, and mark it as authored.
 3. **Latest date.** Under a deadline, compute the latest date of the request and of the response, as the [three acts](../kernel/processes/external-coordination.md#^three-acts) state.
 4. **Fallback.** Under a deadline, or for the milestone of largest successor work, state the fallback.
-5. **Send.** Send the request as soon as its content is stated, in the next window if need be.
-6. **Mark.** Create the wait record, and set the field `waiting` of each task that needs the artifact to that wait.
+5. **Send.** Send the request as soon as its content is stated, in the next request window if need be.
+6. **Mark.** Create the wait record, naming a [declared party](../kernel/objects/external-party.md#^party), and set the field `awaits` of each task that needs the artifact to that wait.
 7. **Close.** At the response, record its date, and create the tasks of revision if work was done on an assumption. For a delegation, review the output against its test, in a task that bears the field `verifies`, so that its time counts as verification.

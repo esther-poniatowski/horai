@@ -14,6 +14,9 @@ aliases:
 
 The research workspace Geonexus holds 39 lists of open actions, one per folder: 858 lines, of which 500 are open. Its lines carry subtasks, dependencies across lists, importance markers set by hand, and due dates, which the records of horai did not admit.
 
+> [!WARNING] Partly replaced
+> The decision on [streams, allocation and loose tasks](streams-allocation-and-loose-tasks.md) replaces the standing parent that holds the loose actions of a folder.
+
 ## Decision
 
 - **Placement.** A record of the hierarchy may sit in any folder under the roots that the configuration declares, and horai finds it by its key `_schema`. The records that describe the agent stay in one central folder: the configuration, the profile, the availability, the calendar, the capture files and the logs.

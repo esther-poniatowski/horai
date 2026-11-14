@@ -23,7 +23,7 @@ aliases:
 
 ## Bearing on `horai`
 
-- The [allocation of capacity](../kernel/processes/capacity-allocation.md) by stream is a form of strategic buckets for one agent, and the roles survey and training are forms of production capability.
+- The [allocation of capacity](../kernel/processes/capacity-allocation.md) by stream is a form of strategic buckets for one agent, and the streams that yield knowledge and competence are forms of production capability.
 - The three [phases](../kernel/objects/phase.md#^phases) of the kernel correspond to these frameworks as follows:
 
 | Kernel | Cynefin | Double diamond | Lean Startup |

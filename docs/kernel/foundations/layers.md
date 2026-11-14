@@ -16,9 +16,9 @@ The method is stated in three layers, as the decision on the [three-layer archit
 | --- | --- | --- |
 | Kernel | objects, rules, and the forms of the parameters | the statement stays true when each term of a domain is replaced by the role that it plays, and it contains no number |
 | Profile | values of the parameters for one domain | the statement is a value of a parameter that the kernel declares |
-| Module | a process attached to one role | the process exists only for that role, and only in some domains |
+| Module | a process attached to one yield | the process exists only for the streams of that yield, and only in some domains |
 
-*Example*: "work on means is pulled by a result that consumes its output" is a statement of the kernel. "The stream of tools receives a ceiling of 15%" is a value of a profile. "A text is read at one of three depths" belongs to a module of the role survey.
+*Example*: "work on means is pulled by a result that consumes its output" is a statement of the kernel. "The stream of tools receives a share of at most 15%" is a value of a profile. "A text is read at one of three depths" belongs to a module for the streams that yield knowledge.
 
 ## Numbers in the kernel
 
@@ -29,7 +29,7 @@ The test of the first row therefore has two parts: no vocabulary of a domain, an
 ## Rules of dependence
 
 - **A profile depends on the kernel, and never the converse.** No note of the kernel links to a profile except as an example, marked as such.
-- **A module depends on the kernel and names its role.** A profile lists the modules that it uses.
+- **A module depends on the kernel and names the yield that it serves.** A profile lists the modules that it uses.
 - **A profile turns options on, and adds no rule.** The [options](core-and-options.md#^options) are defined in the kernel, and a profile declares which apply.
 - **Policies and estimates are revised differently.** A policy changes only by a decision at the strategic review, and an estimate is revised from the logs, as the [parameters](parameters.md#^parameter-kinds) state.
 

@@ -27,7 +27,7 @@ The author ratifies the objects below, with the changes stated for each.
 
   The evidence note is removed, as redundant with the decision entries. A [weekly report](../kernel/processes/feedback.md#^weekly-report), computed from the decisions and the completed tasks, replaces it for any reader.
 - **Appointments.** A dated appointed block is an *appointment*, recorded as soon as it is known. Its preparation is a task linked to it, drawn from a share of the appointed stream, and compared with an optional cap per appointment.
-- **Configuration.** The profile, and an [availability record](../specification/availability-record.md) kept apart from it.
+- **Configuration.** The profile, and an [availability record](../specification/typical-week-record.md) kept apart from it.
 - **Identifiers.** The identifier of a task is the slug of its title, fixed at creation.
 - **Options.**
   - **Imposed deadlines:** the kinds `hard` and `soft` only. The exhaustion of a resource is a `hard` deadline whose date the agent revises.

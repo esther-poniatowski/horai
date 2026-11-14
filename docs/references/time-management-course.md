@@ -40,15 +40,15 @@ The methods enter `horai` in three ways: as a mechanism of the method, as a mech
 | Eisenhower: urgency | the [deadline key](../kernel/processes/task-selection.md#^selection-rule), raised when the [buffer runs ahead](../kernel/objects/deadline.md#^buffer-consumption): the time left against the time needed | implemented, against an outside term |
 | Eisenhower: importance | the rank, or the cost of delay, of a milestone; within one parent, the importance of a task | implemented |
 | Eisenhower: do, plan, delegate, eliminate | the selection of the next task; the commitment of the cycle and of the week; [delegation](../kernel/objects/external-party.md#^relations) and the redirection of a request; the [ideas file](../kernel/objects/work-hierarchy.md#^ideas-file) and the stop at a checkpoint | implemented |
-| Margins of estimation | the [prior margins](../kernel/processes/uncertainty-control.md#^calibration) before calibration, then the ratios logged per class of variance | implemented |
+| Margins of estimation | the [prior margins](../kernel/processes/uncertainty-control.md#^calibration) before calibration, then the ratios logged per type of deliverable and per class of predictability | implemented |
 | PERT | the three durations of a routine item, whose PERT value is its budget | implemented |
 | Retroplanning | the [retroplanning](../kernel/objects/deadline.md#^retroplanning) of a deadline: the latest start of each milestone, and on demand of each task | implemented |
 | Parkinson | the [appetite](../kernel/objects/appetite.md#^appetite): the time of chosen work is fixed in advance, and a date set by the agent is not a deadline | implemented differently |
-| Carlson | blocks of one stream, the regime `batched`, and interruptions limited to the class `immediate` | implemented |
+| Carlson | blocks of one stream, the trigger by accumulation, and interruptions limited to the class `immediate` | implemented |
 | Murphy | the reserve, the planning on the low quantile of the capacity, and the buffers | implemented |
 | Law of emergencies | the [reserve](../kernel/processes/reactive-work.md#^reserve) bounds the reactive load, and its excess is a deviation | implemented |
-| Laborit | the riskiest task first within its milestone, and the planned stream placed at the hours of highest energy | implemented |
-| 2-20-2-2 | the triage: a request served in a window, or converted, with its feasibility tested | departs on the first step, as the note on [reactive work](../kernel/processes/reactive-work.md#^triage) states |
+| Laborit | the riskiest task first within its milestone, and the streams that need high energy placed at the hours of highest energy | implemented |
+| 2-20-2-2 | the triage: a request served in a request window, or converted, with its feasibility tested | departs on the first step, as the note on [reactive work](../kernel/processes/reactive-work.md#^triage) states |
 | Audit of time | the clock entries, the hours per stream against the allocation, and the [overhead](../kernel/foundations/core-and-options.md#^overhead) of the method | implemented |
 | Focus and breaks | blocks of `block_length`, in place of short sessions; breaks are not planned | partly |
 
@@ -58,7 +58,7 @@ The letters of SMARTER are carried by several records:
 | --- | --- |
 | Specific | the title and the scope of a milestone, and the open question of an exploration |
 | Measurable | the definition of done of a milestone: a test of completion, or the acceptance by a party |
-| Assignable, Accepted | the agent by default; a party under the relation `delegates`; the acceptance by a principal |
+| Assignable, Accepted | the agent by default; a party under the relation `delegates`; the acceptance by the party to whom the agent is accountable |
 | Realistic | the fit of the budgets of a cycle to its capacity, and the feasibility test of deadlines |
 | Temporal | the appetite or the budget of chosen work, and the deadline of imposed work |
 | Assessed | the decision entry at each checkpoint and at each completion |

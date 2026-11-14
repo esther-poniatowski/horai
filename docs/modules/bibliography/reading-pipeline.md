@@ -22,7 +22,7 @@ A paper passes through four stages: inbox, triaged, read, synthesized. ^pipeline
 - **Triage is delegated.** Automated agents perform the first pass on the inbox, and the reader decides to keep or to discard.
 - **Work in progress is limited.** At most three papers are in the stage `read` at once, a default taken from [Kanban](../../references/kanban-and-lean-pull.md).
 - **Depth is chosen.** A paper receives one of the three depths of [three-pass reading](../../references/three-pass-reading.md): a decision in ten minutes, a structured note in one hour, or a full reproduction, reserved for a paper whose method is reused.
-- **A session ends with an artifact.** Each session yields a paragraph of related work or a note linked to the claims of a deliverable, as the regime [`floor`](../../kernel/objects/regime.md#^regimes) requires.
+- **A session ends with an artifact.** Each session yields a paragraph of related work or a note linked to the claims of a deliverable, as the [trigger by the calendar](../../kernel/objects/regime.md#^regimes) requires.
 
 ## Two modes
 

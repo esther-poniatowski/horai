@@ -14,10 +14,10 @@ The [root question](overview.md#^root-question) divides into nine control questi
 
 | Function | Question | Mechanism of the kernel |
 | --- | --- | --- |
-| Classification | of which kind is this work? | [role, stream](../objects/stream.md) and [regime](../objects/regime.md); [phase](../objects/phase.md); [class of variance](../objects/appetite.md#^variance-classes) |
+| Classification | of which kind is this work? | [stream and yield](../objects/stream.md) and [trigger](../objects/regime.md); [phase](../objects/phase.md); [predictability](../objects/appetite.md#^variance-classes) |
 | Admission | which deliverables are active, which start, and which are stopped? | the strategic review of the [planning process](../processes/planning-horizons.md#^admission), under the limit `active_deliverables_max` |
 | Allocation | how much capacity does each kind receive? | [allocation of capacity](../processes/capacity-allocation.md) |
-| Placement | when, within the week, does each kind receive its capacity? | [blocks and windows](../objects/horizon.md#^block), under the [availability](../objects/availability.md) of the agent |
+| Placement | when, within the week, does each kind receive its allocation? | [blocks and request windows](../objects/horizon.md#^block), under the [availability](../objects/availability.md) of the agent |
 | Commitment | which subset is promised, for which horizon, and to whom? | [commitment states](../objects/commitment-state.md), [planning across horizons](../processes/planning-horizons.md), [deadlines](../objects/deadline.md) |
 | Ordering | which item comes next? | [selection rule](../processes/task-selection.md) |
 | Termination | when does a piece of work stop? | [appetite and checkpoint](../objects/appetite.md), [control of uncertainty](../processes/uncertainty-control.md) |

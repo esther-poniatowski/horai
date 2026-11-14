@@ -16,7 +16,7 @@ aliases:
 The concepts that the deliverables require form a small **competency graph**, ordered by prerequisite. Two tracks draw on it. ^competency-graph
 
 - **Just in time.** Items are derived from the proof obligations of the active deliverables and of their coming milestones.
-- **Foundational.** Items that several deliverables presuppose are studied on the floor of the stream.
+- **Foundational.** Items that several deliverables presuppose are studied in the minimum of the stream.
 
 ## How to practice
 

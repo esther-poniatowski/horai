@@ -15,32 +15,38 @@ aliases:
 
 ## Streams
 
-| Stream | Role | Regime | Capacity |
+| Stream | Yields | Triggered by | Allocation |
 | --- | --- | --- | --- |
-| Features | production | `planned` | share |
-| Build and infrastructure | tooling | `pulled` | ceiling |
-| Ecosystem watch | survey | `floor` | floor |
-| Techniques | training | `floor` | floor |
-| Releases and community | exchange | `appointed` | cap per release |
-| Dependencies and debt | upkeep | `batched` | slots, and the cool-down |
-| Issues and contributions | upkeep | `reactive` | reserve, the largest of the profiles |
+| Features | results | `selection` | an exact share |
+| Build and infrastructure | means | `demand` | a share at most |
+| Ecosystem watch | knowledge | `calendar` | a share at least |
+| Techniques | competence | `calendar` | a share at least |
+| Releases and community | coordination | `appointment` | a reserve per event, at most, for each release that a task prepares |
+| Dependencies and debt | integrity | `accumulation` | none: the positions of low energy, and the cool-down |
+| Issues and contributions | integrity | `arrival` | a reserve, the largest of the profiles |
+| Planning | organization | `calendar` | a reserve per week, of at most `PT1H45M` by default |
 
-## Names
+## Types of deliverable
 
-| Kernel | Independent developer |
+| Type | Description | Predictability | Starting phase | Review latency | Stages |
+| --- | --- | --- | --- | --- | --- |
+| `prototype` | tests a design before it enters a release | `exploratory` | exploration | — | spike · decision |
+| `release` | delivers a version of the software to its users | `routine` | validation | — | feature freeze · release candidate · release |
+
+## Cadences
+
+| Horizon | Independent developer |
 | --- | --- |
-| Purpose · deliverable | project vision · release |
-| Exploration · validation · delivery | prototype · stabilization · release |
 | Cycle | the release cycle |
 
-## Options
+## Enabled mechanisms
 
-| Option | Setting |
+| Mechanism | Setting |
 | --- | --- |
 | Reactive work | on, heavy: kinds security report (`immediate`), defect and review of a contribution (`windowed`), feature request (`scheduled`, converted to the stream Features) |
 | External parties | on: users (`requests`), contributors (`supplies`, and await a review), upstream projects (`supplies`, with a latency) |
 | Imposed deadlines | rare: the disclosure date of a vulnerability |
-| Valuation | ordinal, unless a sponsor or a client pays for a result |
+| Worth | ordinal, unless a sponsor or a client pays for a result |
 
 ## Notes specific to the domain
 
@@ -48,4 +54,4 @@ aliases:
 - **A release date set by the maintainer is not a deadline,** by the [guard on self-set dates](../kernel/objects/deadline.md#^no-self-deadline), unless users rely on it once announced.
 - **A contribution inverts the wait.** The contributor awaits a review by the agent, so the review is a request under a class of service, and its delay is a latency that the agent imposes on a party.
 - **Recurrent issues pull tooling:** documentation, a template of issue, an automated check.
-- **Degraded mode.** When the reserve leaves less than `discretion_min` of the week, the profile runs in the [degraded mode](../kernel/foundations/problem-class.md): floors and windows are kept, features are suspended, and the deviation goes to the strategic review, which may restrict what is accepted or seek co-maintainers.
+- **Degraded mode.** When the reserve leaves less than `discretion_min` of the week, the profile runs in the [degraded mode](../kernel/foundations/problem-class.md): minimums and request windows are kept, features are suspended, and the deviation goes to the strategic review, which may restrict what is accepted or seek co-maintainers.

@@ -20,7 +20,7 @@ Shape Up is the product-development method of Basecamp, described by Singer [sin
 
 - The [appetite](../kernel/objects/appetite.md#^appetite), the [cool-down](../kernel/objects/horizon.md#^cycle) and the [stop by default](../kernel/processes/uncertainty-control.md#^stop-default) come from this method.
 - The method addresses product teams. The review of 2026-11-11 found that its chapter on appetite cites anecdotes and no data, and found no controlled evidence for fixed time and variable scope in research.
-- `horai` departs from it on two points: the length of a cycle follows the dates of the principal, and appetites apply to [exploratory work only](../adr/variance-classes.md).
+- `horai` departs from it on two points: the length of a cycle follows the dates of the party to whom the agent is accountable, and appetites apply to [exploratory work only](../adr/variance-classes.md).
 
 ## Sources
 

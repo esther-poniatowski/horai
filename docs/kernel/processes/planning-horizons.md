@@ -17,12 +17,12 @@ Each [horizon](../objects/horizon.md) has one act of planning, which draws on th
 | --- | --- | --- | --- |
 | Strategic | strategic review | `ritual_durations.strategic_review` | admission of deliverables, their phases and deadlines, decisions on policies, the review of the ideas file |
 | Cycle | [cycle planning](../../procedures/cycle-planning.md) | `ritual_durations.cycle_planning` | milestones with budgets and ranks, questions with time boxes, the feasibility of the deadlines |
-| Week | [weekly review](../../procedures/weekly-review.md) | `ritual_durations.weekly_review` | committed tasks, blocks and windows, due follow-ups |
+| Week | [weekly review](../../procedures/weekly-review.md) | `ritual_durations.weekly_review` | committed tasks, blocks and request windows, due follow-ups |
 | Day | [daily planning](../../procedures/daily-planning.md) | `ritual_durations.daily_planning` | one main objective, and the other marks |
 
 ## Admission
 
-The strategic review decides which deliverables are active. A deliverable is admitted when a place is free under `active_deliverables_max` and the [feasibility test](imposed-deadlines.md#^feasibility-test) passes with its deadlines. A deliverable is stopped when its phase has not advanced over `stall_cycles` cycles without a recorded reason, or when its deadlines cannot be met by any adjustment. Admission is the act that keeps the plan small enough for the other rules to work. ^admission
+The strategic review decides which deliverables are active. A deliverable is admitted when a place is free under `active_deliverables_max`, where a deliverable derived from another, such as the talk of an article, shares the place of its source, and the [feasibility test](imposed-deadlines.md#^feasibility-test) passes with its deadlines. A deliverable is stopped when its phase has not advanced over `stall_cycles` cycles without a recorded reason, or when its deadlines cannot be met by any adjustment. Admission is the act that keeps the plan small enough for the other rules to work. ^admission
 
 ## Rules of consistency
 
@@ -36,6 +36,6 @@ The strategic review decides which deliverables are active. A deliverable is adm
   6. a revision of work done on an assumption, when the response arrives;
   7. a task of the item marked [non-negotiable](../foundations/commitments.md#^c-non-negotiable).
   No other work enters a plan sideways.
-- **Synchronization as demonstration.** A meeting with a [principal](../objects/external-party.md#^principal) closes a cycle or marks its middle. Its material is assembled from the artifacts of the milestones, under a cap of preparation, so that it serves as the review of the cycle.
+- **Synchronization as demonstration.** A meeting with the [party to whom the agent is accountable](../objects/external-party.md#^principal) closes a cycle or marks its middle. Its material is assembled from the artifacts of the milestones, by a task that prepares the meeting within the reserve per event of its stream, so that it serves as the review of the cycle.
 - **Cool-down.** The end of a cycle holds no milestone of a deliverable. It receives the debt of the means, the upkeep and the planning of the next cycle.
-- **Bounded overhead.** The acts above are budgeted by `overhead_budget`, as the note on [core and options](../foundations/core-and-options.md#^overhead) states.
+- **Bounded overhead.** The acts above are loose tasks of the stream `planning`, bounded by its reserve per week, as the note on [core and options](../foundations/core-and-options.md#^overhead) states.

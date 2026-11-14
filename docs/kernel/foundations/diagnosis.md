@@ -26,6 +26,6 @@ Each defect is corrected by one part of the kernel:
 
 - the [commitment states](../objects/commitment-state.md) separate what is recorded from what is committed for a horizon;
 - the [milestone](../objects/milestone.md) carries the dependencies, at a grain where a graph is legible;
-- the [streams](../objects/stream.md) receive their capacity by [allocation](../processes/capacity-allocation.md), so that no task of one stream is compared with a task of another;
-- the [reactive regime](../processes/reactive-work.md) gives arrivals a reserve and a window of their own;
+- the [streams](../objects/stream.md) receive their time by [allocation](../processes/capacity-allocation.md), so that no task of one stream is compared with a task of another;
+- the process of [reactive work](../processes/reactive-work.md) gives arrivals a reserve and request windows of their own;
 - the [waiting condition](../objects/external-party.md#^waiting) removes an item from the candidates and replaces it by a dated follow-up.

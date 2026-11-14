@@ -6,6 +6,8 @@ aliases:
   - Value
   - Cost of delay
   - Valuation
+  - Worth
+  - Worth per hour
 ---
 # Value
 
@@ -13,20 +15,20 @@ aliases:
 
 ## Two scales
 
-The worth of a result is stated on one of two scales, which a profile declares. Worth is stated at the [milestone](milestone.md), the smallest item whose completion delivers it. ^scales
+The worth of a result is stated on one of two scales, which a profile declares in its field `worth`. Worth is stated at the [milestone](milestone.md), the smallest item whose completion delivers it. ^scales
 
 | Scale | Statement | Use |
 | --- | --- | --- |
-| Ordinal | a **rank** of each milestone of the cycle and of each standing parent within its stream, set at the cycle planning | the last key of the [selection rule](../processes/task-selection.md#^valuation-key) |
-| Quantified | amounts in a unit, such as a currency | the three quantities below |
+| Ordinal worth (`scale: ordinal`) | a **rank** of each milestone of the cycle within its stream, in its field `rank`, set at the cycle planning | the last key of the [selection rule](../processes/task-selection.md#^valuation-key) |
+| Cardinal worth (`scale: cardinal`) | amounts in a unit, such as a currency, which the profile names in its field `unit` | the three quantities below |
 
 ## Quantities
 
-Where the scale is quantified, a milestone can state three quantities. ^quantities
+Under a cardinal worth, three quantities are stated: a milestone states the first two, and the profile states the third. ^quantities
 
 - **Marginal value** $V$: the worth that the completion of the milestone adds to its deliverable. For a milestone without which the deliverable is worthless, $V$ is the value of the deliverable less the remaining cost of its other milestones.
 - **Cost of delay** $\gamma$: the value lost per unit of time while the milestone is not done. For a `hard` [deadline](deadline.md), the loss is a step at the date instead of a rate.
-- **Cost of capacity** $\kappa$: the cost of one hour of the time of the agent. It is authored per cycle, and may rise as a resource is exhausted, as the shadow price of time does when funds run out.
+- **Worth per hour** $\kappa$: the worth of one hour of the time of the agent, in the unit of the profile. It is authored in the field `worth_per_hour` of the profile, may be revised at each cycle, and may rise as a resource is exhausted, as the shadow price of time does when funds run out.
 
 ## Uses
 
@@ -36,5 +38,5 @@ Where the scale is quantified, a milestone can state three quantities. ^quantiti
 
 ## Limits
 
-- **Valuation never reduces a floor or the reserve,** by the ninth [commitment](../foundations/commitments.md#^c-valuation). The streams of deferred payoff have a cost of delay that is real and cannot be observed in time, so a comparison in a unit would starve them. Between streams of the regimes `planned` and `pulled`, a quantified comparison may inform a recorded decision at the strategic review.
+- **Worth never reduces a minimum or the reserve,** by the ninth [commitment](../foundations/commitments.md#^c-valuation). The streams of deferred payoff have a cost of delay that is real and cannot be observed in time, so a comparison in a unit would starve them. Between streams triggered by selection and by demand, a comparison of cardinal worths may inform a recorded decision at the strategic review.
 - **A quantity is an authored judgment.** Each value is stated by the agent with its basis, and its precision is that of the basis.

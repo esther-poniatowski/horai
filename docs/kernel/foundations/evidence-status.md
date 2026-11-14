@@ -21,7 +21,7 @@ The method was submitted on 2026-11-11 to two adversarial reviews. The first tra
 | Mechanism | Source | Level |
 | --- | --- | --- |
 | Inventory and commitment, hidden backlog | [Kanban](../../references/kanban-and-lean-pull.md) | P |
-| Roles and allocation by class | [strategic buckets](../../references/portfolio-and-phase-frameworks.md) | P |
+| Yields and allocation by class | [strategic buckets](../../references/portfolio-and-phase-frameworks.md) | P |
 | Milestone graph for precedence and latency | [critical path and constraints](../../references/critical-path-and-constraints.md) | P |
 | Pull rule, artifact dependency | [Lean pull](../../references/kanban-and-lean-pull.md) | P |
 | Constraint logic for blocking tooling | [theory of constraints](../../references/critical-path-and-constraints.md) | P |
@@ -32,7 +32,7 @@ The method was submitted on 2026-11-11 to two adversarial reviews. The first tra
 | Fewer switches between kinds of work | [attention and switching](../../references/attention-and-switching.md) | E in the laboratory, extrapolated |
 | Cumulative feasibility of deadlines | [earliest deadline first](../../references/critical-path-and-constraints.md) | M for one agent, with estimated work |
 | Pooled buffer of a deadline | [critical chain](../../references/critical-path-and-constraints.md) | P |
-| Window sized on a quantile of the load | [queueing](../../references/queueing-and-reactive-work.md) | P; stability ($\rho < 1$) is M |
+| Request window sized on a quantile of the load | [queueing](../../references/queueing-and-reactive-work.md) | P; stability ($\rho < 1$) is M |
 | Ordering of milestones by cost of delay over remaining work | [cost of delay](../../references/cost-of-delay.md) | P: the theorem assumes known durations and no precedence |
 | Stop rule looking one interval ahead | [control of uncertainty](../processes/uncertainty-control.md#^stop-by-value) | P: a myopic rule, not proven optimal |
 | Logged verification of delegated output | [AI delegation](../../references/ai-delegation.md) | E for the unreliability of perceived speedup |

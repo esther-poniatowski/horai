@@ -17,7 +17,7 @@ aliases:
 ## Bearing on `horai`
 
 - The findings support fewer changes between kinds of work. They do not support a particular length of block.
-- The decision on [day theming](../adr/day-theming.md) therefore assigns a stream to a half-day or a day, and fixes by the clock only the slots of the protected streams.
+- The decision on [day theming](../adr/day-theming.md) therefore assigns a stream to a half-day or a day, and fixes by the clock only the slots of the streams triggered by the calendar.
 
 ## Sources
 

@@ -7,7 +7,7 @@ aliases:
 ---
 # Profiles
 
-Declares the configuration of the [kernel](../kernel/_index.md) for each domain: its streams with their roles, regimes and capacities, the names of its levels and phases, its cadences, its external parties, and the options that it turns on.
+Declares the configuration of the [kernel](../kernel/_index.md) for each domain: its streams with what they yield, what triggers them and their allocations, its types of deliverable, its cadences, its external parties, and the mechanisms that it enables.
 
 > [!IMPORTANT] Form of a profile
 > Each profile fills the fields of the [profile record](../specification/profile-record.md), in the same order. A profile states values and adds no rule, as the [layers](../kernel/foundations/layers.md) require.
@@ -17,7 +17,7 @@ Declares the configuration of the [kernel](../kernel/_index.md) for each domain:
 
 ## Comparison
 
-- [Comparison of instances](comparison.md): places the profiles side by side on the roles, the modulators, the names and the characteristic failures
+- [Comparison of instances](comparison.md): places the profiles side by side on what their streams yield, the modulators, the types of deliverable and the characteristic failures
 
 ## Profiles
 
@@ -25,4 +25,4 @@ Declares the configuration of the [kernel](../kernel/_index.md) for each domain:
 - [Solo founder](solo-founder.md): configures the kernel for the founder of an early company, with a quantified cost and a runway
 - [Independent developer](independent-developer.md): configures the kernel for the developer or maintainer of software, with a heavy reactive load
 - [Author](author.md): configures the kernel for the author of a long work under an editor
-- [Consultant](consultant.md): configures the kernel for an independent consultant, under contractual deadlines and several principals
+- [Consultant](consultant.md): configures the kernel for an independent consultant, under contractual deadlines and several parties to whom it is accountable

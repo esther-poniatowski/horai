@@ -13,7 +13,7 @@ The decision applies the rules of [uncertainty control](../kernel/processes/unce
 
 1. **State.** Write in two sentences what was obtained and what remains unknown.
 2. **Count.** Read the number of earlier overruns of the same item.
-3. **Value.** Where the valuation is quantified, compute $G(\Delta)$ for the renewals considered, as the [stop by value](../kernel/processes/uncertainty-control.md#^stop-by-value) states.
+3. **Value.** Under a cardinal worth, compute $G(\Delta)$ for the renewals considered, as the [stop by value](../kernel/processes/uncertainty-control.md#^stop-by-value) states.
 4. **Decide.** Record exactly one outcome:
    - **Stop.** The item is closed as not obtained, and what was ruled out is stated in the rationale of the decision entry. This is the default at the overrun `stop_overruns`, and whenever no renewal has $G(\Delta) > 0$, except for a [non-negotiable](../kernel/foundations/commitments.md#^c-non-negotiable) item, which has no default outcome.
    - **Reduce.** The definition of done is narrowed to what the evidence now supports, with a budget for the reduced scope.

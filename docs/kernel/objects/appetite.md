@@ -6,6 +6,7 @@ aliases:
   - Appetite
   - Budget of a milestone
   - Variance class
+  - Predictability
   - Checkpoint
 ---
 # Appetite
@@ -14,9 +15,9 @@ aliases:
 
 An **appetite** is the time that a result is judged to be worth, fixed by the agent before the work starts. Under an appetite, the scope is the adjustable variable. The notion comes from [Shape Up](../../references/shape-up.md). An appetite is an authored judgment of worth, and the logs do not set it. ^appetite
 
-## Classes of variance
+## Classes of predictability
 
-Work is assigned to one of two classes, since the argument for an appetite holds only where variance is high, as the [distributions of duration](../../references/duration-distributions.md) show. ^variance-classes
+Work is assigned to one of two classes of predictability, since the argument for an appetite holds only where variance is high, as the [distributions of duration](../../references/duration-distributions.md) show. ^variance-classes
 
 | Class | Typical work | Time control |
 | --- | --- | --- |
@@ -36,4 +37,4 @@ Continuation without a decision is excluded. At the `stop_overruns`-th consecuti
 
 - **Under an imposed deadline,** an appetite is admissible when the [cumulative slack](deadline.md#^slack) stays non-negative with that appetite included in the work. The appetite is part of the demand that the test checks, so the bound is not circular.
 - **A stop on the path of a hard deadline is an adjustment.** When a stop would leave a hard deadline unmet, the stop opens the [adjustments](deadline.md#^adjustment-order) of that deadline, beginning with its scope, and is not recorded silently.
-- **Where the value is quantified,** the checkpoint compares the expected worth of continuing with its expected cost, as the [stop by value](../processes/uncertainty-control.md#^stop-by-value) states.
+- **Under a cardinal worth,** the checkpoint compares the expected worth of continuing with its expected cost, as the [stop by value](../processes/uncertainty-control.md#^stop-by-value) states.
