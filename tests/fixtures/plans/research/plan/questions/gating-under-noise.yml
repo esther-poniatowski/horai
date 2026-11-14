@@ -2,9 +2,8 @@ _schema: horai:question@1
 title: Does gating survive input noise
 deliverable: ctx-geometry
 stream: inquiry
-kind: question
 status: open
-variance: exploratory
+predictability: exploratory
 budget: PT8H
 cycle: 2026-c6
 rank: 3

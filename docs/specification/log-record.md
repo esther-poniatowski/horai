@@ -20,14 +20,14 @@ The agent marks the start and the stop of its work, and the tool writes one entr
 | --- | --- | --- |
 | `at` | always | the date and the hour, recorded by the tool |
 | `event` | always | `start` · `stop` |
-| `task` | for `start` | the identifier of a task, or of a parent for work without a task, such as the standing parent of an appointed stream, for attending an appointment |
-| `assigned` | for a span assigned at the close of the day | a mark: the agent stated the span, and the tool did not observe it |
+| `task` | for `start` | the identifier of a task, of a milestone or a question for work without a task, or of an appointment for attending it |
+| `recalled` | for a span stated at the close of the day | a mark: the agent stated the span from memory, and the tool did not observe it |
 
 ## Time spent
 
 The time spent on a task during a day is computed from the clock entries, and stored nowhere. It measures how long the agent worked on that task, and not what was done: the completion of the task records the work done.
 
-At the close of the day, the tool lists the spans of the planned blocks that no clock entry covers, and the tasks still running. The agent assigns each span to a task, which writes a pair of clock entries marked `assigned`, or leaves it untracked.
+At the close of the day, the tool lists the spans of the planned blocks that no clock entry covers, and the tasks still running. The agent assigns each span to a task, which writes a pair of clock entries marked `recalled`, or leaves it untracked.
 
 The computed time spent has three fields:
 
@@ -39,6 +39,16 @@ The computed time spent has three fields:
 
 The time spent on a task that bears the field `verifies` is time spent verifying delegated output, and is reported apart.
 
+## Review entry
+
+One entry is written at each weekly review held. The review starts a week of commitment, which the next review held ends, as the [state rule](../kernel/objects/commitment-state.md#^state-rule) states.
+
+| Field | Values |
+| --- | --- |
+| `date` | the date on which the review was held; the tasks committed at the review name it in `committed_week` |
+
+The field `committed_week` of a task names a logged review. The check reports a last review held more than seven days before the current date, since its commitments stay in force until the next review.
+
 ## Decision entry
 
 One entry is written at each [checkpoint decision](../procedures/checkpoint-decision.md), and at the completion of each item.
@@ -47,7 +57,7 @@ One entry is written at each [checkpoint decision](../procedures/checkpoint-deci
 | --- | --- |
 | `date` | the date of the decision or of the completion |
 | `milestone` | the identifier of the item |
-| `decision` | `done` · `stop` · `reduce` · `renew` |
+| `checkpoint_decision` | `done` · `stop` · `reduce` · `renew` |
 | `ratio` | the time consumed divided by the budget; censored for `stop` and `reduce` |
 | `rationale` | required except for `done`. It states what was obtained, what remains unknown, and why this decision; for `renew`, it names the fact that was unknown when the first budget was set |
 

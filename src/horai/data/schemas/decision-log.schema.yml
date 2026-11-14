@@ -12,11 +12,11 @@ properties:
     items:
       type: object
       additionalProperties: false
-      required: [date, milestone, decision]
+      required: [date, milestone, checkpoint_decision]
       properties:
         date: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
         milestone: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-        decision: {enum: [done, stop, reduce, renew]}
+        checkpoint_decision: {enum: [done, stop, reduce, renew]}
         rationale: {type: string, minLength: 1}
-      if: {properties: {decision: {enum: [stop, reduce, renew]}}}
+      if: {properties: {checkpoint_decision: {enum: [stop, reduce, renew]}}}
       then: {required: [rationale]}

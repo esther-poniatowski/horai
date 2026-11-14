@@ -4,17 +4,24 @@ The selection rule: which task comes next.
 The rule is stated in the kernel note on the selection of the next task (anchors
 ``^non-negotiable-key`` and ``^selection-rule``). The candidates are the open tasks in the state
 ``week`` of the stream of the current block, which do not wait, whose milestone has no open
-dependency and no consumed budget, and whose predecessors in the local order are done. While an item
-is marked non-negotiable, the candidates are its own open tasks, whatever their stream.
+dependency and no consumed budget, and whose predecessors are done. The loose tasks of the stream,
+which serve no milestone, are candidates as well. While an open item or an open task is marked
+non-negotiable, the candidates are its own open tasks, whatever their stream; a mark left on a
+closed item or task is ignored, and the check reports it. In a request window, a block of a stream
+triggered by arrival, the tasks of other streams that hand off to a party are candidates as well,
+after the tasks of the stream of the window.
 
-The keys apply lexicographically, a question and a standing parent counting as milestones:
+A loose task that is important and urgent precedes the milestones of its stream, and the other loose
+tasks follow them. Among the milestones, the keys apply lexicographically, a question counting as a
+milestone:
 
 1. deadline, under the option of imposed deadlines;
-2. release of a wait, under the option of external parties;
+2. hand-off to a party, under the option of external parties;
 3. unblocking, under the option of the milestone graph;
 4. worth: the rank set at the cycle planning.
 
-Within a milestone, the riskiest task comes first. The result is a list of tiers: the candidates
+Within a milestone, and among loose tasks, the quadrant, the importance and the riskiest mark order
+the tasks. The result is a list of tiers: the candidates
 that the keys do not separate share a tier, and the choice among them is left to the agent.
 
 Classes
@@ -23,6 +30,7 @@ Candidate, Selection
 
 Functions
 ---------
+marked(plan) -> tuple[Item | None, Task | None]
 select(plan, day, stream, work) -> Selection
 """
 
@@ -36,10 +44,11 @@ from itertools import groupby
 
 from ..domain.records import Item, Plan, Task
 from .budgets import budget_status
-from .state import task_state
+from .state import is_open_on, task_state
 from .time_spent import Span
 
 IMPORTANT = {"highest", "high"}
+IMPORTANT_AND_URGENT = 0
 IMPORTANCE_ORDER: dict[str | None, int] = {
     "highest": 0,
     "high": 1,
@@ -57,9 +66,9 @@ _UNIMPLEMENTED_KEYS = {
 
 @dataclass(frozen=True)
 class Candidate:
-    """A task that may be taken next, with its item."""
+    """A task that may be taken next, with its item, or None for a loose task."""
 
-    item: Item
+    item: Item | None
     task: Task
 
 
@@ -79,17 +88,27 @@ class Selection:
 
     tiers: list[list[Candidate]] = field(default_factory=list)
     marked: Item | None = None
+    marked_task: Task | None = None
     notes: list[str] = field(default_factory=list)
 
 
-def _marked(plan: Plan) -> tuple[Item | None, Task | None]:
-    """Return the item marked non-negotiable, with its marked task if the mark is on a task."""
+def marked(plan: Plan) -> tuple[Item | None, Task | None]:
+    """Return the open item marked non-negotiable, or the open marked task with its item.
+
+    The item of a loose task is None. A mark on a closed item, or on a completed task or a task of
+    a closed item, is ignored.
+
+    Examples
+    --------
+    >>> marked(Plan())
+    (None, None)
+    """
     for item in plan.items.values():
-        if item.non_negotiable is not None:
+        if item.non_negotiable is not None and item.is_open:
             return item, None
-        for task in item.tasks:
-            if task.non_negotiable is not None:
-                return item, task
+    for parent, task in plan.tasks():
+        if task.non_negotiable is not None and task.is_open and (parent is None or parent.is_open):
+            return parent, task
     return None, None
 
 
@@ -104,18 +123,23 @@ def _blocked_by_dependency(plan: Plan, item: Item) -> str | None:
 
 def _pool(
     plan: Plan, day: date, stream: str | None, selection: Selection
-) -> list[tuple[Item, Task]]:
+) -> list[tuple[Item | None, Task]]:
     """Return the tasks among which the candidates are chosen, and record the marked item."""
-    marked_item, marked_task = _marked(plan)
+    marked_item, marked_task = marked(plan)
+    if marked_task is not None:
+        selection.marked = marked_item
+        selection.marked_task = marked_task
+        return [(marked_item, marked_task)]
     if marked_item is not None:
         selection.marked = marked_item
-        if marked_task is not None:
-            return [(marked_item, marked_task)]
         return [(marked_item, task) for task in marked_item.tasks]
+    declared = plan.profile.streams.get(stream) if plan.profile and stream else None
+    window = declared is not None and declared.triggered_by == "arrival"
     return [
         (item, task)
         for item, task in plan.tasks()
-        if item.stream == stream and task_state(plan, item, task, day) == "week"
+        if task_state(plan, item, task, day) == "week"
+        and (plan.stream_of(item, task) == stream or (window and task.hands_off))
     ]
 
 
@@ -124,14 +148,19 @@ class _Context:
     """What the admission of a candidate reads: the plan, the work, the done tasks, the notes."""
 
     plan: Plan
+    day: date
     work: Sequence[Span]
     done: set[str]
     notes: list[str]
 
 
-def _admit(item: Item, task: Task, context: _Context) -> bool:
+def _admit(item: Item | None, task: Task, context: _Context) -> bool:
     """Whether a task of the pool is a candidate; record in `notes` why an item is excluded."""
-    if not task.is_open or not item.is_open or task.waiting is not None:
+    if not is_open_on(context.plan, task, context.day) or task.is_waiting:
+        return False
+    if item is None:
+        return all(predecessor in context.done for predecessor in task.depends_on)
+    if not item.is_open:
         return False
     plan, notes = context.plan, context.notes
     dependency = _blocked_by_dependency(plan, item)
@@ -139,6 +168,11 @@ def _admit(item: Item, task: Task, context: _Context) -> bool:
         notes.append(f"{item.id}: waits for the milestone {dependency}")
         return False
     status = budget_status(plan, item, context.work)
+    if status.carried:
+        notes.append(
+            f"{item.id}: carried into its cycle without a decision entry; "
+            f"its budget counts from {status.since}"
+        )
     if status.undefined:
         notes.append(f"{item.id}: the remaining work is undefined: {status.undefined}")
     elif status.exhausted:
@@ -163,19 +197,37 @@ def quadrant(task: Task, day: date) -> int:
     return (0 if urgent else 1) if important else (2 if urgent else 3)
 
 
-def _tiers(candidates: list[Candidate], release_key: bool, day: date) -> list[list[Candidate]]:
-    """Order the candidates by the keys, and group the tied ones into tiers."""
-    releasing = {c.item.id for c in candidates if c.task.releases} if release_key else set()
+def _tiers(
+    candidates: list[Candidate], release_key: bool, day: date, stream: str | None
+) -> list[list[Candidate]]:
+    """Order the candidates by the keys, and group the tied ones into tiers.
 
-    def key(candidate: Candidate) -> tuple[int, float, int, int, int, int]:
+    In a request window, the tasks of other streams that hand off to a party follow the tasks of
+    the stream of the window.
+    """
+    releasing = (
+        {c.item.id for c in candidates if c.item is not None and c.task.hands_off}
+        if release_key
+        else set()
+    )
+
+    def key(candidate: Candidate) -> tuple[int, int, float, int, int, int, int]:
         item, task = candidate.item, candidate.task
+        if stream is not None and Plan.stream_of(item, task) != stream:
+            group, rank = 3, math.inf
+        elif item is None:
+            group = 0 if quadrant(task, day) == IMPORTANT_AND_URGENT else 2
+            rank = math.inf
+        else:
+            group, rank = 1, item.rank if item.rank is not None else math.inf
         return (
-            0 if item.id in releasing else 1,
-            item.rank if item.rank is not None else math.inf,
-            0 if release_key and task.releases else 1,
+            group,
+            0 if item is not None and item.id in releasing else 1,
+            rank,
+            0 if release_key and task.hands_off else 1,
             quadrant(task, day),
             IMPORTANCE_ORDER.get(task.importance, IMPORTANCE_ORDER[None]),
-            0 if task.risk else 1,
+            0 if task.riskiest else 1,
         )
 
     return [list(group) for _, group in groupby(sorted(candidates, key=key), key=key)]
@@ -201,14 +253,15 @@ def select(plan: Plan, day: date, stream: str | None, work: Sequence[Span]) -> S
         The candidates, in tiers.
     """
     selection = Selection()
-    options = plan.profile.options if plan.profile else {}
+    options = plan.profile.enabled_mechanisms if plan.profile else {}
     selection.notes += [note for name, note in _UNIMPLEMENTED_KEYS.items() if name in options]
-    context = _Context(plan, work, {task.id for _, task in plan.tasks() if not task.is_open}, [])
+    done = {task.id for _, task in plan.tasks() if not is_open_on(plan, task, day)}
+    context = _Context(plan, day, work, done, [])
     candidates = [
         Candidate(item, task)
         for item, task in _pool(plan, day, stream, selection)
         if _admit(item, task, context)
     ]
     selection.notes += list(dict.fromkeys(context.notes))
-    selection.tiers = _tiers(candidates, "external_parties" in options, day)
+    selection.tiers = _tiers(candidates, "external_parties" in options, day, stream)
     return selection

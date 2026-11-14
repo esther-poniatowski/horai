@@ -1,5 +1,0 @@
-_schema: horai:availability@1
-capacity: {median: PT30H, low: PT24H}
-predictable: true
-minimum_block: PT3H
-energy: mornings for proofs and drafts

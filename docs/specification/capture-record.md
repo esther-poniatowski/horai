@@ -19,7 +19,7 @@ The inbox receives the work that arises during a block, and is emptied at each [
 
 ## Holding file
 
-The holding file keeps the tasks without a parent. Each entry is a [task record](task-record.md) without a `parent`. Its field `held` states the date at which it entered the file.
+The holding file keeps the tasks that serve no milestone and name no stream. Each entry is a [task record](task-record.md) without a `parent` and without a `stream`. Its field `held_since` states the date at which it entered the file.
 
 ## Ideas file
 

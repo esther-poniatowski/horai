@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import os
 import re
+from fnmatch import fnmatch
 from collections.abc import Callable, Sequence
 from pathlib import Path, PurePath
 from typing import Any
@@ -23,25 +24,27 @@ from typing import Any
 import yaml
 
 from ..domain.records import (
-    Appointment,
-    Availability,
+    Absence,
     ClockEntry,
     Cycle,
+    DayChange,
+    Deadline,
     DecisionEntry,
     Deliverable,
     DeviationEntry,
     Item,
+    Party,
+    PartyRef,
     Plan,
     Profile,
     Purpose,
     Task,
-    Week,
-    WeekTemplate,
-    Block,
-    Window,
+    TypicalWeek,
+    stages_from,
 )
-from ..domain.time import parse_date, parse_duration, parse_time
+from ..domain.time import parse_date
 from ..issues import Issue
+from .config import CONFIG_SCHEMA
 from .schemas import SchemaSet
 from .yaml_loader import load_yaml
 
@@ -49,9 +52,9 @@ _SLUG = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 _MONTH = re.compile(r"^\d{4}-\d{2}$")
 
 SINGLE_FILES: dict[str, str] = {
-    "profile.yml": "horai:profile@1",
-    "availability.yml": "horai:availability@1",
-    "calendar/week-template.yml": "horai:week-template@1",
+    "settings/profile.yml": "horai:profile@1",
+    "settings/parties.yml": "horai:parties@1",
+    "settings/typical-week.yml": "horai:typical-week@1",
     "capture/inbox.yml": "horai:inbox@1",
     "capture/holding.yml": "horai:holding@1",
     "capture/ideas.yml": "horai:ideas@1",
@@ -63,13 +66,13 @@ FOLDERS: dict[str, str] = {
     "plan/deliverables": "horai:deliverable@1",
     "plan/milestones": "horai:milestone@1",
     "plan/questions": "horai:question@1",
-    "plan/standing": "horai:standing@1",
+    "plan/task-lists": "horai:task-list@1",
     "calendar/cycles": "horai:cycle@1",
-    "calendar/weeks": "horai:week@1",
-    "calendar/appointments": "horai:appointment@1",
+    "calendar/dates": "horai:dates@1",
     "log/clock": "horai:clock-log@1",
     "log/decisions": "horai:decision-log@1",
     "log/deviations": "horai:deviation-log@1",
+    "log/reviews": "horai:review-log@1",
 }
 
 _TITLED = {
@@ -77,10 +80,9 @@ _TITLED = {
     "plan/deliverables",
     "plan/milestones",
     "plan/questions",
-    "plan/standing",
-    "calendar/appointments",
+    "plan/task-lists",
 }
-_LOGS = {"log/clock", "log/decisions", "log/deviations"}
+_MONTHLY = {"calendar/dates", "log/clock", "log/decisions", "log/deviations", "log/reviews"}
 
 
 def _read(
@@ -104,28 +106,30 @@ def _read(
     return (None, problems) if problems else (data, [])
 
 
-def _deadline(data: dict[str, Any]) -> Any:
-    """Return the date of the deadline of a level, or None."""
-    return parse_date(data["deadline"]["date"]) if "deadline" in data else None
-
-
-def _week(data: dict[str, Any]) -> Week:
-    """Build a week, with its departures from the template when it states any."""
-    blocks = tuple(Block.from_data(e) for e in data["blocks"]) if "blocks" in data else None
-    windows = tuple(Window.from_data(e) for e in data["windows"]) if "windows" in data else None
-    return Week(opened=parse_date(data["opened"]), blocks=blocks, windows=windows)
+def _deadline(data: dict[str, Any]) -> Deadline | None:
+    """Return the deadline of a level, or None."""
+    return Deadline.from_data(data.get("deadline"))
 
 
 def _store(plan: Plan, folder: str, stem: str, data: dict[str, Any]) -> None:
     """Convert one validated file of a folder into records of the plan."""
     builders: dict[str, Callable[[], None]] = {
         "plan/purposes": lambda: plan.purposes.__setitem__(
-            stem, Purpose(stem, data["title"], _deadline(data))
+            stem, Purpose(stem, data["title"], data.get("description"), _deadline(data))
         ),
         "plan/deliverables": lambda: plan.deliverables.__setitem__(
             stem,
             Deliverable(
-                stem, data["title"], data["purpose"], data["phase"], data["status"], _deadline(data)
+                stem,
+                data["title"],
+                data["purpose"],
+                data["type"],
+                data["status"],
+                data.get("phase"),
+                (stages_from(data["stages"]) if "stages" in data else None),
+                PartyRef.from_data(data.get("accountable_to")),
+                _deadline(data),
+                data.get("derived_from"),
             ),
         ),
         "plan/milestones": lambda: plan.items.__setitem__(
@@ -134,8 +138,8 @@ def _store(plan: Plan, folder: str, stem: str, data: dict[str, Any]) -> None:
         "plan/questions": lambda: plan.items.__setitem__(
             stem, Item.from_data(stem, "question", data)
         ),
-        "plan/standing": lambda: plan.items.__setitem__(
-            stem, Item.from_data(stem, "standing", data)
+        "plan/task-lists": lambda: setattr(
+            plan, "loose", plan.loose + tuple(Task.from_data(e, None) for e in data["tasks"])
         ),
         "calendar/cycles": lambda: plan.cycles.__setitem__(
             stem,
@@ -150,20 +154,6 @@ def _store(plan: Plan, folder: str, stem: str, data: dict[str, Any]) -> None:
                 ),
             ),
         ),
-        "calendar/weeks": lambda: plan.weeks.__setitem__(parse_date(data["opened"]), _week(data)),
-        "calendar/appointments": lambda: plan.appointments.__setitem__(
-            stem,
-            Appointment(
-                stem,
-                data["title"],
-                parse_date(data["date"]),
-                parse_time(data["start"]),
-                parse_duration(data["length"]),
-                data["stream"],
-                data["party"],
-                parse_duration(data["cap"]) if "cap" in data else None,
-            ),
-        ),
     }
     if folder in builders:
         builders[folder]()
@@ -171,8 +161,20 @@ def _store(plan: Plan, folder: str, stem: str, data: dict[str, Any]) -> None:
         plan.clock += tuple(ClockEntry.from_data(e) for e in data["entries"])
     elif folder == "log/decisions":
         plan.decisions += tuple(
-            DecisionEntry(parse_date(e["date"]), e["milestone"], e["decision"], e.get("rationale"))
+            DecisionEntry(
+                parse_date(e["date"]), e["milestone"], e["checkpoint_decision"], e.get("rationale")
+            )
             for e in data["entries"]
+        )
+    elif folder == "calendar/dates":
+        plan.dates.update(
+            (parse_date(day), DayChange.from_data(entry))
+            for day, entry in data.get("days", {}).items()
+        )
+        plan.absences += tuple(Absence.from_data(e) for e in data.get("unavailable", ()))
+    elif folder == "log/reviews":
+        plan.reviews = tuple(
+            sorted({*plan.reviews, *(parse_date(e["date"]) for e in data["entries"])})
         )
     elif folder == "log/deviations":
         plan.deviations += tuple(
@@ -183,12 +185,12 @@ def _store(plan: Plan, folder: str, stem: str, data: dict[str, Any]) -> None:
 
 def _store_single(plan: Plan, relative: str, data: dict[str, Any]) -> None:
     """Convert one validated single file into records of the plan."""
-    if relative == "profile.yml":
+    if relative == "settings/profile.yml":
         plan.profile = Profile.from_data(data)
-    elif relative == "availability.yml":
-        plan.availability = Availability.from_data(data)
-    elif relative == "calendar/week-template.yml":
-        plan.template = WeekTemplate.from_data(data)
+    elif relative == "settings/parties.yml":
+        plan.parties = {entry["id"]: Party.from_data(entry) for entry in data["parties"]}
+    elif relative == "settings/typical-week.yml":
+        plan.typical_week = TypicalWeek.from_data(data)
     elif relative == "capture/inbox.yml":
         plan.inbox = tuple(data["entries"])
     elif relative == "capture/ideas.yml":
@@ -201,25 +203,28 @@ def _store_single(plan: Plan, relative: str, data: dict[str, Any]) -> None:
 
 def _name_issues(folder: str, stem: str, relative: str, data: dict[str, Any]) -> list[Issue]:
     """Check what the file layout fixes about the name of a file."""
-    opened, month = data.get("opened"), data.get("month")
+    month = data.get("month")
     if folder in _TITLED and not _SLUG.match(stem):
         return [Issue("identifier/form", f"the file name {stem!r} must be a slug", relative, stem)]
-    if folder == "calendar/weeks" and data["opened"] != stem:
-        return [
-            Issue(
-                "identifier/week",
-                f"a week file must be named by its date {opened}",
-                relative,
-            )
-        ]
-    if folder in _LOGS and (not _MONTH.match(stem) or data["month"] != stem):
+    if folder in _MONTHLY and (not _MONTH.match(stem) or month != stem):
         return [
             Issue(
                 "identifier/month",
-                f"a log file must be named by its month {month}",
+                f"a file of a month must be named by its month {month}",
                 relative,
             )
         ]
+    dated = [
+        *data.get("days", {}),
+        *(entry["from"] for entry in data.get("unavailable", ())),
+        *(entry["date"] for entry in data.get("entries", ()) if "date" in entry),
+    ]
+    if folder in ("calendar/dates", "log/reviews"):
+        outside = [str(day) for day in dated if not str(day).startswith(f"{month}-")]
+        if outside:
+            listed = ", ".join(outside)
+            message = f"the dates {listed} fall outside the month {month} of the file"
+            return [Issue("calendar/month", message, relative)]
     return []
 
 
@@ -230,14 +235,31 @@ _SCHEMA_LINE = re.compile(r"^_schema:\s*['\"]?(horai:[a-z-]+@\d+)", re.MULTILINE
 
 
 def _skipped(relative: PurePath, exclude: Sequence[str]) -> bool:
-    """Whether a path under a root lies in a hidden folder or matches an excluded pattern."""
-    if any(part.startswith(".") for part in relative.parts[:-1]):
+    """Whether a path under a root lies in a hidden or an excluded folder.
+
+    A pattern without a slash matches a folder name at any depth, as in `.gitignore`; a pattern
+    with a slash matches a path from the root.
+
+    Examples
+    --------
+    >>> _skipped(PurePath("projects/x/archive/a.yml"), ["archive"])
+    True
+    >>> _skipped(PurePath("utils/scripts/tests/a.yml"), ["utils/scripts/tests"])
+    True
+    >>> _skipped(PurePath("conferences/a.yml"), ["archive"])
+    False
+    """
+    folders = relative.parts[:-1]
+    if any(part.startswith(".") for part in folders):
         return True
     posix = relative.as_posix()
-    return any(
-        relative.match(pattern) or posix.startswith(pattern.rstrip("/") + "/")
-        for pattern in exclude
-    )
+    for pattern in exclude:
+        if "/" not in pattern.strip("/"):
+            if any(fnmatch(part, pattern.strip("/")) for part in folders):
+                return True
+        elif fnmatch(posix, pattern.rstrip("/") + "/*"):
+            return True
+    return False
 
 
 class _Loader:
@@ -287,12 +309,18 @@ class _Loader:
                     continue
                 relative = os.path.relpath(path, base)
                 schema_id = match.group(1)
+                if schema_id == CONFIG_SCHEMA:
+                    continue
                 if schema_id in DISTRIBUTED:
                     self.folder_file(path, DISTRIBUTED[schema_id], relative)
                 elif schema_id in FOLDERS.values() or schema_id in SINGLE_FILES.values():
                     self.loaded.add(path.resolve())
                     message = f"a record {schema_id} belongs to the central folder of the plan"
                     self.issues.append(Issue("placement/central", message, relative))
+                else:
+                    self.loaded.add(path.resolve())
+                    message = f"the record type {schema_id} is unknown to this version of horai"
+                    self.issues.append(Issue("schema/unknown", message, relative))
 
 
 def load_plan(
@@ -327,9 +355,9 @@ def load_plan(
         path = folder / relative
         if path.is_file():
             loading.single_file(path, relative, schema_id)
-        elif relative == "profile.yml":
+        elif relative == "settings/profile.yml":
             loading.issues.append(
-                Issue("plan/profile-missing", "the plan has no profile.yml", relative)
+                Issue("plan/profile-missing", "the plan has no settings/profile.yml", relative)
             )
     for sub in FOLDERS:
         directory = folder / sub

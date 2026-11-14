@@ -35,7 +35,7 @@ class Span:
     start: datetime
     end: datetime
     running: bool = False
-    assigned: bool = False
+    recalled: bool = False
 
 
 def spans(entries: Iterable[ClockEntry], now: datetime | None = None) -> list[Span]:
@@ -60,10 +60,10 @@ def spans(entries: Iterable[ClockEntry], now: datetime | None = None) -> list[Sp
             continue
         if index + 1 < len(ordered):
             result.append(
-                Span(entry.task, entry.at, ordered[index + 1].at, assigned=entry.assigned)
+                Span(entry.task, entry.at, ordered[index + 1].at, recalled=entry.recalled)
             )
         elif now is not None and now > entry.at:
-            result.append(Span(entry.task, entry.at, now, running=True, assigned=entry.assigned))
+            result.append(Span(entry.task, entry.at, now, running=True, recalled=entry.recalled))
     return result
 
 

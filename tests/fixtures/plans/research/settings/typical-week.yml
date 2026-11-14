@@ -1,0 +1,32 @@
+_schema: horai:typical-week@1
+predictable: true
+poor_week: PT24H
+unplaced:
+  - {id: supervision, title: Supervision, length: PT1H, stream: meetings, party: supervisor}
+days:
+  mon:
+    spans: ["09:00-13:00", "13:30-17:30"]
+    blocks:
+      - {start: "09:00", length: PT3H30M, stream: inquiry}
+      - {start: "13:30", length: PT1H, stream: training}
+      - {start: "12:30", length: PT30M, stream: requests}
+  tue:
+    spans: ["09:00-12:30", "14:00-17:00"]
+    blocks:
+      - {start: "09:00", length: PT3H30M, stream: inquiry}
+  wed:
+    spans: ["09:00-12:30", "14:00-17:00"]
+    blocks:
+      - {start: "09:00", length: PT3H30M, stream: inquiry}
+  thu:
+    spans: ["09:00-12:30", "14:00-17:00"]
+    blocks:
+      - {start: "09:00", length: PT3H30M, stream: inquiry}
+      - {start: "14:00", length: PT2H, stream: bibliography}
+  fri:
+    spans: ["09:00-12:00", "13:30-16:30"]
+    blocks:
+      - {start: "09:00", length: PT1H, stream: inquiry}
+      - {start: "13:30", length: PT1H, stream: training}
+    appointed:
+      - {id: lab-meeting, start: "10:00", length: PT1H, stream: meetings, party: lab}

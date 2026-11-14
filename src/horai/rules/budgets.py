@@ -6,6 +6,11 @@ once the budget is consumed. The budget was set at the start of the cycle that t
 at the date of its last decision entry that renewed or reduced it. A consumed budget calls for a
 checkpoint decision, and the tasks of the item leave the candidates of the selection until then.
 
+An item carried into a new cycle keeps its budget until a decision entry renews or reduces it. The
+item counts as carried when time was spent on it before its cycle started, and no such decision is
+dated on or after the last of that time. Its budget then counts from its last earlier decision, or
+else from the first time spent on it, so that the time of the earlier cycle is not forgotten.
+
 Classes
 -------
 BudgetStatus
@@ -42,6 +47,8 @@ class BudgetStatus:
         Whether the budget in force is consumed, which calls for a checkpoint decision.
     undefined : str | None
         Reason for which the status cannot be computed, such as an excluded cycle.
+    carried : bool
+        Whether the item was carried into its cycle without a decision entry on its budget.
     """
 
     consumed: timedelta
@@ -49,6 +56,7 @@ class BudgetStatus:
     remaining: timedelta | None
     exhausted: bool
     undefined: str | None = None
+    carried: bool = False
 
 
 def budget_status(plan: Plan, item: Item, work: Sequence[Span]) -> BudgetStatus:
@@ -59,18 +67,30 @@ def budget_status(plan: Plan, item: Item, work: Sequence[Span]) -> BudgetStatus:
         return BudgetStatus(
             consumed, None, None, False, f"its cycle {item.cycle} is excluded as invalid"
         )
-    dates = []
-    if item.cycle is not None and item.cycle in plan.cycles:
-        dates.append(plan.cycles[item.cycle].start)
-    dates += [
+    decisions = [
         entry.date
         for entry in plan.decisions
-        if entry.milestone == item.id and entry.decision in ("renew", "reduce")
+        if entry.milestone == item.id and entry.checkpoint_decision in ("renew", "reduce")
     ]
-    since = max(dates) if dates else None
+    start = (
+        plan.cycles[item.cycle].start
+        if item.cycle is not None and item.cycle in plan.cycles
+        else None
+    )
+    before = sorted(
+        span.start.date()
+        for span in work
+        if span.task in identifiers and start is not None and span.start.date() < start
+    )
+    carried = bool(before) and not any(day >= before[-1] for day in decisions)
+    if carried:
+        since: date | None = max(decisions) if decisions else before[0]
+    else:
+        dates = [day for day in (start, *decisions) if day is not None]
+        since = max(dates) if dates else None
     budget = item.planned_budget
     if budget is None:
-        return BudgetStatus(consumed, since, None, False)
+        return BudgetStatus(consumed, since, None, False, carried=carried)
     spent = time_on(work, identifiers, since)
     remaining = max(budget - spent, timedelta(0))
-    return BudgetStatus(consumed, since, remaining, spent >= budget)
+    return BudgetStatus(consumed, since, remaining, spent >= budget, carried=carried)

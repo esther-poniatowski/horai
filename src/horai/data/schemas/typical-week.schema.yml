@@ -1,0 +1,61 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:typical-week:1
+title: Typical week
+description: the time of the agent in a typical week, and its placement among the streams
+type: object
+additionalProperties: false
+required: [_schema, predictable, poor_week]
+properties:
+  _schema: {const: 'horai:typical-week@1'}
+  predictable:
+    description: whether the free time of the coming week is known at the weekly review
+    type: boolean
+  poor_week:
+    description: the working time of a poor week, on which an unpredictable week is planned
+    $ref: 'urn:horai:schema:common:1#/$defs/duration'
+  weekly_hours:
+    description: the working time of a typical week, stated when no spans are stated
+    $ref: 'urn:horai:schema:common:1#/$defs/duration'
+  unplaced:
+    description: the appointments held without a fixed slot, which the calendar of dates places on dates, a number of times per period
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [id, length, stream, party]
+      properties:
+        id: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+        title: {type: string, minLength: 1}
+        length: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}
+        times:
+          description: the number of occurrences in a period; 1 when absent
+          type: integer
+          minimum: 1
+        every:
+          description: the period, a number of weeks counted from `from`, or a calendar month; one week when absent
+          type: string
+          pattern: '^P([1-9][0-9]?W|1M)$'
+        from:
+          description: the first date of the first period of several weeks
+          $ref: 'urn:horai:schema:common:1#/$defs/date'
+        stream: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
+        party: {$ref: 'urn:horai:schema:common:1#/$defs/party'}
+      if:
+        required: [every]
+        properties: {every: {pattern: '^P([2-9]|[1-9][0-9])W$'}}
+      then: {required: [from]}
+  days:
+    description: for each weekday, its available spans and what they hold
+    type: object
+    propertyNames: {$ref: 'urn:horai:schema:common:1#/$defs/day'}
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [spans]
+      properties:
+        spans: {$ref: 'urn:horai:schema:common:1#/$defs/spans'}
+        appointed: {type: array, items: {$ref: 'urn:horai:schema:common:1#/$defs/recurring_appointment'}}
+        blocks: {type: array, items: {$ref: 'urn:horai:schema:common:1#/$defs/block'}}
+oneOf:
+  - required: [days]
+  - required: [weekly_hours]

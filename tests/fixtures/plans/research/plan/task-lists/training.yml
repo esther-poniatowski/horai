@@ -1,8 +1,6 @@
-_schema: horai:standing@1
-title: Mathematics floor
-stream: training
-rank: 1
+_schema: horai:task-list@1
 tasks:
   - id: chapter-3-exercises
     title: Work the exercises of chapter 3
+    stream: training
     committed_week: 2026-11-09

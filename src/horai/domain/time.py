@@ -18,6 +18,10 @@ parse_timestamp(text) -> datetime
     Convert an ISO 8601 timestamp, which must carry its offset.
 pert(optimistic, probable, pessimistic) -> timedelta
     Compute the PERT value of three durations.
+parse_span(text) -> tuple[int, int]
+    Convert an interval of one day into its bounds, in minutes after midnight.
+minute_of_day(moment) -> int
+    Return the minutes after midnight of an hour of the day.
 """
 
 from __future__ import annotations
@@ -113,3 +117,35 @@ def pert(optimistic: timedelta, probable: timedelta, pessimistic: timedelta) -> 
     datetime.timedelta(seconds=21600)
     """
     return (optimistic + 4 * probable + pessimistic) / 6
+
+
+def parse_span(text: str) -> tuple[int, int]:
+    """Convert an interval of one day, such as ``08:30-12:30``, into its bounds in minutes.
+
+    The end may be ``24:00``, the end of the day. An interval that ends before it starts is
+    returned as written, and the check of the calendar reports it.
+
+    Examples
+    --------
+    >>> parse_span("08:30-12:30")
+    (510, 750)
+    >>> parse_span("20:00-24:00")
+    (1200, 1440)
+    """
+    start, end = text.split("-")
+    bounds = []
+    for part in (start, end):
+        hours, minutes = part.split(":")
+        bounds.append(int(hours) * 60 + int(minutes))
+    return bounds[0], bounds[1]
+
+
+def minute_of_day(moment: time) -> int:
+    """Return the minutes after midnight of an hour of the day.
+
+    Examples
+    --------
+    >>> minute_of_day(time(9, 30))
+    570
+    """
+    return moment.hour * 60 + moment.minute

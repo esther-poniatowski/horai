@@ -3,16 +3,20 @@ $id: urn:horai:schema:question:1
 title: Question
 type: object
 additionalProperties: false
-required: [_schema, title, deliverable, stream, kind, status]
+required: [_schema, title, deliverable, stream, status]
 properties:
   _schema: {const: 'horai:question@1'}
   title: {type: string, minLength: 1}
   deliverable: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
   stream: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
-  kind: {const: question}
-  done: {type: string, minLength: 1}
+  done_when:
+    description: the test that judges completion, or the acceptance by a party
+    type: string
+    minLength: 1
   status: {enum: [open, done, reduced, stopped]}
-  variance: {enum: [routine, exploratory]}
+  predictability:
+    description: routine for a kind of work done several times, exploratory for an open outcome
+    enum: [routine, exploratory]
   budget: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}
   estimate: {$ref: 'urn:horai:schema:common:1#/$defs/estimate'}
   cycle: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
@@ -22,7 +26,8 @@ properties:
   depends_on:
     type: array
     items: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-  consumers:
+  consumed_by:
+    description: the milestones, or kinds of request, that consume the output of a tooling item
     type: array
     items: {type: string}
   deadline: {$ref: 'urn:horai:schema:common:1#/$defs/deadline'}

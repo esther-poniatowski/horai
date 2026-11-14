@@ -3,12 +3,26 @@ $id: urn:horai:schema:deliverable:1
 title: Deliverable
 type: object
 additionalProperties: false
-required: [_schema, title, purpose, phase, status]
+required: [_schema, title, purpose, type, status]
 properties:
   _schema: {const: 'horai:deliverable@1'}
   title: {type: string, minLength: 1}
   purpose: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-  phase: {enum: [exploration, validation, delivery]}
-  status: {enum: [active, waiting-admission, stopped, done]}
-  principal: {type: string}
+  type:
+    description: the type of deliverable declared by the profile, which sets its defaults
+    $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+  phase:
+    description: the current phase; the starting phase of the type when absent
+    enum: [exploration, validation, delivery]
+  stages:
+    description: the stages of the deliverable, in place of those of its type
+    type: array
+    items: {$ref: 'urn:horai:schema:profile:1#/$defs/stage'}
+  status: {enum: [active, awaiting-admission, stopped, done]}
+  derived_from:
+    description: the deliverable that this one presents, such as the article of a talk; it shares its place under the cap on active deliverables
+    $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+  accountable_to:
+    description: the party to whom the agent answers for the deliverable
+    $ref: 'urn:horai:schema:common:1#/$defs/party'
   deadline: {$ref: 'urn:horai:schema:common:1#/$defs/deadline'}

@@ -1,0 +1,5 @@
+_schema: horai:task-list@1
+tasks:
+  - {id: weekly-review, title: Weekly review, stream: planning, recurs: weekly}
+  - {id: daily-planning, title: Daily planning, stream: planning, recurs: daily}
+  - {id: cycle-planning, title: Cycle planning, stream: planning, recurs: cycle}

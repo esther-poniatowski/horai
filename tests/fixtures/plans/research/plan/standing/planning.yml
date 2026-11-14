@@ -1,9 +1,0 @@
-_schema: horai:standing@1
-title: Planning
-stream: upkeep
-rank: 1
-overhead: true
-tasks:
-  - {id: weekly-review, title: Weekly review}
-  - {id: daily-planning, title: Daily planning}
-  - {id: cycle-planning, title: Cycle planning}

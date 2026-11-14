@@ -6,4 +6,4 @@ additionalProperties: false
 required: [_schema, tasks]
 properties:
   _schema: {const: 'horai:archive@1'}
-  tasks: {$ref: 'urn:horai:schema:common:1#/$defs/tasks'}
+  tasks: {$ref: 'urn:horai:schema:common:1#/$defs/held_tasks'}

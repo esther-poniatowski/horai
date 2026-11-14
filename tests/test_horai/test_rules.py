@@ -7,11 +7,11 @@ from datetime import date, datetime, timedelta, timezone
 
 from conftest import DAY
 
-from horai.domain.records import ClockEntry, DecisionEntry, Item, Plan, Task
+from horai.domain.records import ClockEntry, Cycle, DecisionEntry, Item, Plan, Task
 from horai.rules.budgets import budget_status
 from horai.rules.checks import check_plan
 from horai.rules.selection import select
-from horai.rules.state import task_state
+from horai.rules.state import is_open_on, task_state
 from horai.rules.time_spent import spans, time_by_task_and_day
 
 TZ = timezone(timedelta(hours=1))
@@ -33,6 +33,10 @@ def _replace_task(plan: Plan, identifier: str, **changes) -> None:
     _replace_item(plan, item.id, tasks=tasks)
 
 
+def _located_on(plan: Plan, day: date) -> set[tuple[str, str]]:
+    return {(issue.rule, issue.record) for issue in check_plan(plan, day)}
+
+
 # --- State ----------------------------------------------------------------------------------------
 
 
@@ -47,18 +51,36 @@ def test_state_follows_the_week_and_the_cycle(plan: Plan) -> None:
     assert task_state(plan, None, plan.holding[0], DAY) == "backlog"
 
 
-def test_week_ends_at_the_next_review(plan: Plan) -> None:
-    plan.weeks[date(2026, 11, 16)] = dataclasses.replace(
-        plan.weeks[date(2026, 11, 9)], opened=date(2026, 11, 16)
-    )
+def test_week_ends_at_the_next_review_held(plan: Plan) -> None:
     item = plan.items["ctx-population-fit"]
-    assert task_state(plan, item, item.tasks[0], date(2026, 11, 16)) == "cycle"
+    late = date(2026, 11, 17)
+    assert task_state(plan, item, item.tasks[0], late) == "week"
+    assert ("review/overdue", "") in _located_on(plan, late)
+    plan.reviews = (*plan.reviews, date(2026, 11, 16))
+    assert task_state(plan, item, item.tasks[0], late) == "cycle"
+    assert ("review/overdue", "") not in _located_on(plan, late)
 
 
-def test_standing_parent_puts_its_tasks_in_the_cycle(plan: Plan) -> None:
-    item = plan.items["mathematics-floor"]
-    task = dataclasses.replace(item.tasks[0], committed_week=None)
-    assert task_state(plan, item, task, DAY) == "cycle"
+def test_loose_task_waits_in_the_backlog_until_committed(plan: Plan) -> None:
+    committed = next(task for task in plan.loose if task.id == "chapter-3-exercises")
+    assert task_state(plan, None, committed, DAY) == "week"
+    task = dataclasses.replace(committed, committed_week=None)
+    assert task_state(plan, None, task, DAY) == "backlog"
+    assert task_state(plan, None, dataclasses.replace(task, stream=None), DAY) == "backlog"
+
+
+def test_recurring_task_reopens_with_its_period(plan: Plan) -> None:
+    tasks = {task.id: task for task in plan.loose}
+    weekly = dataclasses.replace(tasks["weekly-review"], completed=date(2026, 11, 9))
+    assert task_state(plan, None, weekly, DAY) == "week" and not is_open_on(plan, weekly, DAY)
+    plan.reviews = (*plan.reviews, date(2026, 11, 16))
+    assert is_open_on(plan, weekly, date(2026, 11, 16))
+    daily = dataclasses.replace(tasks["daily-planning"], completed=date(2026, 11, 12))
+    assert is_open_on(plan, daily, DAY) and not is_open_on(plan, daily, date(2026, 11, 12))
+    per_cycle = dataclasses.replace(tasks["cycle-planning"], completed=date(2026, 12, 8))
+    assert not is_open_on(plan, per_cycle, date(2026, 12, 9))
+    plan.cycles["2026-c7"] = Cycle("2026-c7", date(2026, 12, 14), date(2027, 1, 22))
+    assert is_open_on(plan, per_cycle, date(2026, 12, 14))
 
 
 # --- Time spent -----------------------------------------------------------------------------------
@@ -111,6 +133,22 @@ def test_consumed_budget_is_exhausted(plan: Plan) -> None:
     assert status.exhausted and status.remaining == timedelta(0)
 
 
+def test_carried_item_keeps_its_budget_until_a_decision(plan: Plan) -> None:
+    cycle = plan.cycles["2026-c6"]
+    plan.cycles["2026-c6"] = dataclasses.replace(cycle, start=date(2026, 11, 13))
+    item = plan.items["ctx-population-fit"]
+    status = budget_status(plan, item, spans(plan.clock))
+    assert status.carried and status.since == date(2026, 11, 12)
+    assert status.remaining == timedelta(hours=10, minutes=15)
+    assert ("budget/carried", item.id) in _located(plan)
+    selection = select(plan, DAY, "inquiry", spans(plan.clock))
+    assert any("carried into its cycle" in note for note in selection.notes)
+    plan.decisions = (DecisionEntry(date(2026, 11, 12), item.id, "renew", "new fact"),)
+    status = budget_status(plan, item, spans(plan.clock))
+    assert not status.carried and status.remaining == timedelta(hours=12)
+    assert ("budget/carried", item.id) not in _located(plan)
+
+
 def test_excluded_cycle_makes_the_status_undefined(plan: Plan) -> None:
     plan.excluded.add("2026-c6")
     assert budget_status(plan, plan.items["ctx-population-fit"], ()).undefined
@@ -154,7 +192,16 @@ def test_non_negotiable_item_takes_every_stream(plan: Plan) -> None:
     ]
 
 
-def test_selection_counts_a_standing_parent(plan: Plan) -> None:
+def test_mark_on_a_closed_item_is_ignored_and_reported(plan: Plan) -> None:
+    _replace_item(plan, "gating-under-noise", non_negotiable=DAY, status="done")
+    selection = select(plan, DAY, "training", spans(plan.clock))
+    assert selection.marked is None and _first_tier_ids(plan, "training") == [
+        ["chapter-3-exercises"]
+    ]
+    assert "mark/closed" in _rules(plan)
+
+
+def test_selection_admits_loose_tasks(plan: Plan) -> None:
     assert _first_tier_ids(plan, "training") == [["chapter-3-exercises"]]
 
 
@@ -165,12 +212,21 @@ def _rules(plan: Plan) -> set[str]:
     return {issue.rule for issue in check_plan(plan, DAY)}
 
 
+def _located(plan: Plan) -> set[tuple[str, str]]:
+    return _located_on(plan, DAY)
+
+
+def test_stream_with_committed_work_states_an_allocation(plan: Plan) -> None:
+    _replace_item(plan, "ctx-population-fit", stream="upkeep")
+    assert ("profile/allocation", "upkeep") in _located(plan)
+
+
 def test_fixture_passes_every_check(plan: Plan) -> None:
     assert check_plan(plan, DAY) == []
 
 
 def test_duplicate_identifier(plan: Plan) -> None:
-    plan.holding = (Task("prove-rank-bound", "duplicate", None, held=DAY),)
+    plan.holding = (Task("prove-rank-bound", "duplicate", None, held_since=DAY),)
     assert "identifier/duplicate" in _rules(plan)
 
 
@@ -188,28 +244,30 @@ def test_second_non_negotiable_mark(plan: Plan) -> None:
 
 def test_too_many_marks_for_one_day(plan: Plan) -> None:
     for identifier in ["compare-geometries", "prove-rank-bound", "simulate-noise"]:
-        _replace_task(plan, identifier, today=DAY, main=True)
-    assert {"mark/today", "mark/main"} <= _rules(plan)
+        _replace_task(plan, identifier, marked_for=DAY, main_objective=True)
+    assert {"mark/marked-for", "mark/main"} <= _rules(plan)
 
 
 def test_selected_item_needs_a_budget_and_a_rank(plan: Plan) -> None:
     _replace_item(plan, "ctx-rank-bound", budget=None, rank=None)
-    _replace_item(plan, "mathematics-floor", rank=None)
     issues = [(i.rule, i.record) for i in check_plan(plan, DAY)]
     assert ("field/budget", "ctx-rank-bound") in issues and (
         "field/rank",
-        "mathematics-floor",
+        "ctx-rank-bound",
     ) in issues
 
 
 def test_held_task_needs_its_date_and_stop_needs_a_start(plan: Plan) -> None:
     plan.holding = (Task("loose-task", "loose", None),)
     plan.clock = plan.clock + (ClockEntry(_at(13, 20), "stop"),)
-    assert {"field/held", "clock/stop"} <= _rules(plan)
+    assert {"field/held-since", "clock/stop"} <= _rules(plan)
 
 
 def test_item_appears_in_an_unknown_stream(plan: Plan) -> None:
-    plan.items["stray"] = Item("stray", "standing", "Stray", "absent", rank=1)
+    plan.items["stray"] = Item("stray", "milestone", "Stray", "absent", rank=1)
+    assert "reference/stream" in _rules(plan)
+    plan.items.pop("stray")
+    plan.loose = plan.loose + (Task("stray-task", "Stray", None, stream="absent"),)
     assert "reference/stream" in _rules(plan)
 
 
@@ -234,16 +292,38 @@ def test_estimate_defects(plan: Plan) -> None:
     assert any("either a budget" in m for m in messages) and any("appetite" in m for m in messages)
 
 
-def test_second_overhead_parent(plan: Plan) -> None:
-    _replace_item(plan, "mathematics-floor", overhead=True)
-    assert "mark/overhead" in _rules(plan)
+def _loose(plan: Plan, task: Task) -> None:
+    plan.loose = plan.loose + (task,)
+
+
+def test_urgent_loose_task_precedes_the_milestones(plan: Plan) -> None:
+    urgent = Task(
+        "answer-referee",
+        "Answer the referee",
+        None,
+        stream="inquiry",
+        committed_week=date(2026, 11, 9),
+        importance="high",
+        scheduled=DAY,
+    )
+    later = dataclasses.replace(urgent, id="tidy-figures", title="Tidy", importance="low")
+    _loose(plan, urgent)
+    _loose(plan, later)
+    tiers = _first_tier_ids(plan)
+    assert tiers[0] == ["answer-referee"] and tiers[-1] == ["tidy-figures"]
+
+
+def test_milestone_without_deliverable_serves_its_stream(plan: Plan) -> None:
+    _replace_item(plan, "gating-under-noise", deliverable=None)
+    assert check_plan(plan, DAY) == []
+    assert "simulate-noise" in {t for tier in _first_tier_ids(plan) for t in tier}
 
 
 # --- Order within a parent and dependencies across parents ------------------------------------------
 
 
 def test_quadrant_orders_the_tasks_of_one_parent(plan: Plan) -> None:
-    _replace_task(plan, "fit-gating-model", risk=False)
+    _replace_task(plan, "fit-gating-model", riskiest=False)
     _replace_task(plan, "compare-geometries", depends_on=())
     _replace_task(plan, "fit-gating-model", importance="low", scheduled=DAY)
     _replace_task(plan, "compare-geometries", importance="highest")

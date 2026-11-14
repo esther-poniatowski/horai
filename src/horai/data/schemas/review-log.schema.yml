@@ -1,0 +1,20 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:review-log:1
+title: Weekly reviews of one month
+description: the weekly reviews held in one month; each starts a week of commitment, which the next review ends
+type: object
+additionalProperties: false
+required: [_schema, month, entries]
+properties:
+  _schema: {const: 'horai:review-log@1'}
+  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  entries:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [date]
+      properties:
+        date:
+          description: the date on which the review was held, which tasks name in `committed_week`
+          $ref: 'urn:horai:schema:common:1#/$defs/date'

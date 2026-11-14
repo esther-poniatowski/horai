@@ -1,0 +1,4 @@
+_schema: horai:parties@1
+parties:
+  - {id: supervisor, name: Thomas Hardy}
+  - {id: lab, name: the lab}

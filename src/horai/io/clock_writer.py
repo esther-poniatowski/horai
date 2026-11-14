@@ -39,8 +39,8 @@ def _line(entry: ClockEntry) -> str:
     fields = [f"at: {moment}", f"event: {entry.event}"]
     if entry.task is not None:
         fields.append(f"task: {entry.task}")
-    if entry.assigned:
-        fields.append("assigned: true")
+    if entry.recalled:
+        fields.append("recalled: true")
     return "  - {" + ", ".join(fields) + "}\n"
 
 

@@ -17,6 +17,8 @@ properties:
         at: {$ref: 'urn:horai:schema:common:1#/$defs/timestamp'}
         event: {enum: [start, stop]}
         task: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-        assigned: {type: boolean}
+        recalled:
+          description: whether the span was stated from memory instead of marked live
+          type: boolean
       if: {properties: {event: {const: start}}}
       then: {required: [task]}

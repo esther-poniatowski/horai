@@ -35,6 +35,7 @@ Horai records the tasks of complex projects, their priorities and their organiza
 - [x] **Selection of the next task:** the selection rule orders the committed tasks, and reports ties.
 - [x] **View of the week:** the calendar, the committed tasks with the remaining work of each item, and the follow-ups due.
 - [x] **Time spent:** start and stop marks, from which the time spent and the remaining work are computed.
+- [x] **Stages of deliverables:** the milestones of the stages that a deliverable has reached are created by one command.
 - [ ] **Planning sessions:** capture, weekly commitment, cycle planning and checkpoint decisions written by the tool.
 - [ ] **Obsidian plugin:** live views and forms over the same records.
 

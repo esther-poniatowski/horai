@@ -10,7 +10,7 @@ The package is divided into five layers. Each layer imports only the layers list
 | --- | --- | --- |
 | Domain | `domain/time.py`, `domain/records.py`, `issues.py` | the ISO 8601 notations, the typed records of a plan, and the issue reported by a check |
 | Input and output | `io/yaml_loader.py`, `io/schemas.py`, `io/config.py`, `io/loader.py`, `io/clock_writer.py` | the reading of YAML, the validation against the schemas, the resolution of the configuration, the loading of a plan, and the appending of clock entries |
-| Rules | `rules/state.py`, `rules/time_spent.py`, `rules/budgets.py`, `rules/selection.py`, `rules/checks.py` | pure computations on a loaded plan, given an explicit day or moment |
+| Rules | `rules/state.py`, `rules/time_spent.py`, `rules/budgets.py`, `rules/selection.py`, `rules/calendar.py`, `rules/checks.py`, `rules/calendar_checks.py` | pure computations on a loaded plan, given an explicit day or moment |
 | Rendering | `render/text.py` | the text of the reports and of the views |
 | Command line | `cli.py` | the commands, their options and their exit statuses |
 
@@ -24,15 +24,17 @@ A plan is loaded in three steps, and a file that fails one of them is excluded:
 
 1. the YAML reader keeps dates, hours and durations as strings, and resolves only the scalar types of the YAML 1.2 core schema;
 2. the key `_schema` must name the type that the folder of the file expects, and the content must satisfy that schema;
-3. the name of the file must agree with the layout: a slug for a titled record, the opening date for a week, the month for a log.
+3. the name of the file must agree with the layout: a slug for a titled record, the month for a log or for the dates of a month.
 
 The central folder is read at the paths of the layout. Under the roots that the configuration declares, a file is read only when its first lines name a schema of `horai`, so that the other YAML records of a workspace are not parsed. A record of the hierarchy found there is loaded as if it sat in its default folder; a central record found there is reported as misplaced.
+
+A file under a root whose key `_schema` names a type of horai that the tool does not know is reported, and is not read.
 
 The identifier of an excluded file joins the set `Plan.excluded`. A check reports a reference to it as excluded rather than missing, and a computation that needs it reports itself undefined.
 
 ## Rules
 
-Each rule receives the plan and an explicit day, or the spans of work computed from the clock entries. No rule reads the clock, the environment or a file, so each rule is tested on a constructed plan. The commitment state, the remaining work and the selection follow the kernel notes cited in the docstrings of their modules. The selection returns tiers of tied candidates and never breaks a tie.
+Each rule receives the plan and an explicit day, or the spans of work computed from the clock entries. The calendar of a date is computed once, in `rules/calendar.py`, from the typical week, the departures of the date and the absences, and the week view, the command `next` and the checks read it there. No rule reads the clock, the environment or a file, so each rule is tested on a constructed plan. The commitment state, the remaining work and the selection follow the kernel notes cited in the docstrings of their modules. The selection returns tiers of tied candidates and never breaks a tie.
 
 ## Writing
 

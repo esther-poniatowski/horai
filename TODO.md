@@ -22,7 +22,25 @@ The roadmap of horai lists the steps of each increment, with the state of each s
 - [x] **Records**: add the fields `importance` and `steps` to the task, and admit dependencies across parents in the schema, the checks and the selection. (2026-11-13)
 - [x] **Selection**: order the tasks of one parent by quadrant, then by importance, then by the riskiest mark. (2026-11-13)
 - [ ] **Geonexus rule**: amend the rule on task tracking of Geonexus for the areas that horai covers, under its instructions for agents and its commit gate.
-- [ ] **Pilot**: migrate the task list of `lexicon/` into a standing parent of its own.
+- [x] **Pilot**: draft the central folder `planning/` of Geonexus, and migrate the task list of the CCS 2026 satellite into a standing parent beside it; the original list stays until the author has compared the two. (2026-11-13)
+- [x] **Gate**: decide the labels of the streams, the typical week, the exceptions held by the week, the energy hours and the types of deliverable, after the review of the drafted plan. (2026-11-13)
+- [x] **Names**: ratify the naming criterion and the renames of the [explicit names](docs/adr/explicit-names.md). (2026-11-13)
+- [x] **Formats**: implement the [typical week and the types of deliverable](docs/adr/typical-week-and-deliverable-types.md) and the [explicit names](docs/adr/explicit-names.md) in the schemas, the loader, the checks, the week view, the fixture plan and the specification. (2026-11-13)
+- [x] **Terms of the method**: carry the explicit names into the kernel notes, the procedures, the profiles, the modules and the references. (2026-11-13)
+- [ ] **Names of files and anchors**: rename the notes `regime.md` and `stream.md`, and the anchors that keep the former terms (`^regimes`, `^roles`, `^floors`, `^standing-parent`, `^variance-classes`, `^release-key`, `^principal`), with every link to them.
+- [x] **Gate**: decide the preparation per appointment, the unplaced appointments, the added and removed blocks, the phase of each stage and the argument plan. (2026-11-13)
+- [x] **Gate**: decide the allocation by mode, bound and anchor, the scale of the worth, the declared parties, the retirement of the permanent areas, the milestones without a deliverable, the order of loose tasks, the stream of planning and the energy in the profile. (2026-11-14)
+- [x] **Streams, appointments and stages**: implement the [streams, allocation and loose tasks](docs/adr/streams-allocation-and-loose-tasks.md) and the [appointments and stages](docs/adr/appointments-and-stages.md) in the schemas, the selection, the calendar, the checks, the fixture plan, the specification, the method notes, and the plan of the author in Geonexus. (2026-11-14)
+- [x] **Review fixes**: keep the budget of a carried milestone, check the blocks of the preparations, ignore a mark on a closed record, and correct four minor defects found by the adversarial review. (2026-11-14)
+- [x] **Gate**: decide the calendar of dates and the review log, the energy of a stream, the overrun by bounds, the appointments in any stream, the recurring tasks and the backlog of loose tasks. (2026-11-14)
+- [x] **Dates, reviews and recurrence**: implement the decisions on [properties apart from the trigger](docs/adr/properties-apart-from-the-trigger.md) and on [dates, reviews and recurring tasks](docs/adr/dates-reviews-and-recurring-tasks.md) in the schemas, the loader, the rules, the week view, the fixture plan, the notes, and the plan of the author in Geonexus. (2026-11-14)
+- [x] **Request windows and stages**: implement the decision on [request windows and stages](docs/adr/request-windows-and-stages.md), with the command `stages`. (2026-11-14)
+- [x] **Uniform selection and recurrence**: implement the decision on [uniform selection and recurrence](docs/adr/uniform-selection-and-recurrence.md). (2026-11-14)
+- [x] **Parties and derived deliverables**: implement the decision on [parties, derived deliverables and the lifetimes of the profile](docs/adr/parties-and-derived-deliverables.md), which closes the findings of the adversarial review. (2026-11-14)
+- [x] **Settings and yields**: implement the decision on [settings and yields](docs/adr/settings-and-yields.md): the folder `settings/`, and `yields` as a list of nine values. (2026-11-14)
+- [ ] **Suggested blocks**: compute the blocks of a typical week from the allocation of the streams, the spans, the appointments and the energy hours, as a proposal that the author edits.
+- [ ] **Forms**: publish the schemas of horai as a registry of Kleisis, and pin horai in the schema resources of Geonexus, so that Ekphrasis renders the records.
+- [ ] **Migration**: carry the plan of the author in Geonexus to the new formats, and settle the placeholders with the author.
 
 ## Alignment with the time-management course
 

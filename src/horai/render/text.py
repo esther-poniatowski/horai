@@ -14,12 +14,13 @@ import math
 from collections.abc import Sequence
 from datetime import date, timedelta
 
-from ..domain.records import WEEKDAYS, Appointment, Block, Plan, Task, Window
+from ..domain.records import WEEKDAYS, Plan, Task
 from ..domain.time import format_duration
 from ..issues import Issue
 from ..rules.budgets import budget_status
+from ..rules.calendar import Entry, week_calendar
 from ..rules.selection import Selection
-from ..rules.state import current_cycle, current_week, task_state
+from ..rules.state import current_cycle, current_week, is_open_on, task_state
 from ..rules.time_spent import Span, time_on
 
 
@@ -35,7 +36,10 @@ def render_issues(issues: Sequence[Issue]) -> str:
 
 def render_selection(selection: Selection, stream: str | None) -> str:
     """Write the tiers of the selection, numbered, with the notes of the rule."""
-    if selection.marked is not None:
+    if selection.marked_task is not None and selection.marked is None:
+        task = selection.marked_task
+        header = f"Next, for the non-negotiable task {task.title} [{task.id}]:"
+    elif selection.marked is not None:
         header = (
             f"Next, for the non-negotiable item {selection.marked.title} [{selection.marked.id}]:"
         )
@@ -47,74 +51,70 @@ def render_selection(selection: Selection, stream: str | None) -> str:
     for number, tier in enumerate(selection.tiers, start=1):
         tied = " (tied)" if len(tier) > 1 else ""
         for candidate in tier:
-            rank = f", rank {candidate.item.rank}" if candidate.item.rank is not None else ""
-            risk = ", riskiest" if candidate.task.risk else ""
-            if candidate.task.importance:
-                risk += f", {candidate.task.importance}"
-            lines.append(
-                f"  {number}. {candidate.task.title} [{candidate.task.id}] "
-                f"— {candidate.item.title}{rank}{risk}{tied}"
-            )
+            item, task = candidate.item, candidate.task
+            parent = item.title if item is not None else "loose task"
+            rank = f", rank {item.rank}" if item is not None and item.rank is not None else ""
+            risk = ", riskiest" if task.riskiest else ""
+            if task.importance:
+                risk += f", {task.importance}"
+            lines.append(f"  {number}. {task.title} [{task.id}] — {parent}{rank}{risk}{tied}")
     lines += [f"  note: {note}" for note in selection.notes]
     return "\n".join(lines)
 
 
-def _calendar(plan: Plan, opened: date) -> list[str]:
-    """List, day by day, the blocks, windows and appointments of the week opened on `opened`."""
-    week = plan.weeks.get(opened)
-    template = plan.template
-    blocks: Sequence[Block] = (
-        week.blocks if week and week.blocks is not None else template.blocks if template else ()
-    )
-    windows: Sequence[Window] = (
-        week.windows if week and week.windows is not None else template.windows if template else ()
-    )
-    appointed = template.appointed if template else ()
-    days = [opened + timedelta(days=offset) for offset in range(7)]
+def _entry(entry: Entry) -> str:
+    """Write one entry of the calendar: its hour, its kind, and what it holds."""
+    length = format_duration(entry.length)
+    if entry.kind == "block":
+        return f"{entry.start:%H:%M} block {entry.stream} {length}"
+    assert entry.appointment is not None
+    title = entry.appointment.title or entry.appointment.id
+    party = entry.appointment.party
+    return f"{entry.start:%H:%M} appointment {title} ({entry.stream}, {party}) {length}"
+
+
+def _calendar(plan: Plan, starts_on: date) -> list[str]:
+    """List, day by day, the entries of the week that starts on `starts_on`."""
     lines = []
-    for day in days:
-        weekday = WEEKDAYS[day.weekday()]
-        slots: list[tuple[str, str]] = []
-        slots += [
-            (f"{b.start:%H:%M}", f"block {b.stream} {format_duration(b.length)}")
-            for b in blocks
-            if b.day == weekday
-        ]
-        slots += [
-            (f"{w.start:%H:%M}", f"window {format_duration(w.length)}")
-            for w in windows
-            if w.day == weekday
-        ]
-        slots += [
-            (f"{a.start:%H:%M}", f"appointed {a.stream} {format_duration(a.length)} with {a.party}")
-            for a in appointed
-            if a.day == weekday
-        ]
-        dated: list[Appointment] = [a for a in plan.appointments.values() if a.date == day]
-        slots += [
-            (f"{a.start:%H:%M}", f"appointment {a.title} ({a.stream}, {a.party})") for a in dated
-        ]
-        if slots:
+    for calendar in week_calendar(plan, starts_on):
+        weekday = WEEKDAYS[calendar.day.weekday()]
+        if calendar.unavailable:
+            reason = f": {calendar.reason}" if calendar.reason else ""
+            lines.append(f"  {weekday} {calendar.day}: unavailable{reason}")
+        elif calendar.entries:
             lines.append(
-                f"  {weekday} {day}: " + "; ".join(f"{hour} {what}" for hour, what in sorted(slots))
+                f"  {weekday} {calendar.day}: " + "; ".join(_entry(e) for e in calendar.entries)
             )
     return lines
 
 
-def _mark(task: Task, day: date) -> str:
+def _mark(plan: Plan, task: Task, day: date) -> str:
     """Return the mark of a task on `day`: done, main objective, marked for the day, or none."""
-    if not task.is_open:
+    if not is_open_on(plan, task, day):
         return "x"
-    if task.today == day:
-        return "main" if task.main else "today"
+    if task.marked_for == day:
+        return "main" if task.main_objective else "today"
     return " "
+
+
+def _task_row(plan: Plan, task: Task, day: date, indent: str) -> str:
+    """Write one committed task, with its mark of the day and its wait."""
+    waits = (
+        f" (waits, follow-up {task.follow_up})"
+        if task.follow_up is not None
+        else f" (awaits {task.awaits})" if task.awaits is not None else ""
+    )
+    return f"{indent}[{_mark(plan, task, day)}] {task.title} [{task.id}]{waits}"
 
 
 def _committed(plan: Plan, day: date, work: Sequence[Span]) -> list[str]:
     """List the tasks in the state week, by stream, each item with its remaining work."""
     streams = plan.profile.streams if plan.profile else {}
     lines = []
-    for stream_id in sorted({item.stream for item in plan.items.values()}):
+    named = {item.stream for item in plan.items.values()} | {
+        task.stream for task in plan.loose if task.stream
+    }
+    for stream_id in sorted(named):
         rows = []
         items = sorted(
             (i for i in plan.items.values() if i.stream == stream_id),
@@ -127,12 +127,18 @@ def _committed(plan: Plan, day: date, work: Sequence[Span]) -> list[str]:
             remaining = budget_status(plan, item, work).remaining
             budget = f", remaining {format_duration(remaining)}" if remaining is not None else ""
             rows.append(f"    {item.title} [{item.id}]{budget}")
-            for task in committed:
-                waits = f" (waits, follow-up {task.waiting})" if task.waiting is not None else ""
-                rows.append(f"      [{_mark(task, day)}] {task.title} [{task.id}]{waits}")
+            rows += [_task_row(plan, task, day, "      ") for task in committed]
+        loose = [
+            task
+            for task in plan.loose
+            if task.stream == stream_id and task_state(plan, None, task, day) == "week"
+        ]
+        if loose:
+            rows.append("    loose tasks")
+            rows += [_task_row(plan, task, day, "      ") for task in loose]
         if rows:
-            name = streams[stream_id].name if stream_id in streams else stream_id
-            lines += [f"  {stream_id} {name}:", *rows]
+            described = f": {streams[stream_id].description}" if stream_id in streams else ""
+            lines += [f"  {stream_id}{described}", *rows]
     return lines
 
 
@@ -140,39 +146,54 @@ def _follow_ups(plan: Plan, end: date) -> list[str]:
     """List the follow-ups of open tasks that fall on or before `end`."""
     due = sorted(
         (
-            (task.waiting, task)
+            (task.follow_up, task)
             for _, task in plan.tasks()
-            if isinstance(task.waiting, date) and task.is_open and task.waiting <= end
+            if task.follow_up is not None and task.is_open and task.follow_up <= end
         ),
         key=lambda pair: pair[0],
     )
     return [f"  {when}: {task.title} [{task.id}]" for when, task in due] or ["  none"]
 
 
-def _overhead(plan: Plan, opened: date, work: Sequence[Span]) -> list[str]:
-    """State the time spent on the planning acts of the week, against the overhead budget."""
-    parent = next((item for item in plan.items.values() if item.overhead), None)
-    if parent is None or plan.profile is None:
+def _reserves(plan: Plan, starts_on: date, work: Sequence[Span]) -> list[str]:
+    """State, for each stream with a reserve per week, the time spent on it during the week."""
+    if plan.profile is None:
         return []
-    spent = time_on(
-        work, {parent.id, *(t.id for t in parent.tasks)}, opened, opened + timedelta(days=6)
-    )
-    budget = plan.profile.overhead_budget
-    over = " (over budget)" if spent > budget else ""
-    return [f"Overhead of the method: {format_duration(spent)} of {format_duration(budget)}{over}"]
+    lines = []
+    for stream in plan.profile.streams.values():
+        allocation = stream.allocation
+        if allocation is None or allocation.mode != "reserve" or allocation.per != "week":
+            continue
+        assert isinstance(allocation.amount, timedelta)
+        names = {
+            name
+            for item, task in plan.tasks()
+            if plan.stream_of(item, task) == stream.id
+            for name in (task.id, item.id if item else task.id)
+        }
+        spent = time_on(work, names, starts_on, starts_on + timedelta(days=6))
+        amount = format_duration(allocation.amount)
+        bound = allocation.bound.replace("_", " ")
+        beyond = (
+            " (beyond the reserve)"
+            if allocation.bound == "at_most" and spent > allocation.amount
+            else ""
+        )
+        lines.append(f"  {stream.id}: {format_duration(spent)}, {bound} {amount}{beyond}")
+    return ["Reserves of the week:", *lines] if lines else []
 
 
 def render_week(plan: Plan, day: date, work: Sequence[Span]) -> str:
     """Write the week view: the calendar, the committed tasks by stream, and the follow-ups due."""
     week = current_week(plan, day)
     if week is None:
-        return "No week is opened: a weekly review opens one in calendar/weeks/."
+        return "No week has started: log a weekly review in log/reviews/."
     cycle = current_cycle(plan, day)
     cycle_text = f" · cycle {cycle.id} until {cycle.end}" if cycle else " · no current cycle"
-    lines = [f"Week opened {week.opened}{cycle_text}", "Calendar:", *_calendar(plan, week.opened)]
+    lines = [f"Week of {week}{cycle_text}", "Calendar:", *_calendar(plan, week)]
     lines += ["Committed tasks:", *_committed(plan, day, work)]
-    lines += ["Follow-ups due:", *_follow_ups(plan, week.opened + timedelta(days=6))]
-    lines += _overhead(plan, week.opened, work)
+    lines += ["Follow-ups due:", *_follow_ups(plan, week + timedelta(days=6))]
+    lines += _reserves(plan, week, work)
     running = [span for span in work if span.running]
     if running:
         lines.append(f"Running: {running[-1].task} since {running[-1].start:%H:%M}")

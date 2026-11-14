@@ -54,7 +54,7 @@ timezone: Europe/Paris
 
 ### `check`
 
-The check validates every file of the plan against the schema of its type, then the references between records: identifiers unique in the plan, references to existing records, at most one non-negotiable mark, the marks of each day, the budget and the rank of each item selected for the current cycle.
+The check validates every file of the plan against the schema of its type, then the references between records: identifiers unique in the plan, references to existing records, at most one non-negotiable mark, the marks of each day, the budget and the rank of each item selected for the current cycle. It checks the calendar as well: the coherence of the allocations, the placement of the blocks and the appointments within the spans of the typical week, the time that the blocks give each stream against its allocation, the hours of high energy, the declared parties, the departures recorded for single dates, the absences, and, over the current week, the placement of the unplaced appointments and the blocks of the preparations. It reports a last weekly review older than seven days, and a stream that holds committed work without an allocation.
 
 ```sh
 horai check [--format text|json] [--date DATE]
@@ -82,7 +82,7 @@ While an item is marked non-negotiable, the candidates are its own tasks, and th
 
 ### `view week`
 
-The week view prints the calendar of the current week, the committed tasks grouped by stream with the remaining work of each item and the marks of the day, the follow-ups due, and the task under way.
+The week view prints the calendar of the current week, which is the typical week changed by the departures of the week, then the committed tasks grouped by stream, with the remaining work of each item, the loose tasks and the marks of the day, the follow-ups due, the time spent against each reserve per week, and the task under way.
 
 ```sh
 horai view week [--date DATE]
@@ -90,7 +90,7 @@ horai view week [--date DATE]
 
 ### `start`
 
-The start mark records that work begins on a task, or on a parent for work without a task, such as attending an appointment. Starting a task stops the task under way; starting the task already under way changes nothing.
+The start mark records that work begins on a task, on a milestone or a question for work without a task, or on an appointment, for attending it. Starting a task stops the task under way; starting the task already under way changes nothing.
 
 ```sh
 horai start TASK [--at MOMENT]
@@ -109,6 +109,23 @@ The stop mark records that work ends on the task under way. Without a task under
 ```sh
 horai stop [--at MOMENT]
 ```
+
+### `stages`
+
+The command creates the milestone of each stage that an active deliverable has reached and that no milestone holds, as the [cycle planning](../procedures/cycle-planning.md) requires at a change of phase. Each milestone is named `<deliverable>-<stage>`, takes the predictability of its stage, or else that of the type, and holds a placeholder test of completion to state.
+
+```sh
+horai stages [--deliverable ID] [--stream STREAM] [--into FOLDER] [--dry-run]
+```
+
+| Option | Description | Default |
+| ------ | ----------- | ------- |
+| `--deliverable` | Identifier of the one deliverable to examine. | every active deliverable |
+| `--stream` | Stream of the milestones whose deliverable has no stream shared by its milestones. | the stream shared by the milestones of the deliverable |
+| `--into` | Folder of the new milestones. | `plan/milestones/` of the plan |
+| `--dry-run` | List the missing stages without creating a file. | off |
+
+An existing file is never replaced. A deliverable whose milestones share no stream, without `--stream`, ends the command with the status 2.
 
 ### `info`
 

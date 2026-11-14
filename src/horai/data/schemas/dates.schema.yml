@@ -1,0 +1,67 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:dates:1
+title: Dates of one month
+description: the departures of the dates of one month from the typical week, and the absences that start in it
+type: object
+additionalProperties: false
+required: [_schema, month]
+properties:
+  _schema: {const: 'horai:dates@1'}
+  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  unavailable:
+    description: the ranges of whole dates on which the agent is unavailable, each filed in the month of its first date
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [from]
+      properties:
+        from: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+        to:
+          description: the last date of the absence; the absence lasts one date when it is absent
+          $ref: 'urn:horai:schema:common:1#/$defs/date'
+        reason: {type: string, minLength: 1}
+  days:
+    description: for each date of the month that departs from the typical week, its departures
+    type: object
+    propertyNames: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        blocks:
+          description: the blocks of the day, in place of those of the typical week
+          type: array
+          items: {$ref: 'urn:horai:schema:common:1#/$defs/block'}
+        added_blocks:
+          description: blocks added to those of the typical day
+          type: array
+          items: {$ref: 'urn:horai:schema:common:1#/$defs/block'}
+        removed_blocks:
+          description: the starts of the typical blocks removed on this date
+          type: array
+          items: {$ref: 'urn:horai:schema:common:1#/$defs/time'}
+        appointments:
+          description: the appointments of this date only
+          type: array
+          items:
+            allOf:
+              - {$ref: 'urn:horai:schema:common:1#/$defs/appointment'}
+              - not:
+                  anyOf: [{required: [from]}, {required: [every]}, {required: [occurrences_in_month]}]
+        cancelled:
+          description: the identifiers of the recurring appointments cancelled on this date
+          type: array
+          items: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+        moved:
+          description: the recurring appointments held at another hour on this date
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, start]
+            properties:
+              id: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+              start: {$ref: 'urn:horai:schema:common:1#/$defs/time'}
+              length: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}

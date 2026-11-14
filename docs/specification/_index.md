@@ -22,14 +22,14 @@ Documents the fields of each record of a plan and the views computed from them.
 ## Configuration
 
 - [Profile record](profile-record.md): documents the fields by which a profile configures the kernel
-- [Availability record](availability-record.md): documents the working time of the agent, on which capacity is planned
+- [Typical week record](typical-week-record.md): documents the time of the agent in a typical week and its placement among the streams
 
 ## Plan
 
-- [Level records](milestone-record.md): documents the fields of a purpose, a deliverable, a milestone or a question, and a standing parent
+- [Level records](milestone-record.md): documents the fields of a purpose, a deliverable, a milestone and a question
 - [Task record](task-record.md): documents the fields that a task adds to its identifier and its dependencies
 - [Party record](party-record.md): documents the fields of an external party and of a wait
-- [Calendar record](calendar-record.md): documents the cycles, the blocks, the windows and the appointed blocks
+- [Calendar record](calendar-record.md): documents the cycles, and the departures of each week from the typical week
 - [Capture record](capture-record.md): documents the files that keep captured work outside the commitments
 
 ## Observation

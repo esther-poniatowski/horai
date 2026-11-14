@@ -1,0 +1,34 @@
+_schema: horai:profile@1
+name: research
+streams:
+  - {id: inquiry, description: advances the results of the research projects, yields: [results], triggered_by: selection, needs_high_energy: true, allocation: {mode: share, bound: exact, amount: 0.5}}
+  - {id: tools, description: builds the tools and frameworks that the projects consume, yields: [means], triggered_by: demand, allocation: {mode: share, bound: at_most, amount: 0.15}}
+  - {id: training, description: derives the mathematics that the projects will need, yields: [competence], triggered_by: calendar, allocation: {mode: share, bound: at_least, amount: 0.06}}
+  - {id: bibliography, description: surveys the literature of the field, yields: [knowledge], triggered_by: calendar, allocation: {mode: share, bound: at_least, amount: 0.06}}
+  - {id: meetings, description: prepares and holds the supervision and lab meetings, yields: [coordination], triggered_by: appointment, allocation: {mode: reserve, bound: at_most, amount: PT3H, per: event}}
+  - {id: upkeep, description: repairs the vault and its defects, yields: [integrity], triggered_by: accumulation}
+  - {id: requests, description: answers the correspondence and the requests of others, yields: [coordination], triggered_by: arrival, allocation: {mode: reserve, bound: exact, amount: PT30M}}
+  - {id: planning, description: plans the work and reviews its course, yields: [organization], triggered_by: calendar, allocation: {mode: reserve, bound: at_most, amount: PT1H45M}}
+deliverable_types:
+  - id: paper
+    description: reports established results to the field
+    predictability: exploratory
+    starting_phase: exploration
+    stages:
+      - {id: argument-plan, phase: validation}
+      - {id: draft, phase: delivery}
+      - {id: internal-review, phase: delivery}
+      - {id: submission, phase: delivery, predictability: routine}
+      - {id: revision, phase: delivery}
+  - id: poster
+    description: presents established results at a conference
+    predictability: routine
+    prior_margin: 1.5
+    starting_phase: delivery
+    stages:
+      - {id: argument-plan, phase: delivery}
+      - {id: layout, phase: delivery}
+      - {id: print, phase: delivery}
+enabled_mechanisms: {}
+worth: {scale: ordinal}
+energy: {high: ["09:00-12:30"]}

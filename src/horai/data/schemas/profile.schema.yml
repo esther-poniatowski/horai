@@ -3,7 +3,7 @@ $id: urn:horai:schema:profile:1
 title: Profile
 type: object
 additionalProperties: false
-required: [_schema, name, streams, valuation]
+required: [_schema, name, streams, worth]
 properties:
   _schema: {const: 'horai:profile@1'}
   name: {type: string}
@@ -13,50 +13,70 @@ properties:
     items:
       type: object
       additionalProperties: false
-      required: [id, name, role, regime, capacity]
+      required: [id, description, yields, triggered_by]
       properties:
         id: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
-        name: {type: string}
-        role: {enum: [production, tooling, survey, training, exchange, upkeep, duty]}
-        regime: {enum: [planned, pulled, floor, appointed, batched, reactive]}
-        capacity:
-          type: object
-          additionalProperties: false
-          minProperties: 1
-          properties:
-            share: {type: number, exclusiveMinimum: 0, maximum: 1}
-            ceiling: {type: number, exclusiveMinimum: 0, maximum: 1}
-            floor: {type: number, exclusiveMinimum: 0, maximum: 1}
-            reserve: {type: number, exclusiveMinimum: 0, maximum: 1}
-            cap: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}
-            slots: {type: boolean}
-  levels:
-    type: object
-    additionalProperties: false
-    properties:
-      purpose: {type: string}
-      deliverable: {type: string}
-  phases:
-    type: object
-    additionalProperties: false
-    properties:
-      exploration: {type: string}
-      validation: {type: string}
-      delivery: {type: string}
-  options:
-    description: the options turned on, each with its settings
+        description:
+          description: what the stream does, opening on its most specific verb
+          type: string
+          minLength: 1
+        yields:
+          description: what the work gives the agent; a stream may yield several outcomes
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {enum: [results, means, knowledge, competence, network, coordination, organization, integrity, obligation]}
+        triggered_by:
+          description: what prompts the work, which suggests its allocation without fixing it
+          enum: [selection, demand, calendar, accumulation, arrival, appointment]
+        allocation: {$ref: 'urn:horai:schema:common:1#/$defs/allocation'}
+        needs_high_energy:
+          description: whether the blocks of the stream belong at the hours of high energy of the profile
+          type: boolean
+  deliverable_types:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [id, description, predictability, starting_phase]
+      properties:
+        id: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+        description: {type: string, minLength: 1}
+        predictability:
+          description: the class of the work of a deliverable of the type
+          enum: [routine, exploratory]
+        prior_margin:
+          description: the ratio of time to budget not exceeded at the calibration quantile, before calibration
+          type: number
+          minimum: 1
+        starting_phase: {enum: [exploration, validation, delivery]}
+        stages:
+          description: the milestones of a deliverable of the type, each created when the deliverable enters its phase
+          type: array
+          items: {$ref: '#/$defs/stage'}
+  enabled_mechanisms:
+    description: the optional mechanisms that run beside the core, each with its settings
     type: object
     propertyNames:
       enum: [tooling_control, milestone_graph, calibration, reactive_work, external_parties, delegation, imposed_deadlines, quantified_valuation, availability_model, modules]
     additionalProperties: {type: object}
-  valuation:
+  worth:
+    description: the scale on which the worth of a milestone is stated
     type: object
     additionalProperties: false
     required: [scale]
     properties:
-      scale: {enum: [ordinal, quantified]}
-      unit: {type: string}
-      cost_of_capacity: {type: number, exclusiveMinimum: 0}
+      scale:
+        description: ordinal when items are only ordered by rank, cardinal when their worth is an amount
+        enum: [ordinal, cardinal]
+      unit: {type: string, minLength: 1}
+      worth_per_hour:
+        description: the worth of one hour of the agent, in the unit
+        type: number
+        exclusiveMinimum: 0
+    if: {properties: {scale: {const: cardinal}}}
+    then: {required: [unit, worth_per_hour]}
+  energy: {$ref: 'urn:horai:schema:common:1#/$defs/energy'}
   modules:
     type: array
     items:
@@ -76,3 +96,21 @@ properties:
       properties:
         value: {}
         reason: {type: string, minLength: 1}
+$defs:
+  stage:
+    description: a stage of a deliverable, whose milestone is named after the deliverable and the stage
+    type: object
+    additionalProperties: false
+    required: [id, phase]
+    properties:
+      id: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+      phase:
+        description: the phase from which the stage exists as a milestone; exploration holds no milestone
+        enum: [validation, delivery]
+      predictability:
+        description: the class of the work of the stage, in place of that of the type
+        enum: [routine, exploratory]
+      prior_margin:
+        description: the prior margin of the stage, in place of that of the type
+        type: number
+        minimum: 1

@@ -8,6 +8,7 @@ next : Apply the selection rule and print the candidates, in tiers.
 view week : Print the view of the current week.
 start : Mark the start of work on a task.
 stop : Mark the stop of work.
+stages : Create the milestones of the stages that the active deliverables have reached.
 info : Print diagnostic information.
 
 The options ``--root`` and ``--config`` and the exit statuses follow the conventions of the command
@@ -26,17 +27,20 @@ from pathlib import Path
 import typer
 
 from . import __version__, info
-from .domain.records import WEEKDAYS, ClockEntry, Plan
+from .domain.records import ClockEntry, Plan
 from .domain.time import parse_date, parse_timestamp
 from .io.clock_writer import ClockFileError, append_clock_entry
 from .io.config import Configuration, ConfigurationError, resolve_configuration
 from .io.loader import load_plan
+from .io.milestone_writer import MilestoneFileError, write_stage_milestone
 from .io.schemas import SchemaSet
 from .issues import Issue, Severity
 from .render.text import render_issues, render_selection, render_week
+from .rules.calendar import calendar_day
+from .rules.calendar_checks import appointment_ids
 from .rules.checks import check_plan
-from .rules.selection import select
-from .rules.state import current_week
+from .rules.selection import marked, select
+from .rules.stages import missing_stages
 from .rules.time_spent import spans
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
@@ -119,17 +123,10 @@ def cli_check(
 
 
 def _current_stream(plan: Plan, moment: datetime) -> str | None:
-    """Return the stream of the block of the current week that holds `moment`, or None."""
-    week = current_week(plan, moment.date())
-    blocks = (
-        week.blocks
-        if week is not None and week.blocks is not None
-        else (plan.template.blocks if plan.template else ())
-    )
-    weekday = WEEKDAYS[moment.weekday()]
-    for block in blocks:
+    """Return the stream of the block of the calendar that holds `moment`, or None."""
+    for block in calendar_day(plan, moment.date()).blocks():
         start = datetime.combine(moment.date(), block.start, moment.tzinfo)
-        if block.day == weekday and start <= moment < start + block.length:
+        if start <= moment < start + block.length:
             return block.stream
     return None
 
@@ -147,9 +144,7 @@ def cli_next(
     now = _now(configuration)
     on = _day(day, configuration)
     work = spans(plan.clock, now)
-    if stream is None and not any(
-        i.non_negotiable or any(t.non_negotiable for t in i.tasks) for i in plan.items.values()
-    ):
+    if stream is None and marked(plan) == (None, None):
         stream = _current_stream(plan, now)
         if stream is None:
             raise _fail("no block of the calendar holds this moment; name the stream with --stream")
@@ -200,7 +195,7 @@ AT_OPTION = typer.Option(None, "--at", help="Moment of the mark, in ISO 8601; no
 @app.command("start")
 def cli_start(
     task: str = typer.Argument(
-        ..., help="Identifier of the task, or of a parent for work without a task."
+        ..., help="Identifier of a task, of a milestone or a question, or of an appointment."
     ),
     at: str | None = AT_OPTION,
     root: Path | None = ROOT_OPTION,
@@ -210,8 +205,8 @@ def cli_start(
     configuration = _configure(root, config)
     plan, _ = _load(configuration)
     found = plan.find_task(task)
-    if found is None and task not in plan.items:
-        raise _fail(f"no task or parent named {task}")
+    if found is None and task not in plan.items and task not in appointment_ids(plan):
+        raise _fail(f"no task, milestone or appointment named {task}")
     if found is not None and not found[1].is_open:
         raise _fail(f"the task {task} is completed")
     if _running(plan) == task:
@@ -271,3 +266,52 @@ def main_callback(  # pylint: disable=unused-argument  # typer reads the option
     )
 ) -> None:
     """Organize tasks, priorities and schedules from the YAML records of a plan."""
+
+
+# A command of Typer takes each option as a parameter.
+@app.command("stages")
+def cli_stages(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    deliverable: str | None = typer.Option(
+        None, "--deliverable", help="Identifier of the one deliverable to examine."
+    ),
+    stream: str | None = typer.Option(
+        None, "--stream", help="Stream of the milestones whose deliverable has no shared stream."
+    ),
+    into: Path | None = typer.Option(
+        None, "--into", help="Folder of the new milestones; plan/milestones by default."
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="List the missing stages only."),
+    root: Path | None = ROOT_OPTION,
+    config: Path | None = CONFIG_OPTION,
+) -> None:
+    """Create the milestones of the stages that the active deliverables have reached."""
+    configuration = _configure(root, config)
+    plan, _ = _load(configuration)
+    if deliverable is not None and deliverable not in plan.deliverables:
+        raise _fail(f"no deliverable named {deliverable}")
+    if stream is not None and plan.profile and stream not in plan.profile.streams:
+        raise _fail(f"no stream {stream} in the profile")
+    missing = missing_stages(plan, deliverable)
+    if not missing:
+        typer.echo("no stage is missing")
+        return
+    folder = into or configuration.plan / "plan" / "milestones"
+    unplaced = []
+    for milestone in missing:
+        chosen = milestone.stream or stream
+        if chosen is None:
+            unplaced.append(milestone.name)
+            continue
+        if dry_run:
+            typer.echo(f"missing {milestone.name} ({chosen})")
+            continue
+        try:
+            path = write_stage_milestone(folder, milestone, chosen)
+        except MilestoneFileError as error:
+            raise _fail(str(error)) from error
+        typer.echo(f"created {path}: state its done_when")
+    if unplaced:
+        raise _fail(
+            "the milestones of these deliverables share no stream; name it with --stream: "
+            + ", ".join(unplaced)
+        )

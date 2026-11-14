@@ -69,8 +69,8 @@ def test_next_rejects_an_unknown_stream(plan_folder: Path) -> None:
 def test_view_week(plan_folder: Path) -> None:
     result = runner.invoke(app, ["view", "week", "--root", str(plan_folder), *DAY])
     assert result.exit_code == 0
-    assert "Week opened 2026-11-09" in result.stdout and "remaining PT10H15M" in result.stdout
-    assert "Overhead of the method: PT45M of PT1H45M" in result.stdout
+    assert "Week of 2026-11-09" in result.stdout and "remaining PT10H15M" in result.stdout
+    assert "planning: PT45M, at most PT1H45M" in result.stdout
 
 
 def test_start_and_stop_append_clock_entries(plan_folder: Path) -> None:
@@ -123,3 +123,15 @@ def test_start_refuses_a_clock_file_not_ending_with_its_entries(plan_folder: Pat
         ["start", "simulate-noise", "--at", "2026-11-13T15:00+01:00", "--root", str(plan_folder)],
     )
     assert result.exit_code == 2 and path.read_text() == before
+
+
+def test_stages_creates_the_missing_milestones(plan_folder: Path) -> None:
+    root = ["--root", str(plan_folder)]
+    listed = runner.invoke(app, ["stages", "--dry-run", *root])
+    assert listed.exit_code == 0 and "missing ctx-geometry-argument-plan (inquiry)" in listed.stdout
+    created = runner.invoke(app, ["stages", *root])
+    assert created.exit_code == 0, created.stdout
+    path = plan_folder / "plan" / "milestones" / "ctx-geometry-argument-plan.yml"
+    assert "stage: argument-plan" in path.read_text()
+    assert runner.invoke(app, ["check", *root, *DAY]).exit_code == 0
+    assert "no stage is missing" in runner.invoke(app, ["stages", *root]).stdout

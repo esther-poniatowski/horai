@@ -40,41 +40,79 @@ $defs:
     description: a date that a party relies on
     type: object
     additionalProperties: false
-    required: [date, kind]
+    required: [date, strictness]
     properties:
       date: {$ref: '#/$defs/date'}
-      kind: {enum: [hard, soft]}
-      party: {type: string}
+      strictness:
+        description: hard when missing the date loses the result, soft when its value only decays
+        enum: [hard, soft]
+      party:
+        description: the party that relies on the date
+        $ref: '#/$defs/party'
+  span:
+    description: an interval of one day, from its start to its end
+    type: string
+    pattern: '^([01]\d|2[0-3]):[0-5]\d-(([01]\d|2[0-3]):[0-5]\d|24:00)$'
+  spans:
+    type: array
+    items: {$ref: '#/$defs/span'}
   block:
-    description: a block of the week template, assigned to one stream
+    description: a block of one day, assigned to one stream
     type: object
     additionalProperties: false
-    required: [day, start, length, stream]
+    required: [start, length, stream]
     properties:
-      day: {$ref: '#/$defs/day'}
       start: {$ref: '#/$defs/time'}
       length: {$ref: '#/$defs/duration'}
       stream: {$ref: '#/$defs/stream_id'}
-  window:
-    description: a short slot between two blocks, for requests and releasing tasks
+  appointment:
+    description: a block of one day fixed by a party, removed from the plannable time
     type: object
     additionalProperties: false
-    required: [day, start, length]
+    required: [id, start, length, stream, party]
     properties:
-      day: {$ref: '#/$defs/day'}
-      start: {$ref: '#/$defs/time'}
-      length: {$ref: '#/$defs/duration'}
-  appointed_block:
-    description: a recurring block fixed by a party
-    type: object
-    additionalProperties: false
-    required: [day, start, length, stream, party]
-    properties:
-      day: {$ref: '#/$defs/day'}
+      id: {$ref: '#/$defs/identifier'}
+      title: {type: string, minLength: 1}
+      from: true
+      every: true
+      occurrences_in_month: true
       start: {$ref: '#/$defs/time'}
       length: {$ref: '#/$defs/duration'}
       stream: {$ref: '#/$defs/stream_id'}
-      party: {type: string}
+      party: {$ref: '#/$defs/party'}
+      places:
+        description: the identifier of the unplaced appointment of the typical week that this appointment places
+        $ref: '#/$defs/identifier'
+  recurring_appointment:
+    description: an appointment of the typical week, held on its weekday every week, every few weeks, or on some occurrences of the weekday in each month
+    allOf:
+      - {$ref: '#/$defs/appointment'}
+      - type: object
+        properties:
+          from:
+            description: the date of the first occurrence, on the weekday of the appointment
+            $ref: '#/$defs/date'
+          every:
+            description: the period of the recurrence in weeks, counted from `from`
+            type: string
+            pattern: '^P[1-9][0-9]?W$'
+          occurrences_in_month:
+            description: the occurrences of the weekday in each month at which the appointment is held, 1 for the first and -1 for the last
+            type: array
+            minItems: 1
+            items: {enum: [1, 2, 3, 4, 5, -1]}
+        dependentRequired:
+          every: [from]
+        not: {required: [every, occurrences_in_month]}
+  party:
+    description: a party declared in the file of the parties, by its identifier, or an occasional party, by its name
+    anyOf:
+      - {$ref: '#/$defs/identifier'}
+      - type: object
+        additionalProperties: false
+        required: [name]
+        properties:
+          name: {type: string, minLength: 1}
   task:
     description: a task, held in the file of its parent or in the holding file
     type: object
@@ -83,26 +121,43 @@ $defs:
     properties:
       id: {$ref: '#/$defs/identifier'}
       title: {type: string, minLength: 1}
-      committed_week: {$ref: '#/$defs/date'}
+      stream:
+        description: the stream of a loose task; a task of a milestone or a question takes the stream of its parent
+        $ref: '#/$defs/stream_id'
+      committed_week:
+        description: the date of the weekly review that committed the task for its week
+        $ref: '#/$defs/date'
+      recurs:
+        description: the period with which a loose task recurs; it reopens at the start of each period
+        enum: [daily, weekly, cycle]
       origin: {$ref: '#/$defs/origin'}
       budget: {$ref: '#/$defs/duration'}
-      today:
-        description: the date for which the task is marked, followed by main for the main objective
-        type: string
-        pattern: '^\d{4}-\d{2}-\d{2}( main)?$'
-      completed: {$ref: '#/$defs/date'}
-      held: {$ref: '#/$defs/date'}
+      marked_for:
+        description: the day for which the daily planning marks the task
+        $ref: '#/$defs/date'
+      main_objective:
+        description: whether the task is the main objective of the day it is marked for
+        type: boolean
+      completed:
+        description: the date of completion; for a recurring task, that of its last completion
+        $ref: '#/$defs/date'
+      held_since: {$ref: '#/$defs/date'}
       depends_on:
         type: array
         items: {$ref: '#/$defs/identifier'}
       scheduled: {$ref: '#/$defs/date'}
-      waiting:
-        description: the date of the follow-up in the core, or the identifier of a wait
-        anyOf:
-          - {$ref: '#/$defs/date'}
-          - {$ref: '#/$defs/identifier'}
-      releases: {type: boolean}
-      risk: {type: boolean}
+      follow_up:
+        description: the date at which the awaited party is reminded
+        $ref: '#/$defs/date'
+      awaits:
+        description: the identifier of the wait that blocks the task
+        $ref: '#/$defs/identifier'
+      hands_off:
+        description: whether completing the task starts the delay of a party
+        type: boolean
+      riskiest:
+        description: whether the task is the riskiest of its parent
+        type: boolean
       importance:
         description: the importance of the task within its parent
         enum: [highest, high, medium, low, lowest]
@@ -120,6 +175,8 @@ $defs:
       prepares: {$ref: '#/$defs/identifier'}
       verifies: {$ref: '#/$defs/identifier'}
       non_negotiable: {$ref: '#/$defs/date'}
+    dependentRequired:
+      main_objective: [marked_for]
   estimate:
     description: three durations of a routine item, whose PERT value is its budget
     type: object
@@ -130,8 +187,71 @@ $defs:
       probable: {$ref: '#/$defs/duration'}
       pessimistic: {$ref: '#/$defs/duration'}
   tasks:
+    description: the tasks of a milestone or a question, which take the stream of their parent
     type: array
-    items: {$ref: '#/$defs/task'}
+    items:
+      allOf:
+        - {$ref: '#/$defs/task'}
+        - not: {required: [stream]}
+        - not: {required: [recurs]}
+  loose_tasks:
+    description: tasks that serve no milestone and name their stream
+    type: array
+    items:
+      allOf:
+        - {$ref: '#/$defs/task'}
+        - required: [stream]
+        - if: {required: [recurs]}
+          then: {not: {required: [committed_week]}}
+  held_tasks:
+    description: tasks that name neither a parent nor a stream
+    type: array
+    items:
+      allOf:
+        - {$ref: '#/$defs/task'}
+        - not: {required: [stream]}
+        - not: {required: [recurs]}
+  energy:
+    description: the spans of high energy, for every day or per weekday
+    type: object
+    additionalProperties: false
+    required: [high]
+    properties:
+      high:
+        anyOf:
+          - {$ref: '#/$defs/spans'}
+          - type: object
+            propertyNames: {$ref: '#/$defs/day'}
+            additionalProperties: {$ref: '#/$defs/spans'}
+  allocation:
+    description: the time that a stream receives; reserves are removed first, and shares divide the remainder
+    type: object
+    additionalProperties: false
+    required: [mode, bound, amount]
+    properties:
+      mode:
+        description: share for a fraction of the plannable time, reserve for a duration
+        enum: [share, reserve]
+      bound: {enum: [at_least, at_most, exact]}
+      amount:
+        description: a fraction for a share, a duration for a reserve
+        anyOf:
+          - {type: number, exclusiveMinimum: 0, maximum: 1}
+          - {$ref: '#/$defs/duration'}
+      per:
+        description: the anchor of the amount; week when absent
+        enum: [day, week, cycle, event]
+      events:
+        description: with per event, the appointments that the reserve concerns; every prepared appointment of the stream when absent
+        type: array
+        items: {$ref: '#/$defs/identifier'}
+    allOf:
+      - if: {properties: {mode: {const: share}}}
+        then: {properties: {amount: {type: number}, per: {enum: [week]}}}
+      - if: {properties: {mode: {const: reserve}}}
+        then: {properties: {amount: {type: string}}}
+      - if: {required: [events]}
+        then: {required: [per], properties: {per: {const: event}}}
   entries_of_text:
     type: array
     items: {type: string, minLength: 1}

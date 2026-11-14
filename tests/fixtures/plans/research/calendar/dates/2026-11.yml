@@ -1,0 +1,6 @@
+_schema: horai:dates@1
+month: 2026-11
+days:
+  2026-11-12:
+    appointments:
+      - {id: supervision-2026-11-12, title: Supervision meeting, start: "16:00", length: PT1H, stream: meetings, party: supervisor, places: supervision}

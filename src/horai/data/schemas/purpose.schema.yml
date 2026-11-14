@@ -7,4 +7,7 @@ required: [_schema, title]
 properties:
   _schema: {const: 'horai:purpose@1'}
   title: {type: string, minLength: 1}
+  description:
+    description: a statement of the purpose for the reader, which no rule reads
+    type: string
   deadline: {$ref: 'urn:horai:schema:common:1#/$defs/deadline'}

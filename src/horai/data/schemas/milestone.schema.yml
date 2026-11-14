@@ -3,16 +3,25 @@ $id: urn:horai:schema:milestone:1
 title: Milestone
 type: object
 additionalProperties: false
-required: [_schema, title, deliverable, stream, kind, status, done]
+required: [_schema, title, stream, status, done_when]
 properties:
   _schema: {const: 'horai:milestone@1'}
   title: {type: string, minLength: 1}
-  deliverable: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+  deliverable:
+    description: the deliverable that the milestone serves; absent for a milestone that serves its stream directly
+    $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+  stage:
+    description: the stage of its deliverable that the milestone holds; the milestone is then named `<deliverable>-<stage>`
+    $ref: 'urn:horai:schema:common:1#/$defs/identifier'
   stream: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
-  kind: {const: milestone}
-  done: {type: string, minLength: 1}
+  done_when:
+    description: the test that judges completion, or the acceptance by a party
+    type: string
+    minLength: 1
   status: {enum: [open, done, reduced, stopped]}
-  variance: {enum: [routine, exploratory]}
+  predictability:
+    description: routine for a kind of work done several times, exploratory for an open outcome
+    enum: [routine, exploratory]
   budget: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}
   estimate: {$ref: 'urn:horai:schema:common:1#/$defs/estimate'}
   cycle: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
@@ -22,8 +31,11 @@ properties:
   depends_on:
     type: array
     items: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-  consumers:
+  consumed_by:
+    description: the milestones, or kinds of request, that consume the output of a tooling item
     type: array
     items: {type: string}
   deadline: {$ref: 'urn:horai:schema:common:1#/$defs/deadline'}
   tasks: {$ref: 'urn:horai:schema:common:1#/$defs/tasks'}
+dependentRequired:
+  stage: [deliverable]

@@ -11,15 +11,15 @@ aliases:
 
 > [!QUESTION] Goal: which fields do an external party and a wait state, so that the waits are visible and the latencies can be calibrated?
 
-Both records are required only when the profile turns the option of external parties on.
+A party is an entry of the file `settings/parties.yml`, which every plan that names a party holds; its relations matter under the option of external parties. A wait is a record of its own, under that option.
 
 ## Party
 
 | Field | When it is required | Kind | Values | Source |
 | --- | --- | --- | --- | --- |
-| `title` | always | authored | the name of the party, or the title of the wait | — |
-| `id` | always | authored | the slug of the title, fixed at creation and unique in the plan; it names the file of the record | — |
-| `relations` | always | authored | one or several of `supplies` · `delegates` · `consumes` · `reviews` · `imposes` · `requests` | [relations](../kernel/objects/external-party.md#^relations) |
+| `id` | always | authored | an identifier, unique among the parties, by which records name the party | [one parties file](../adr/parties-and-derived-deliverables.md) |
+| `name` | always | authored | the name of the party | — |
+| `relations` | option external parties | authored | one or several of `supplies` · `delegates` · `consumes` · `reviews` · `imposes` · `requests` | [relations](../kernel/objects/external-party.md#^relations) |
 | `class_of_service` | for the relation `requests`, optional | authored | per kind of request, a class that overrides the class of the profile for this party | [classes of service](../kernel/processes/reactive-work.md#^classes-of-service) |
 | `latency` | computed | computed | the median and the quantile of the logged latencies, with the number of samples | [latency](../kernel/objects/external-party.md#^latency) |
 
