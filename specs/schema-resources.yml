@@ -1,0 +1,28 @@
+# Inputs of the schema closure of horai, which consumers such as Geonexus pin by commit.
+_schema: kleisis:schema-resources@2
+
+paths:
+  owned_schemas: src/horai/data/schemas
+  registry: specs/schema-registry.yml
+
+exports:
+  - horai:actions@1
+  - horai:archive@1
+  - horai:clock-log@1
+  - horai:configuration@1
+  - horai:cycle@1
+  - horai:dates@1
+  - horai:decision-log@1
+  - horai:deliverable@1
+  - horai:deviation-log@1
+  - horai:holding@1
+  - horai:ideas@1
+  - horai:inbox@1
+  - horai:parties@1
+  - horai:profile@1
+  - horai:purpose@1
+  - horai:review-log@1
+  - horai:typical-week@1
+
+dependencies: []
+projects: []
