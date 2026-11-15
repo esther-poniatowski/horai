@@ -6,4 +6,7 @@ additionalProperties: false
 required: [_schema, entries]
 properties:
   _schema: {const: 'horai:ideas@1'}
-  entries: {$ref: 'urn:horai:schema:common:1#/$defs/entries_of_text'}
+  entries:
+    title: Ideas
+    description: the ideas of possible deliverables, kept for the strategic review, one line each
+    $ref: 'urn:horai:schema:common:1#/$defs/entries_of_text'

@@ -4,17 +4,24 @@ Loading of the files of a plan into typed records.
 Each file is parsed, checked for its `_schema`, and validated against the schema of its type, then
 converted into records. A file that fails any of these steps is reported as an issue and excluded:
 its identifier joins `Plan.excluded`, so that a computation that needs it reports itself undefined
-instead of running on a partial plan.
+instead of running on a partial plan. In a store of actions, an invalid milestone, question or
+loose task is excluded alone, with its tasks.
+
+Classes
+-------
+Discovery
+    Where the distributed records are found.
 
 Functions
 ---------
-load_plan(folder, schemas) -> tuple[Plan, list[Issue]]
+load_plan(folder, schemas, discovery) -> tuple[Plan, list[Issue]]
     Load every file of the plan in `folder`.
 """
 
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 import re
 from fnmatch import fnmatch
 from collections.abc import Callable, Sequence
@@ -24,6 +31,7 @@ from typing import Any
 import yaml
 
 from ..domain.records import (
+    ItemKind,
     Absence,
     ClockEntry,
     Cycle,
@@ -44,7 +52,7 @@ from ..domain.records import (
 )
 from ..domain.time import parse_date
 from ..issues import Issue
-from .config import CONFIG_SCHEMA
+from .config import ACTIONS_FILE, CONFIG_SCHEMA
 from .schemas import SchemaSet
 from .yaml_loader import load_yaml
 
@@ -64,9 +72,6 @@ SINGLE_FILES: dict[str, str] = {
 FOLDERS: dict[str, str] = {
     "plan/purposes": "horai:purpose@1",
     "plan/deliverables": "horai:deliverable@1",
-    "plan/milestones": "horai:milestone@1",
-    "plan/questions": "horai:question@1",
-    "plan/task-lists": "horai:task-list@1",
     "calendar/cycles": "horai:cycle@1",
     "calendar/dates": "horai:dates@1",
     "log/clock": "horai:clock-log@1",
@@ -75,13 +80,9 @@ FOLDERS: dict[str, str] = {
     "log/reviews": "horai:review-log@1",
 }
 
-_TITLED = {
-    "plan/purposes",
-    "plan/deliverables",
-    "plan/milestones",
-    "plan/questions",
-    "plan/task-lists",
-}
+_TITLED = {"plan/purposes", "plan/deliverables"}
+ACTIONS = "horai:actions@1"
+_LOCATION = re.compile(r"^(milestones|questions|tasks)/(\d+)(/|:)")
 _MONTHLY = {"calendar/dates", "log/clock", "log/decisions", "log/deviations", "log/reviews"}
 
 
@@ -104,6 +105,63 @@ def _read(
         Issue("schema/invalid", message, relative) for message in schemas.errors(schema_id, data)
     ]
     return (None, problems) if problems else (data, [])
+
+
+def _parse(path: Path, relative: str, schema_id: str) -> tuple[dict[str, Any] | None, list[Issue]]:
+    """Parse one file and check its type, without validating its content."""
+    try:
+        data = load_yaml(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError) as error:
+        return None, [Issue("file/unreadable", f"cannot be read as YAML: {error}", relative)]
+    if not isinstance(data, dict):
+        return None, [Issue("file/not-a-record", "the file must hold a mapping", relative)]
+    if data.get("_schema") != schema_id:
+        found = data.get("_schema", "nothing")
+        return None, [
+            Issue("schema/type", f"the key _schema must hold {schema_id}, not {found}", relative)
+        ]
+    return data, []
+
+
+def _entry_ids(data: dict[str, Any]) -> list[str]:
+    """Return the identifiers of the items and of the tasks that a store states, valid or not."""
+    names = []
+    for key in ("milestones", "questions", "tasks"):
+        for entry in data.get(key) or ():
+            if isinstance(entry, dict) and isinstance(entry.get("id"), str):
+                names.append(entry["id"])
+            if key != "tasks" and isinstance(entry, dict):
+                names += [
+                    t["id"]
+                    for t in entry.get("tasks") or ()
+                    if isinstance(t, dict) and isinstance(t.get("id"), str)
+                ]
+    return names
+
+
+def _store_actions(
+    plan: Plan, data: dict[str, Any], relative: str, invalid: set[tuple[str, int]]
+) -> None:
+    """Convert the valid entries of a store of actions into records of the plan."""
+    kinds: tuple[tuple[str, ItemKind], ...] = (
+        ("milestones", "milestone"),
+        ("questions", "question"),
+    )
+    for key, kind in kinds:
+        for index, entry in enumerate(data.get(key) or ()):
+            if (key, index) in invalid:
+                continue
+            item = Item.from_data(kind, entry)
+            plan.items[item.id] = item
+            plan.sources[item.id] = relative
+            for task in item.tasks:
+                plan.sources.setdefault(task.id, relative)
+    for index, entry in enumerate(data.get("tasks") or ()):
+        if ("tasks", index) in invalid:
+            continue
+        task = Task.from_data(entry, None)
+        plan.loose += (task,)
+        plan.sources.setdefault(task.id, relative)
 
 
 def _deadline(data: dict[str, Any]) -> Deadline | None:
@@ -131,15 +189,6 @@ def _store(plan: Plan, folder: str, stem: str, data: dict[str, Any]) -> None:
                 _deadline(data),
                 data.get("derived_from"),
             ),
-        ),
-        "plan/milestones": lambda: plan.items.__setitem__(
-            stem, Item.from_data(stem, "milestone", data)
-        ),
-        "plan/questions": lambda: plan.items.__setitem__(
-            stem, Item.from_data(stem, "question", data)
-        ),
-        "plan/task-lists": lambda: setattr(
-            plan, "loose", plan.loose + tuple(Task.from_data(e, None) for e in data["tasks"])
         ),
         "calendar/cycles": lambda: plan.cycles.__setitem__(
             stem,
@@ -292,10 +341,41 @@ class _Loader:
             return
         _store(self.plan, sub, stem, data)
         self.plan.sources[stem] = relative
-        for task in data.get("tasks", ()):
-            self.plan.sources.setdefault(task["id"], relative)
 
-    def discover(self, roots: Sequence[Path], exclude: Sequence[str], base: Path) -> None:
+    def actions_file(self, path: Path, relative: str, actions_file: str) -> None:
+        """Load one store of actions, and exclude each invalid entry alone.
+
+        An error located in one milestone, question or loose task excludes that entry; any other
+        error excludes the whole store.
+        """
+        self.loaded.add(path.resolve())
+        data, problems = _parse(path, relative, ACTIONS)
+        if data is None:
+            self.issues += problems
+            return
+        if path.name != actions_file:
+            message = f"a store of actions must be named {actions_file}, the name of every store"
+            self.issues.append(Issue("identifier/actions-file", message, relative))
+        invalid: set[tuple[str, int]] = set()
+        whole = False
+        for message in self.schemas.errors(ACTIONS, data):
+            self.issues.append(Issue("schema/invalid", message, relative))
+            match = _LOCATION.match(message)
+            if match is None:
+                whole = True
+            else:
+                invalid.add((match.group(1), int(match.group(2))))
+        if whole:
+            self.plan.excluded.update(_entry_ids(data))
+            return
+        for key, index in invalid:
+            entry = (data.get(key) or [])[index]
+            self.plan.excluded.update(_entry_ids({key: [entry]}))
+        _store_actions(self.plan, data, relative, invalid)
+
+    def discover(
+        self, roots: Sequence[Path], exclude: Sequence[str], base: Path, actions_file: str
+    ) -> None:
         """Load the records of the hierarchy found by their `_schema` under the roots."""
         for root in roots:
             for path in sorted(root.rglob("*.yml")):
@@ -311,7 +391,9 @@ class _Loader:
                 schema_id = match.group(1)
                 if schema_id == CONFIG_SCHEMA:
                     continue
-                if schema_id in DISTRIBUTED:
+                if schema_id == ACTIONS:
+                    self.actions_file(path, relative, actions_file)
+                elif schema_id in DISTRIBUTED:
                     self.folder_file(path, DISTRIBUTED[schema_id], relative)
                 elif schema_id in FOLDERS.values() or schema_id in SINGLE_FILES.values():
                     self.loaded.add(path.resolve())
@@ -323,12 +405,31 @@ class _Loader:
                     self.issues.append(Issue("schema/unknown", message, relative))
 
 
+@dataclass(frozen=True)
+class Discovery:
+    """Where the records of the hierarchy are found, outside the central folder of a plan.
+
+    Attributes
+    ----------
+    roots : Sequence[Path]
+        Folders under which the records are found by their key `_schema`.
+    exclude : Sequence[str]
+        Patterns of paths, relative to a root, under which no record is sought.
+    base : Path | None
+        Folder against which the paths of the distributed records are reported; the central
+        folder by default.
+    actions_file : str
+        Name of the file in which each folder, the central `plan/` included, keeps its actions.
+    """
+
+    roots: Sequence[Path] = ()
+    exclude: Sequence[str] = ()
+    base: Path | None = None
+    actions_file: str = ACTIONS_FILE
+
+
 def load_plan(
-    folder: Path,
-    schemas: SchemaSet,
-    roots: Sequence[Path] = (),
-    exclude: Sequence[str] = (),
-    base: Path | None = None,
+    folder: Path, schemas: SchemaSet, discovery: Discovery = Discovery()
 ) -> tuple[Plan, list[Issue]]:
     """Load the central folder of a plan, then the records found under its roots.
 
@@ -338,12 +439,8 @@ def load_plan(
         Central folder of the plan.
     schemas : SchemaSet
         Validators of the record types.
-    roots : Sequence[Path]
-        Folders under which the records of the hierarchy are found by their key `_schema`.
-    exclude : Sequence[str]
-        Patterns of paths, relative to a root, under which no record is sought.
-    base : Path | None
-        Folder against which the paths of the distributed records are reported; `folder` by default.
+    discovery : Discovery
+        Where the distributed records are found, and the name of the stores of actions.
 
     Returns
     -------
@@ -364,7 +461,11 @@ def load_plan(
         if directory.is_dir():
             for path in sorted(directory.glob("*.yml")):
                 loading.folder_file(path, sub, f"{sub}/{path.name}")
-    loading.discover(roots, exclude, base or folder)
+    name = discovery.actions_file
+    central = folder / "plan" / name
+    if central.is_file():
+        loading.actions_file(central, f"plan/{name}", name)
+    loading.discover(discovery.roots, discovery.exclude, discovery.base or folder, name)
     for task in loading.plan.holding:
         loading.plan.sources.setdefault(task.id, "capture/holding.yml")
     return loading.plan, loading.issues

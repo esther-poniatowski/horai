@@ -42,11 +42,16 @@ $defs:
     additionalProperties: false
     required: [date, strictness]
     properties:
-      date: {$ref: '#/$defs/date'}
+      date:
+        title: Date
+        description: the date that the party relies on
+        $ref: '#/$defs/date'
       strictness:
+        title: Strictness
         description: hard when missing the date loses the result, soft when its value only decays
         enum: [hard, soft]
       party:
+        title: Party
         description: the party that relies on the date
         $ref: '#/$defs/party'
   span:
@@ -62,25 +67,55 @@ $defs:
     additionalProperties: false
     required: [start, length, stream]
     properties:
-      start: {$ref: '#/$defs/time'}
-      length: {$ref: '#/$defs/duration'}
-      stream: {$ref: '#/$defs/stream_id'}
+      start:
+        title: Start
+        description: the hour at which the block starts, such as 09:00
+        $ref: '#/$defs/time'
+      length:
+        title: Length
+        description: the length of the block, in ISO 8601, such as PT2H
+        $ref: '#/$defs/duration'
+      stream:
+        title: Stream
+        description: the one stream to which the block is assigned
+        $ref: '#/$defs/stream_id'
   appointment:
     description: a block of one day fixed by a party, removed from the plannable time
     type: object
     additionalProperties: false
     required: [id, start, length, stream, party]
     properties:
-      id: {$ref: '#/$defs/identifier'}
-      title: {type: string, minLength: 1}
+      id:
+        title: Identifier
+        description: a slug of the appointment, unique in the plan; an appointment held on several weekdays keeps one identifier on all of them
+        $ref: '#/$defs/identifier'
+      title:
+        title: Title
+        description: the name of the appointment
+        type: string
+        minLength: 1
+        x-kind: markdown-line
       from: true
       every: true
       occurrences_in_month: true
-      start: {$ref: '#/$defs/time'}
-      length: {$ref: '#/$defs/duration'}
-      stream: {$ref: '#/$defs/stream_id'}
-      party: {$ref: '#/$defs/party'}
+      start:
+        title: Start
+        description: the hour at which the appointment starts, such as 14:00
+        $ref: '#/$defs/time'
+      length:
+        title: Length
+        description: the length of the appointment, in ISO 8601, such as PT1H
+        $ref: '#/$defs/duration'
+      stream:
+        title: Stream
+        description: the stream whose time the appointment takes
+        $ref: '#/$defs/stream_id'
+      party:
+        title: Party
+        description: the party that fixes the appointment, by its identifier or by its name
+        $ref: '#/$defs/party'
       places:
+        title: Places
         description: the identifier of the unplaced appointment of the typical week that this appointment places
         $ref: '#/$defs/identifier'
   recurrence_period:
@@ -94,13 +129,16 @@ $defs:
       - type: object
         properties:
           from:
+            title: From
             description: the date of the first occurrence, on the weekday of the appointment
             $ref: '#/$defs/date'
           every:
+            title: Every
             description: the period of the recurrence in weeks, counted from `from`
             type: string
             pattern: '^P[1-9][0-9]?W$'
           occurrences_in_month:
+            title: Occurrences in month
             description: the occurrences of the weekday in each month at which the appointment is held, 1 for the first and -1 for the last
             type: array
             minItems: 1
@@ -116,72 +154,181 @@ $defs:
         additionalProperties: false
         required: [name]
         properties:
-          name: {type: string, minLength: 1}
+          name:
+            title: Name
+            description: the name of an occasional party, which the file of the parties does not declare
+            type: string
+            minLength: 1
+            x-kind: markdown-line
   task:
-    description: a task, held in the file of its parent or in the holding file
+    description: a task, held by a milestone or a question, by the loose tasks of a folder, or by the holding file
     type: object
     additionalProperties: false
-    required: [id, title]
+    required: [id, action]
     properties:
-      id: {$ref: '#/$defs/identifier'}
-      title: {type: string, minLength: 1}
+      id:
+        title: Identifier
+        description: a slug of the action, fixed at creation and unique in the plan
+        $ref: '#/$defs/identifier'
+      action:
+        title: Action
+        description: one brief imperative sentence, such as 'Create the contact profile of Yusuf Helal'; details go below
+        type: string
+        minLength: 1
+        maxLength: 90
+        x-kind: markdown-line
+      details:
+        title: Details
+        description: the context, the links and the remarks that the action needs, in Markdown
+        type: string
+        minLength: 1
+        x-kind: markdown
       stream:
-        description: the stream of a loose task; a task of a milestone or a question takes the stream of its parent
+        title: Stream
+        description: the stream whose time a loose task takes; a task of a milestone or a question takes the stream of its parent
         $ref: '#/$defs/stream_id'
+      complexity:
+        title: Complexity
+        description: the demand of the task on the agent; the complexity of its stream when absent. Outside the hours of high energy, the selection offers high tasks last
+        enum: [low, medium, high]
+      importance:
+        title: Importance
+        description: the importance of the task within its parent; highest and high make it important
+        enum: [highest, high, medium, low, lowest]
+      riskiest:
+        title: Riskiest
+        description: whether the task is the riskiest of its parent, which the selection offers first
+        type: boolean
+      scheduled:
+        title: Scheduled
+        description: a date within the week; from that date, the task is urgent within its parent
+        $ref: '#/$defs/date'
       committed_week:
+        title: Committed week
         description: the date of the weekly review that committed the task for its week
         $ref: '#/$defs/date'
       recurs:
+        title: Recurs
         description: the rule by which a loose task recurs, a default rule (daily, weekly, cycle), a rule of the profile, or a period such as P2W or P2C; the task reopens once that many periods have begun since its last completion
         type: string
         anyOf:
           - {$ref: '#/$defs/recurrence_period'}
           - {$ref: '#/$defs/identifier'}
-      origin: {$ref: '#/$defs/origin'}
-      budget: {$ref: '#/$defs/duration'}
-      marked_for:
-        description: the day for which the daily planning marks the task
-        $ref: '#/$defs/date'
-      main_objective:
-        description: whether the task is the main objective of the day it is marked for
-        type: boolean
-      completed:
-        description: the date of completion; for a recurring task, that of its last completion
-        $ref: '#/$defs/date'
-      held_since: {$ref: '#/$defs/date'}
+      budget:
+        title: Budget
+        description: the time planned for the task, in ISO 8601, such as PT2H
+        $ref: '#/$defs/duration'
       depends_on:
+        title: Depends on
+        description: the identifiers of the tasks that must be completed before this one
         type: array
         items: {$ref: '#/$defs/identifier'}
-      scheduled: {$ref: '#/$defs/date'}
-      follow_up:
-        description: the date at which the awaited party is reminded
-        $ref: '#/$defs/date'
-      awaits:
-        description: the identifier of the wait that blocks the task
-        $ref: '#/$defs/identifier'
-      hands_off:
-        description: whether completing the task starts the delay of a party
-        type: boolean
-      riskiest:
-        description: whether the task is the riskiest of its parent
-        type: boolean
-      importance:
-        description: the importance of the task within its parent
-        enum: [highest, high, medium, low, lowest]
       steps:
-        description: the decomposition of the task, each step with a title and a mark of completion
+        title: Steps
+        description: the checks within the task, one level deep; a step that needs its own date, dependency or selection is a task
         type: array
         items:
           type: object
           additionalProperties: false
-          required: [title]
+          required: [action]
           properties:
-            title: {type: string, minLength: 1}
-            done: {type: boolean}
-      request_kind: {type: string}
-      prepares: {$ref: '#/$defs/identifier'}
-      verifies: {$ref: '#/$defs/identifier'}
-      non_negotiable: {$ref: '#/$defs/date'}
+            action:
+              title: Action
+              description: one brief imperative sentence
+              type: string
+              minLength: 1
+              maxLength: 90
+              x-kind: markdown-line
+            done:
+              title: Done
+              description: whether the step is done
+              type: boolean
+              default: false
+            details:
+              title: Details
+              description: the context, the links and the remarks of the step, in Markdown
+              type: string
+              minLength: 1
+              x-kind: markdown
+      created:
+        title: Created
+        description: the date on which the task was recorded
+        $ref: '#/$defs/date'
+      started:
+        title: Started
+        description: the date on which work on the task began
+        $ref: '#/$defs/date'
+      completed:
+        title: Completed
+        description: the date of completion; for a recurring task, that of its last completion
+        $ref: '#/$defs/date'
+      cancelled:
+        title: Cancelled
+        description: the date on which the task was dropped, with the reason, such as a duplicate or a change of plan
+        type: object
+        additionalProperties: false
+        required: [date, reason]
+        properties:
+          date:
+            title: Date
+            description: the date on which the task was dropped
+            $ref: '#/$defs/date'
+          reason:
+            title: Reason
+            description: why the task was dropped, in one sentence
+            type: string
+            minLength: 1
+            x-kind: markdown-line
+      marked_for:
+        title: Marked for
+        description: the day for which the daily planning marks the task
+        $ref: '#/$defs/date'
+      main_objective:
+        title: Main objective
+        description: whether the task is the main objective of the day it is marked for
+        type: boolean
+      follow_up:
+        title: Follow-up
+        description: the date at which the awaited party is reminded
+        $ref: '#/$defs/date'
+      awaits:
+        title: Awaits
+        description: the identifier of the wait that blocks the task
+        $ref: '#/$defs/identifier'
+      hands_off:
+        title: Hands off
+        description: whether completing the task starts the delay of a party
+        type: boolean
+      prepares:
+        title: Prepares
+        description: the identifier of the appointment that the task prepares
+        $ref: '#/$defs/identifier'
+      verifies:
+        title: Verifies
+        description: the identifier of the wait whose delegated output the task reviews
+        $ref: '#/$defs/identifier'
+      request_kind:
+        title: Kind of request
+        description: the kind of request from which the task was converted
+        type: string
+        minLength: 1
+      consumed_by:
+        title: Consumed by
+        description: for a loose task, the milestones, questions or streams that its result serves, beside the stream whose time it takes
+        type: array
+        items: {$ref: '#/$defs/identifier'}
+      origin:
+        title: Origin
+        description: chosen by the agent, imposed by a party, or converted from a request; chosen when absent
+        $ref: '#/$defs/origin'
+      held_since:
+        title: Held since
+        description: the date on which the task entered the holding file
+        $ref: '#/$defs/date'
+      non_negotiable:
+        title: Non-negotiable
+        description: the date on which the agent marked the task non-negotiable; at most one record of the plan bears the mark
+        $ref: '#/$defs/date'
     dependentRequired:
       main_objective: [marked_for]
   estimate:
@@ -190,9 +337,18 @@ $defs:
     additionalProperties: false
     required: [optimistic, probable, pessimistic]
     properties:
-      optimistic: {$ref: '#/$defs/duration'}
-      probable: {$ref: '#/$defs/duration'}
-      pessimistic: {$ref: '#/$defs/duration'}
+      optimistic:
+        title: Optimistic
+        description: the optimistic duration of the item, in ISO 8601, such as PT6H
+        $ref: '#/$defs/duration'
+      probable:
+        title: Probable
+        description: the probable duration of the item, in ISO 8601, weighted four times in the PERT value
+        $ref: '#/$defs/duration'
+      pessimistic:
+        title: Pessimistic
+        description: the pessimistic duration of the item, in ISO 8601
+        $ref: '#/$defs/duration'
   tasks:
     description: the tasks of a milestone or a question, which take the stream of their parent
     type: array
@@ -201,6 +357,7 @@ $defs:
         - {$ref: '#/$defs/task'}
         - not: {required: [stream]}
         - not: {required: [recurs]}
+        - not: {required: [consumed_by]}
   loose_tasks:
     description: tasks that serve no milestone and name their stream
     type: array
@@ -218,6 +375,7 @@ $defs:
         - {$ref: '#/$defs/task'}
         - not: {required: [stream]}
         - not: {required: [recurs]}
+        - not: {required: [consumed_by]}
   energy:
     description: the spans of high energy, for every day or per weekday
     type: object
@@ -225,6 +383,8 @@ $defs:
     required: [high]
     properties:
       high:
+        title: High energy
+        description: the spans of high energy, as one list for every day or as one list per weekday
         anyOf:
           - {$ref: '#/$defs/spans'}
           - type: object
@@ -237,18 +397,25 @@ $defs:
     required: [mode, bound, amount]
     properties:
       mode:
+        title: Mode
         description: share for a fraction of the plannable time, reserve for a duration
         enum: [share, reserve]
-      bound: {enum: [at_least, at_most, exact]}
+      bound:
+        title: Bound
+        description: whether the stream receives at least, at most or exactly the amount
+        enum: [at_least, at_most, exact]
       amount:
+        title: Amount
         description: a fraction for a share, a duration for a reserve
         anyOf:
           - {type: number, exclusiveMinimum: 0, maximum: 1}
           - {$ref: '#/$defs/duration'}
       per:
+        title: Per
         description: the anchor of the amount; week when absent
         enum: [day, week, cycle, event]
       events:
+        title: Events
         description: with per event, the appointments that the reserve concerns; every prepared appointment of the stream when absent
         type: array
         items: {$ref: '#/$defs/identifier'}
@@ -261,4 +428,4 @@ $defs:
         then: {required: [per], properties: {per: {const: event}}}
   entries_of_text:
     type: array
-    items: {type: string, minLength: 1}
+    items: {type: string, minLength: 1, x-kind: markdown-line}

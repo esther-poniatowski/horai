@@ -6,17 +6,36 @@ additionalProperties: false
 required: [_schema, month, entries]
 properties:
   _schema: {const: 'horai:decision-log@1'}
-  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  month:
+    title: Month
+    description: the month of the entries, which names the file
+    $ref: 'urn:horai:schema:common:1#/$defs/month'
   entries:
+    title: Entries
+    description: the decision entries of the month, one for each checkpoint decision and for each completion of an item
     type: array
     items:
       type: object
       additionalProperties: false
       required: [date, milestone, checkpoint_decision]
       properties:
-        date: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
-        milestone: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-        checkpoint_decision: {enum: [done, stop, reduce, renew]}
-        rationale: {type: string, minLength: 1}
+        date:
+          title: Date
+          description: the date of the decision or of the completion
+          $ref: 'urn:horai:schema:common:1#/$defs/date'
+        milestone:
+          title: Milestone
+          description: the identifier of the milestone or the question that the decision concerns
+          $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+        checkpoint_decision:
+          title: Checkpoint decision
+          description: the decision on the item, done at its completion, or stop, reduce or renew at a checkpoint
+          enum: [done, stop, reduce, renew]
+        rationale:
+          title: Rationale
+          description: what was obtained, what remains unknown, and why this decision; for renew, the fact that was unknown when the first budget was set; required except for done
+          type: string
+          minLength: 1
+          x-kind: markdown
       if: {properties: {checkpoint_decision: {enum: [stop, reduce, renew]}}}
       then: {required: [rationale]}

@@ -6,9 +6,17 @@ additionalProperties: false
 required: [_schema, start, end]
 properties:
   _schema: {const: 'horai:cycle@1'}
-  start: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
-  end: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+  start:
+    title: Start
+    description: the first date of the cycle
+    $ref: 'urn:horai:schema:common:1#/$defs/date'
+  end:
+    title: End
+    description: the last date of the cycle
+    $ref: 'urn:horai:schema:common:1#/$defs/date'
   cool_down:
+    title: Cool-down
+    description: the first and the last dates of the cool-down, which ends the cycle
     type: array
     minItems: 2
     maxItems: 2

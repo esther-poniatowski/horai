@@ -7,12 +7,13 @@ from pathlib import Path
 import pytest
 
 from horai.io.config import ConfigurationError, resolve_configuration
-from horai.io.loader import load_plan
+from horai.io.loader import Discovery, load_plan
 from horai.io.schemas import SchemaSet
 
 
 def test_every_record_type_has_a_schema(schemas: SchemaSet) -> None:
     expected = {
+        "actions",
         "archive",
         "clock-log",
         "configuration",
@@ -24,12 +25,9 @@ def test_every_record_type_has_a_schema(schemas: SchemaSet) -> None:
         "holding",
         "ideas",
         "inbox",
-        "milestone",
-        "task-list",
         "parties",
         "profile",
         "purpose",
-        "question",
         "review-log",
         "typical-week",
     }
@@ -74,6 +72,18 @@ def test_named_rule_cannot_shadow_a_default(plan_folder: Path, schemas: SchemaSe
     assert [issue.rule for issue in issues] == ["schema/invalid"]
 
 
+def test_store_takes_the_configured_name(plan_folder: Path, schemas: SchemaSet) -> None:
+    (plan_folder / "plan" / "TODO.yml").rename(plan_folder / "plan" / "actions.yml")
+    plan, issues = load_plan(plan_folder, schemas, Discovery(actions_file="actions.yml"))
+    assert issues == [] and "ctx-rank-bound" in plan.items
+    workspace = _workspace(plan_folder)
+    (workspace / "lexicon" / "TODO.yml").rename(workspace / "lexicon" / "upkeep.yml")
+    _, issues = load_plan(
+        workspace, schemas, Discovery(roots=[workspace], base=workspace, actions_file="actions.yml")
+    )
+    assert [(i.rule, i.path) for i in issues] == [("identifier/actions-file", "lexicon/upkeep.yml")]
+
+
 def test_fixture_loads_without_issue(plan_folder: Path, schemas: SchemaSet) -> None:
     plan, issues = load_plan(plan_folder, schemas)
     assert issues == []
@@ -86,28 +96,26 @@ def test_fixture_loads_without_issue(plan_folder: Path, schemas: SchemaSet) -> N
     assert len(plan.clock) == 7
 
 
-def test_invalid_file_is_reported_and_excluded(plan_folder: Path, schemas: SchemaSet) -> None:
-    path = plan_folder / "plan" / "milestones" / "ctx-rank-bound.yml"
+def test_invalid_entry_is_reported_and_excluded_alone(
+    plan_folder: Path, schemas: SchemaSet
+) -> None:
+    path = plan_folder / "plan" / "TODO.yml"
     path.write_text(path.read_text().replace("budget: PT6H", "budget: 6h"))
     plan, issues = load_plan(plan_folder, schemas)
     assert [issue.rule for issue in issues] == ["schema/invalid"]
-    assert "6h" in issues[0].message and issues[0].path == "plan/milestones/ctx-rank-bound.yml"
+    assert "6h" in issues[0].message and issues[0].path == "plan/TODO.yml"
     assert "ctx-rank-bound" not in plan.items and "ctx-rank-bound" in plan.excluded
+    assert "prove-rank-bound" in plan.excluded and "ctx-population-fit" in plan.items
 
 
 @pytest.mark.parametrize(
     ("relative", "old", "new", "rule"),
     [
-        (
-            "plan/questions/gating-under-noise.yml",
-            "horai:question@1",
-            "horai:milestone@1",
-            "schema/type",
-        ),
+        ("plan/TODO.yml", "horai:actions@1", "horai:milestone@1", "schema/type"),
         ("calendar/dates/2026-11.yml", "2026-11-12:", "2026-12-12:", "calendar/month"),
         ("log/reviews/2026-11.yml", "date: 2026-11-09", "date: 2026-10-30", "calendar/month"),
         ("log/clock/2026-11.yml", "month: 2026-11", "month: 2026-10", "identifier/month"),
-        ("plan/task-lists/training.yml", "tasks:", "tasks: [", "file/unreadable"),
+        ("plan/TODO.yml", "tasks:", "tasks: [", "file/unreadable"),
     ],
 )
 def test_file_defects_are_reported(
@@ -190,15 +198,15 @@ def test_stream_identifier_must_be_a_slug(plan_folder: Path, schemas: SchemaSet)
 
 FIXTURE_LOOSE = {"chapter-3-exercises", "weekly-review", "daily-planning", "cycle-planning"}
 
-UPKEEP = """_schema: horai:task-list@1
+UPKEEP = """_schema: horai:actions@1
 tasks:
   - id: glossary-skeleton
-    title: Stabilize the glossary skeleton
+    action: Stabilize the glossary skeleton
     stream: upkeep
     importance: high
     steps:
-      - {title: draft the fields, done: true}
-      - {title: bind the schema}
+      - {action: Draft the fields, done: true}
+      - {action: Bind the schema}
 """
 
 
@@ -207,7 +215,7 @@ def _workspace(plan_folder: Path) -> Path:
     workspace = plan_folder.parent / "workspace"
     plan_folder.rename(workspace)
     (workspace / "lexicon").mkdir()
-    (workspace / "lexicon" / "lexicon-upkeep.yml").write_text(UPKEEP)
+    (workspace / "lexicon" / "TODO.yml").write_text(UPKEEP)
     (workspace / "lexicon" / "notes.yml").write_text(
         "_schema: other:record@1\ntitle: not a horai record\n"
     )
@@ -216,24 +224,24 @@ def _workspace(plan_folder: Path) -> Path:
 
 def test_records_are_found_beside_their_folder(plan_folder: Path, schemas: SchemaSet) -> None:
     workspace = _workspace(plan_folder)
-    plan, issues = load_plan(workspace, schemas, roots=[workspace], base=workspace)
+    plan, issues = load_plan(workspace, schemas, Discovery(roots=[workspace], base=workspace))
     assert issues == []
     task = next(t for t in plan.loose if t.id == "glossary-skeleton")
-    assert task.stream == "upkeep" and plan.sources[task.id] == "lexicon/lexicon-upkeep.yml"
+    assert task.stream == "upkeep" and plan.sources[task.id] == "lexicon/TODO.yml"
     assert task.importance == "high"
-    assert task.steps == (("draft the fields", True), ("bind the schema", False))
+    assert task.steps == (("Draft the fields", True), ("Bind the schema", False))
 
 
 def test_hidden_and_excluded_folders_are_skipped(plan_folder: Path, schemas: SchemaSet) -> None:
     workspace = _workspace(plan_folder)
     (workspace / ".hidden").mkdir()
-    (workspace / ".hidden" / "copy.yml").write_text(UPKEEP)
+    (workspace / ".hidden" / "TODO.yml").write_text(UPKEEP)
     (workspace / "lexicon" / "archive").mkdir()
-    (workspace / "lexicon" / "archive" / "old-upkeep.yml").write_text(
+    (workspace / "lexicon" / "archive" / "TODO.yml").write_text(
         UPKEEP.replace("glossary-skeleton", "old-task")
     )
     plan, issues = load_plan(
-        workspace, schemas, roots=[workspace], exclude=["archive"], base=workspace
+        workspace, schemas, Discovery(roots=[workspace], exclude=["archive"], base=workspace)
     )
     assert issues == [] and {t.id for t in plan.loose} == {"glossary-skeleton", *FIXTURE_LOOSE}
 
@@ -243,14 +251,14 @@ def test_central_record_outside_the_central_folder(plan_folder: Path, schemas: S
     (workspace / "lexicon" / "2026-c7.yml").write_text(
         "_schema: horai:cycle@1\nstart: 2026-12-14\nend: 2027-01-22\n"
     )
-    _, issues = load_plan(workspace, schemas, roots=[workspace], base=workspace)
+    _, issues = load_plan(workspace, schemas, Discovery(roots=[workspace], base=workspace))
     assert [(i.rule, i.path) for i in issues] == [("placement/central", "lexicon/2026-c7.yml")]
 
 
 def test_no_root_finds_no_distributed_record(plan_folder: Path, schemas: SchemaSet) -> None:
     workspace = _workspace(plan_folder)
     plan, _ = load_plan(workspace, schemas)
-    assert "lexicon-upkeep" not in plan.items
+    assert "glossary-skeleton" not in {task.id for task in plan.loose}
 
 
 def test_configuration_declares_the_roots(plan_folder: Path) -> None:

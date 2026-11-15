@@ -47,7 +47,7 @@ The methods enter `horai` in three ways: as a mechanism of the method, as a mech
 | Carlson | blocks of one stream, the trigger by accumulation, and interruptions limited to the class `immediate` | implemented |
 | Murphy | the reserve, the planning on the low quantile of the capacity, and the buffers | implemented |
 | Law of emergencies | the [reserve](../kernel/processes/reactive-work.md#^reserve) bounds the reactive load, and its excess is a deviation | implemented |
-| Laborit | the riskiest task first within its milestone, and the streams that need high energy placed at the hours of highest energy | implemented |
+| Laborit | the riskiest task first within its milestone, and the streams of high complexity placed at the hours of highest energy, and the tasks of high complexity offered last outside them | implemented |
 | 2-20-2-2 | the triage: a request served in a request window, or converted, with its feasibility tested | departs on the first step, as the note on [reactive work](../kernel/processes/reactive-work.md#^triage) states |
 | Audit of time | the clock entries, the hours per stream against the allocation, and the [overhead](../kernel/foundations/core-and-options.md#^overhead) of the method | implemented |
 | Focus and breaks | blocks of `block_length`, in place of short sessions; breaks are not planned | partly |

@@ -38,7 +38,7 @@ def render_selection(selection: Selection, stream: str | None) -> str:
     """Write the tiers of the selection, numbered, with the notes of the rule."""
     if selection.marked_task is not None and selection.marked is None:
         task = selection.marked_task
-        header = f"Next, for the non-negotiable task {task.title} [{task.id}]:"
+        header = f"Next, for the non-negotiable task {task.action} [{task.id}]:"
     elif selection.marked is not None:
         header = (
             f"Next, for the non-negotiable item {selection.marked.title} [{selection.marked.id}]:"
@@ -57,7 +57,7 @@ def render_selection(selection: Selection, stream: str | None) -> str:
             risk = ", riskiest" if task.riskiest else ""
             if task.importance:
                 risk += f", {task.importance}"
-            lines.append(f"  {number}. {task.title} [{task.id}] — {parent}{rank}{risk}{tied}")
+            lines.append(f"  {number}. {task.action} [{task.id}] — {parent}{rank}{risk}{tied}")
     lines += [f"  note: {note}" for note in selection.notes]
     return "\n".join(lines)
 
@@ -104,7 +104,7 @@ def _task_row(plan: Plan, task: Task, day: date, indent: str) -> str:
         if task.follow_up is not None
         else f" (awaits {task.awaits})" if task.awaits is not None else ""
     )
-    return f"{indent}[{_mark(plan, task, day)}] {task.title} [{task.id}]{waits}"
+    return f"{indent}[{_mark(plan, task, day)}] {task.action} [{task.id}]{waits}"
 
 
 def _committed(plan: Plan, day: date, work: Sequence[Span]) -> list[str]:
@@ -152,7 +152,7 @@ def _follow_ups(plan: Plan, end: date) -> list[str]:
         ),
         key=lambda pair: pair[0],
     )
-    return [f"  {when}: {task.title} [{task.id}]" for when, task in due] or ["  none"]
+    return [f"  {when}: {task.action} [{task.id}]" for when, task in due] or ["  none"]
 
 
 def _reserves(plan: Plan, starts_on: date, work: Sequence[Span]) -> list[str]:

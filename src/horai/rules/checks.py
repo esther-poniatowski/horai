@@ -302,6 +302,50 @@ def check_selection(plan: Plan, day: date) -> Iterator[Issue]:
             )
 
 
+def check_task_life(plan: Plan) -> Iterator[Issue]:
+    """The dates of a task follow its life, and a loose task serves records that exist.
+
+    A task is created, then started, then completed or cancelled; a recurring task may be completed
+    many times, so only its first start is compared. A `started` later than the first session of
+    work on the task is reported, since the clock shows an earlier start.
+    """
+    first_session: dict[str, date] = {}
+    for span in spans(plan.clock):
+        first_session[span.task] = min(
+            first_session.get(span.task, span.start.date()), span.start.date()
+        )
+    streams = set(plan.profile.streams) if plan.profile else set()
+    for parent, task in plan.tasks():
+        record = parent.id if parent else task.id
+        ends = [
+            day for day in (task.completed, task.cancelled[0] if task.cancelled else None) if day
+        ]
+        for earlier, label in ((task.created, "created"), (task.started, "started")):
+            for later in ends:
+                if (
+                    earlier is not None
+                    and later < earlier
+                    and not (task.recurs and label == "started")
+                ):
+                    message = (
+                        f"the task {task.id} ends on {later}, before it was {label} on {earlier}"
+                    )
+                    yield _issue(plan, "task/dates", message, record)
+        if task.created and task.started and task.started < task.created:
+            message = f"the task {task.id} was started on {task.started}, before its creation"
+            yield _issue(plan, "task/dates", message, record)
+        clocked = first_session.get(task.id)
+        if task.started and clocked and clocked < task.started:
+            message = (
+                f"the task {task.id} states its start on {task.started}, "
+                f"but work began on {clocked}"
+            )
+            yield _issue(plan, "task/started", message, record, Severity.WARNING)
+        for target in task.consumed_by:
+            if target not in plan.items and target not in streams:
+                yield _missing(plan, "milestone, question or stream", target, record)
+
+
 def check_recurrences(plan: Plan) -> Iterator[Issue]:
     """A recurring task names a default rule, a rule of the profile, or a period."""
     for task in plan.loose:
@@ -413,6 +457,7 @@ def check_plan(plan: Plan, day: date) -> list[Issue]:
         *check_reviews(plan, day),
         *check_committed_streams(plan, day),
         *check_recurrences(plan),
+        *check_task_life(plan),
         *check_estimates(plan),
         *check_holding(plan),
         *check_clock(plan),

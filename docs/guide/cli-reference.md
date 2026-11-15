@@ -23,13 +23,14 @@ The commands that read a plan accept three common options:
 | `--config`, `-c` | Configuration file at any path. | the environment variable `HORAI_CONFIG`, then `config/tools/horai.yml` or `horai.yml` under the root |
 | `--date` | Day of the computation, in ISO 8601; `start` and `stop` take the moment `--at` instead. | today, in the time zone of the configuration |
 
-The configuration file states four keys, each optional:
+The configuration file states five keys, each optional:
 
 | Key | Value | Default |
 | --- | --- | --- |
 | `plan` | the central folder of the plan, relative to the root | the root |
 | `roots` | the folders, relative to the root, under which the records of the hierarchy are found by their key `_schema`, beside what they concern | none |
 | `exclude` | the patterns of paths, relative to a root, under which no record is sought; hidden folders are always skipped | none |
+| `actions_file` | the name of the file in which every folder keeps its actions, the same in every folder | `TODO.yml` |
 | `timezone` | the time zone of the agent, an IANA name | the local zone |
 
 The configuration below serves a workspace whose central folder is `planning/`, and whose folders each ship their own records:
@@ -112,7 +113,7 @@ horai stop [--at MOMENT]
 
 ### `stages`
 
-The command creates the milestone of each stage that an active deliverable has reached and that no milestone holds, as the [cycle planning](../procedures/cycle-planning.md) requires at a change of phase. Each milestone is named `<deliverable>-<stage>`, takes the predictability of its stage, or else that of the type, and holds a placeholder test of completion to state.
+The command creates the milestone of each stage that an active deliverable has reached and that no milestone holds, as the [cycle planning](../procedures/cycle-planning.md) requires at a change of phase. Each milestone is named `<deliverable>-<stage>`, takes the predictability of its stage, or else that of the type, and is appended to the store of actions of the folder of its deliverable.
 
 ```sh
 horai stages [--deliverable ID] [--stream STREAM] [--into FOLDER] [--dry-run]
@@ -122,10 +123,10 @@ horai stages [--deliverable ID] [--stream STREAM] [--into FOLDER] [--dry-run]
 | ------ | ----------- | ------- |
 | `--deliverable` | Identifier of the one deliverable to examine. | every active deliverable |
 | `--stream` | Stream of the milestones whose deliverable has no stream shared by its milestones. | the stream shared by the milestones of the deliverable |
-| `--into` | Folder of the new milestones. | `plan/milestones/` of the plan |
-| `--dry-run` | List the missing stages without creating a file. | off |
+| `--into` | Folder whose store of actions receives the new milestones. | the folder of the deliverable; `plan/` for a deliverable of the central folder |
+| `--dry-run` | List the missing stages without writing. | off |
 
-An existing file is never replaced. A deliverable whose milestones share no stream, without `--stream`, ends the command with the status 2.
+The rest of the store is left as written. A deliverable whose milestones share no stream, without `--stream`, ends the command with the status 2.
 
 ### `info`
 

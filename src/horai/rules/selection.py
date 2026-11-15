@@ -9,7 +9,8 @@ which serve no milestone, are candidates as well. While an open item or an open 
 non-negotiable, the candidates are its own open tasks, whatever their stream; a mark left on a
 closed item or task is ignored, and the check reports it. In a request window, a block of a stream
 triggered by arrival, the tasks of other streams that hand off to a party are candidates as well,
-after the tasks of the stream of the window.
+after the tasks of the stream of the window. Outside the hours of high energy, the tasks of high
+complexity, by their own value or by that of their stream, follow all the others.
 
 A loose task that is important and urgent precedes the milestones of its stream, and the other loose
 tasks follow them. Among the milestones, the keys apply lexicographically, a question counting as a
@@ -197,8 +198,20 @@ def quadrant(task: Task, day: date) -> int:
     return (0 if urgent else 1) if important else (2 if urgent else 3)
 
 
+def complexity_of(plan: Plan, item: Item | None, task: Task) -> str | None:
+    """Return the complexity of a task: its own, or else that of its stream."""
+    if task.complexity is not None:
+        return task.complexity
+    declared = plan.profile.streams.get(plan.stream_of(item, task) or "") if plan.profile else None
+    return declared.complexity if declared else None
+
+
 def _tiers(
-    candidates: list[Candidate], release_key: bool, day: date, stream: str | None
+    candidates: list[Candidate],
+    release_key: bool,
+    day: date,
+    stream: str | None,
+    demanding: set[str] | None = None,
 ) -> list[list[Candidate]]:
     """Order the candidates by the keys, and group the tied ones into tiers.
 
@@ -211,8 +224,9 @@ def _tiers(
         else set()
     )
 
-    def key(candidate: Candidate) -> tuple[int, int, float, int, int, int, int]:
+    def key(candidate: Candidate) -> tuple[int, int, int, float, int, int, int, int]:
         item, task = candidate.item, candidate.task
+        deferred = 1 if demanding is not None and task.id in demanding else 0
         if stream is not None and Plan.stream_of(item, task) != stream:
             group, rank = 3, math.inf
         elif item is None:
@@ -221,6 +235,7 @@ def _tiers(
         else:
             group, rank = 1, item.rank if item.rank is not None else math.inf
         return (
+            deferred,
             group,
             0 if item is not None and item.id in releasing else 1,
             rank,
@@ -233,7 +248,13 @@ def _tiers(
     return [list(group) for _, group in groupby(sorted(candidates, key=key), key=key)]
 
 
-def select(plan: Plan, day: date, stream: str | None, work: Sequence[Span]) -> Selection:
+def select(
+    plan: Plan,
+    day: date,
+    stream: str | None,
+    work: Sequence[Span],
+    low_energy: bool = False,
+) -> Selection:
     """Apply the selection rule on `day`, for the stream of the current block.
 
     Parameters
@@ -246,6 +267,9 @@ def select(plan: Plan, day: date, stream: str | None, work: Sequence[Span]) -> S
         The stream of the current block; ignored while an item is marked non-negotiable.
     work : Sequence[Span]
         The spans of work, from which the consumed budgets are computed.
+    low_energy : bool
+        Whether the selection takes place outside the hours of high energy, which defers the tasks
+        of high complexity.
 
     Returns
     -------
@@ -263,5 +287,10 @@ def select(plan: Plan, day: date, stream: str | None, work: Sequence[Span]) -> S
         if _admit(item, task, context)
     ]
     selection.notes += list(dict.fromkeys(context.notes))
-    selection.tiers = _tiers(candidates, "external_parties" in options, day, stream)
+    demanding = (
+        {c.task.id for c in candidates if complexity_of(plan, c.item, c.task) == "high"}
+        if low_energy
+        else None
+    )
+    selection.tiers = _tiers(candidates, "external_parties" in options, day, stream, demanding)
     return selection

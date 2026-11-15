@@ -6,15 +6,36 @@ additionalProperties: false
 required: [_schema, month, entries]
 properties:
   _schema: {const: 'horai:deviation-log@1'}
-  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  month:
+    title: Month
+    description: the month of the entries, which names the file
+    $ref: 'urn:horai:schema:common:1#/$defs/month'
   entries:
+    title: Entries
+    description: the deviations from a policy that the weekly reviews of the month found, each closed later by the strategic review
     type: array
     items:
       type: object
       additionalProperties: false
       required: [date, policy, deviation]
       properties:
-        date: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
-        policy: {type: string, minLength: 1}
-        deviation: {type: string, minLength: 1}
-        cycle: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+        date:
+          title: Date
+          description: the date of the weekly review that found the deviation
+          $ref: 'urn:horai:schema:common:1#/$defs/date'
+        policy:
+          title: Policy
+          description: the policy from which the work deviated, such as a parameter of the kernel or the allocation of a stream
+          type: string
+          minLength: 1
+          x-kind: markdown-line
+        deviation:
+          title: Deviation
+          description: how the work departed from the policy
+          type: string
+          minLength: 1
+          x-kind: markdown-line
+        cycle:
+          title: Cycle
+          description: the identifier of the cycle in which the deviation occurred
+          $ref: 'urn:horai:schema:common:1#/$defs/identifier'

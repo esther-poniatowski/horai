@@ -22,7 +22,7 @@ from horai.domain.records import (
     Stream,
     Task,
 )
-from horai.io.loader import load_plan
+from horai.io.loader import Discovery, load_plan
 from horai.rules.calendar_checks import plannable_hours
 from horai.io.schemas import SchemaSet
 from horai.rules.calendar import calendar_day, week_calendar
@@ -313,7 +313,7 @@ def test_unknown_record_type_is_reported(plan_folder: Path, schemas: SchemaSet) 
     stray.mkdir()
     (stray / "typo.yml").write_text("_schema: horai:milstone@1\ntitle: Typo\n")
     (stray / "horai.yml").write_text("_schema: horai:configuration@1\nplan: .\n")
-    _, issues = load_plan(plan_folder, schemas, roots=[stray], base=plan_folder)
+    _, issues = load_plan(plan_folder, schemas, Discovery(roots=[stray], base=plan_folder))
     assert [(i.rule, i.path) for i in issues] == [("schema/unknown", "stray/typo.yml")]
 
 

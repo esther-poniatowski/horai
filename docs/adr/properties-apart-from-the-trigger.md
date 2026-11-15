@@ -15,6 +15,9 @@ aliases:
 
 The decision on [streams, allocation and loose tasks](streams-allocation-and-loose-tasks.md) removed the control of the trigger over the allocation. A review of the framework then found three other rules that still read the trigger. Only the blocks of streams triggered by selection were checked against the hours of high energy, so a demanding stream triggered by the calendar, such as the derivation of mathematics, was never checked. The overrun rule protected the streams triggered by the calendar, whereas a minimum is what needs protection. An appointment could name only a stream triggered by appointment, so the days of a conference could not sit in the stream of the conferences.
 
+> [!WARNING] Partly replaced
+> The decision on [stores of actions and the life of a task](stores-of-actions-and-task-life.md) replaces the field `needs_high_energy` by the `complexity` of a stream, which its tasks may override.
+
 ## Decision
 
 - **Energy.** A stream may state `needs_high_energy: true`. The check reports each block of such a stream that lies outside the hours of high energy of the profile, whatever triggers the stream.

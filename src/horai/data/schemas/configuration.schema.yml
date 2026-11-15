@@ -7,16 +7,25 @@ required: [_schema]
 properties:
   _schema: {const: 'horai:configuration@1'}
   plan:
+    title: Plan folder
     description: folder of the plan, relative to the root
     type: string
   roots:
+    title: Roots
     description: folders, relative to the root, under which the records of the hierarchy are found
     type: array
     items: {type: string}
   exclude:
+    title: Excluded paths
     description: patterns of paths, relative to a root, under which no record is sought
     type: array
     items: {type: string}
+  actions_file:
+    title: Actions file
+    description: the name of the file in which each folder keeps its actions, the same in every folder; TODO.yml when absent
+    type: string
+    pattern: '^[^/]+\.ya?ml$'
   timezone:
+    title: Time zone
     description: IANA name of the time zone of the agent; the local zone when absent
     type: string

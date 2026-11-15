@@ -1,0 +1,69 @@
+_schema: horai:actions@1
+milestones:
+  - id: ctx-population-fit
+    title: Fit of the gating model to the recorded population
+    deliverable: ctx-geometry
+    stream: inquiry
+    success_criteria:
+      - the fitted model reproduces the three recorded geometries within the noise
+    status: open
+    cycle: 2026-c6
+    predictability: exploratory
+    budget: PT12H
+    rank: 1
+    tasks:
+      - id: fit-gating-model
+        action: Fit the gating model to the recordings
+        riskiest: true
+        committed_week: 2026-11-09
+        marked_for: 2026-11-13
+        main_objective: true
+      - id: compare-geometries
+        action: Compare fitted and recorded geometries
+        committed_week: 2026-11-09
+        depends_on: [fit-gating-model]
+      - id: write-methods-paragraph
+        action: Write the methods paragraph of the fit
+  - id: ctx-rank-bound
+    title: Rank bound for context-gated readouts
+    deliverable: ctx-geometry
+    stream: inquiry
+    success_criteria:
+      - the bound is proved
+      - the bound holds on the small cases
+    status: open
+    cycle: 2026-c6
+    predictability: routine
+    budget: PT6H
+    rank: 2
+    tasks:
+      - id: prove-rank-bound
+        action: Prove the rank bound
+        committed_week: 2026-11-09
+      - id: check-small-cases
+        action: Check the bound on the small cases
+        details: with the recordings of co-author A
+        committed_week: 2026-11-09
+        follow_up: 2026-11-16
+questions:
+  - id: gating-under-noise
+    title: Does gating survive input noise
+    deliverable: ctx-geometry
+    stream: inquiry
+    status: open
+    cycle: 2026-c6
+    predictability: exploratory
+    budget: PT8H
+    rank: 3
+    tasks:
+      - id: simulate-noise
+        action: Simulate the gated network under input noise
+        committed_week: 2026-11-09
+tasks:
+  - {id: weekly-review, action: Hold the weekly review, stream: planning, recurs: weekly}
+  - {id: daily-planning, action: Plan the day, stream: planning, recurs: daily}
+  - {id: cycle-planning, action: Plan the next cycle, stream: planning, recurs: cycle}
+  - id: chapter-3-exercises
+    action: Work the exercises of chapter 3
+    stream: training
+    committed_week: 2026-11-09

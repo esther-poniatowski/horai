@@ -1,0 +1,127 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: urn:horai:schema:actions:1
+title: Actions of a folder
+description: the milestones, the questions and the loose tasks that a folder owns, in the one store of the folder
+type: object
+additionalProperties: false
+required: [_schema]
+properties:
+  _schema: {const: 'horai:actions@1'}
+  milestones:
+    title: Milestones
+    description: the results that the folder works toward, each with its tasks
+    type: array
+    items: {$ref: '#/$defs/milestone'}
+  questions:
+    title: Questions
+    description: the questions of the explorations of the folder, each with its tasks
+    type: array
+    items: {$ref: '#/$defs/question'}
+  tasks:
+    title: Loose tasks
+    description: the tasks that serve no milestone and no question, each naming its stream
+    $ref: 'urn:horai:schema:common:1#/$defs/loose_tasks'
+$defs:
+  item:
+    description: the fields shared by a milestone and a question
+    type: object
+    additionalProperties: false
+    properties:
+      id:
+        title: Identifier
+        description: a slug, fixed at creation and unique in the plan; the milestone of a stage is named `<deliverable>-<stage>`
+        $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+      title:
+        title: Title
+        description: the name of the result, as a noun phrase, such as 'Draft of the article'
+        type: string
+        minLength: 1
+        x-kind: markdown-line
+      deliverable:
+        title: Deliverable
+        description: the deliverable that the item serves; absent for a milestone that serves its stream directly
+        $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+      stage:
+        title: Stage
+        description: for a milestone, the stage of its deliverable that it holds
+        $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+      stream:
+        title: Stream
+        description: the stream whose time the tasks of the item take
+        $ref: 'urn:horai:schema:common:1#/$defs/stream_id'
+      success_criteria:
+        title: Success criteria
+        description: the observable states that judge the item done, each one checkable; when absent, the item is done once its tasks are closed
+        type: array
+        minItems: 1
+        items:
+          type: string
+          minLength: 1
+          x-kind: markdown-line
+      status:
+        title: Status
+        description: open while the work goes on; done, reduced or stopped by a decision entry
+        enum: [open, done, reduced, stopped]
+        default: open
+      cycle:
+        title: Cycle
+        description: the cycle for which the cycle planning selected the item
+        $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+      predictability:
+        title: Predictability
+        description: routine for a kind of work done several times, which takes an estimate; exploratory for an open outcome, which takes an appetite
+        enum: [routine, exploratory]
+      budget:
+        title: Budget
+        description: the estimate or the appetite of the item for its cycle, in ISO 8601, such as PT12H
+        $ref: 'urn:horai:schema:common:1#/$defs/duration'
+      estimate:
+        title: Estimate
+        description: three durations of a routine item, in place of its budget, whose PERT value is the budget
+        $ref: 'urn:horai:schema:common:1#/$defs/estimate'
+      rank:
+        title: Rank
+        description: the order of worth of the item within its stream and its cycle, 1 first
+        type: integer
+        minimum: 1
+      depends_on:
+        title: Depends on
+        description: the identifiers of the items that must be done before this one
+        type: array
+        items: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+      consumed_by:
+        title: Consumed by
+        description: the milestones, questions or kinds of request that the output of a tooling item serves
+        type: array
+        items: {type: string, minLength: 1}
+      deadline:
+        title: Deadline
+        description: the date that a party relies on, with its strictness
+        $ref: 'urn:horai:schema:common:1#/$defs/deadline'
+      origin:
+        title: Origin
+        description: chosen by the agent, imposed by a party, or converted from a request; chosen when absent
+        $ref: 'urn:horai:schema:common:1#/$defs/origin'
+      non_negotiable:
+        title: Non-negotiable
+        description: the date on which the agent marked the item non-negotiable; at most one record of the plan bears the mark
+        $ref: 'urn:horai:schema:common:1#/$defs/date'
+      tasks:
+        title: Tasks
+        description: the actions that produce the item
+        $ref: 'urn:horai:schema:common:1#/$defs/tasks'
+  milestone:
+    title: Milestone
+    description: a result with a test of done, budgeted and finished within one cycle
+    type: object
+    allOf: [{$ref: '#/$defs/item'}]
+    required: [id, title, stream]
+    dependentRequired:
+      stage: [deliverable]
+  question:
+    title: Question
+    description: a question of an exploration, answered within a time box
+    type: object
+    allOf: [{$ref: '#/$defs/item'}]
+    required: [id, title, deliverable, stream]
+    not: {required: [stage]}

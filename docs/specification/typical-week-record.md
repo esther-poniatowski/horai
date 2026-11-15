@@ -44,5 +44,5 @@ The identifier of a recurring appointment is unique in the plan, and an appointm
 - **Placement.** Each block and appointment lies within a span, and no two of them overlap.
 - **Streams.** A block and an appointment name a stream of the profile.
 - **Recurrence.** The date `from` of a recurring appointment falls on its weekday.
-- **Energy.** A block of a stream that states `needs_high_energy` lies within the spans of high energy that the [profile](profile-record.md) states for its weekday. A block outside them is reported as a warning.
+- **Energy.** A block of a stream of high `complexity` lies within the spans of high energy that the [profile](profile-record.md) states for its weekday. A block outside them is reported as a warning.
 - **Allocation.** The plannable time of the typical week is its spans, less the mean weekly time of the recurring and the unplaced appointments, less the reserves per week and per day. The blocks of each stream give it the share of that time, or the reserve, that its allocation states; the blocks of a stream triggered by arrival, its request windows, hold its reserve. An exact amount is met within `allocation_tolerance`, and a deviation is reported as a warning. A reserve per event is checked on the week of its appointments, as the [calendar record](calendar-record.md) states.

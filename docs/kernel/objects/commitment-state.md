@@ -28,7 +28,7 @@ The state of a task is computed from its parent and from the week of its commitm
 3. Any other task is in the state `backlog`, including a [loose task](work-hierarchy.md#^standing-parent) that no review has committed.
 
 - **A week ends at the next review.** A task left undone in the state `week` returns to the state `cycle` or `backlog` when the next weekly review is held, unless that review commits it again. A postponed review leaves the commitments of the week in force.
-- **A recurring task is never promised again.** It stays in the state `week`, and its completion closes it until its rule counts enough periods begun since then.
+- **A recurring task is never promised again.** It stays in the state `week`, and its completion closes it until its rule counts enough periods begun since then; only its cancellation closes it for good.
 - **The backlog is hidden by default.** No view displays it outside a planning session, which removes the permanent competition among recorded tasks.
 - **Priority is derived.** The order of the tasks of a week follows from the [selection rule](../processes/task-selection.md#^selection-rule), so a priority assigned by hand has meaning only within its parent, as the importance of a task.
 - **The task of the day is a mark, not a state.** The [daily planning](../../procedures/daily-planning.md) marks at most `daily_marks` tasks of the week.

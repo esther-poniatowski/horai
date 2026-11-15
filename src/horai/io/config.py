@@ -33,6 +33,7 @@ CONFIG_NAME = "horai.yml"
 CONFIG_SCHEMA = "horai:configuration@1"
 ROOT_VARIABLE = "HORAI_ROOT"
 CONFIG_VARIABLE = "HORAI_CONFIG"
+ACTIONS_FILE = "TODO.yml"
 
 
 class ConfigurationError(Exception):
@@ -57,6 +58,8 @@ class Configuration:
         Folders under which the records of the hierarchy are found by their key `_schema`.
     exclude : tuple[str, ...]
         Patterns of paths, relative to a root, under which no record is sought.
+    actions_file : str
+        Name of the file in which each folder keeps its actions.
     """
 
     root: Path
@@ -65,6 +68,7 @@ class Configuration:
     path: Path | None
     roots: tuple[Path, ...] = ()
     exclude: tuple[str, ...] = ()
+    actions_file: str = ACTIONS_FILE
 
 
 def _candidates(folder: Path) -> list[Path]:
@@ -175,4 +179,5 @@ def resolve_configuration(
             _folder(resolved_root / entry, "root of the plan") for entry in data.get("roots", ())
         ),
         exclude=tuple(data.get("exclude", ())),
+        actions_file=data.get("actions_file", ACTIONS_FILE),
     )

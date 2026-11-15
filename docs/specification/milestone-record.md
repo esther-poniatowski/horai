@@ -53,11 +53,11 @@ A purpose, a deliverable and a milestone may each bear one deadline, with the sa
 
 | Field | When it is required | Kind | Values | Source |
 | --- | --- | --- | --- | --- |
-| `id` | always | authored | the slug of the title, fixed at creation and unique in the plan; it names the file of the record | — |
-| `title` | always | authored | the title, from which the identifier is formed | [file layout](file-layout.md) |
-| `deliverable` | unless the milestone serves its stream directly | authored | the identifier of one deliverable; a milestone without one, such as the follow-up of an event, serves its stream and closes by its `done_when` | [hierarchy of work](../kernel/objects/work-hierarchy.md) |
+| `id` | always | authored | a slug, fixed at creation and unique in the plan, stated in the entry of the item in the store of actions of its folder | [stores of actions](../adr/stores-of-actions-and-task-life.md) |
+| `title` | always | authored | the name of the result, as a noun phrase | — |
+| `deliverable` | unless the milestone serves its stream directly | authored | the identifier of one deliverable; a milestone without one, such as the follow-up of an event, serves its stream | [hierarchy of work](../kernel/objects/work-hierarchy.md) |
 | `stream` | always | authored | a stream of the profile | [streams](../kernel/objects/stream.md#^streams) |
-| `done_when` | for a milestone | authored | the test that judges completion, or the acceptance by a party | [definition of done](../kernel/objects/milestone.md#^definition-of-done) |
+| `success_criteria` | optional | authored | a list of observable states, each checkable, that judge the item done, such as the acceptance by a party; without the list, the item is done once its tasks are closed | [definition of done](../kernel/objects/milestone.md#^definition-of-done) |
 | `stage` | for the milestone of a stage | authored | the identifier of the stage of its deliverable that the milestone holds; the milestone is then named `<deliverable>-<stage>` | [request windows and stages](../adr/request-windows-and-stages.md) |
 | `predictability` | when selected for a cycle | authored, or computed by threshold | `routine` · `exploratory` | [classes of predictability](../kernel/objects/appetite.md#^variance-classes) |
 | `budget` | when selected for a cycle | authored, or computed from `estimate` | a duration: an estimate or an appetite | [appetite](../kernel/objects/appetite.md#^appetite) |
@@ -68,11 +68,11 @@ A purpose, a deliverable and a milestone may each bear one deadline, with the sa
 | `depends_on` | option milestone graph | authored | identifiers of milestones | [milestone graph](../kernel/objects/dependency.md#^milestone-graph) |
 | `successor_work` | option milestone graph | computed | a duration | [unblocking](../kernel/objects/dependency.md#^graph-uses) |
 | `supplied_by` | option external parties | authored | a party, for an external dependency | [external dependency](../kernel/objects/dependency.md#^external-dependency) |
-| `consumed_by` | for a stream that yields means | authored | identifiers of the milestones, or kinds of request, that consume the output | [pull rule](../kernel/processes/tooling.md#^pull-rule) |
+| `consumed_by` | for a tooling item | authored | identifiers of the milestones, or kinds of request, that consume the output | [pull rule](../kernel/processes/tooling.md#^pull-rule) |
 | `non_negotiable` | optional | authored | the date at which the agent set the mark; at most one item of the plan bears it; `check` reports a second mark, and a mark left on a closed item or a completed task | [non-negotiable key](../kernel/processes/task-selection.md#^non-negotiable-key) |
 | `rank` | ordinal worth, when selected | authored | an integer within the stream and the cycle | [scales](../kernel/objects/value.md#^scales) |
 | `value`, `cost_of_delay` | cardinal worth | authored | amounts in the unit of the profile, each with its basis | [quantities](../kernel/objects/value.md#^quantities) |
 | `deadline` | when the milestone bears one | — | as above | — |
-| `status` | always | authored | `open` · `done` · `reduced` · `stopped` | [checkpoint decision](../procedures/checkpoint-decision.md) |
+| `status` | always | authored | `open` · `done` · `reduced` · `stopped`; `open` when the item is created | [checkpoint decision](../procedures/checkpoint-decision.md) |
 | `cycle` | when selected | authored | the identifier of the cycle | [calendar record](calendar-record.md) |
 | `origin` | when the milestone enters the plan as an imposed commitment or a converted request | authored | `chosen` · `imposed` · `request`; `chosen` when absent | [origin](../kernel/objects/commitment-state.md#^origin) |

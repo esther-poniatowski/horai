@@ -8,19 +8,31 @@ required: [_schema, parties]
 properties:
   _schema: {const: 'horai:parties@1'}
   parties:
+    title: Parties
+    description: the declared parties, each with an identifier and a name
     type: array
     items:
       type: object
       additionalProperties: false
       required: [id, name]
       properties:
-        id: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-        name: {type: string, minLength: 1}
+        id:
+          title: Identifier
+          description: a slug, unique among the parties, by which records name the party
+          $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+        name:
+          title: Name
+          description: the name of the party
+          type: string
+          minLength: 1
+          x-kind: markdown-line
         relations:
+          title: Relations
           description: what the party does for the agent or with its results, under the option of external parties
           type: array
           items: {enum: [supplies, delegates, consumes, reviews, imposes, requests]}
         class_of_service:
+          title: Class of service
           description: per kind of request of the party, the class of service that replaces that of the profile
           type: object
           propertyNames: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}

@@ -140,8 +140,8 @@ class Allocation:
 class Stream:
     """A class of work declared by the profile: what it yields, and what triggers it.
 
-    The attribute `needs_high_energy` states whether the work of the stream is placed at the hours
-    of high energy, whatever triggers it.
+    The attribute `complexity` states the demand of the work of the stream on the agent, the default
+    of its tasks; the blocks of a stream of high complexity belong at the hours of high energy.
     """
 
     id: str
@@ -149,7 +149,7 @@ class Stream:
     yields: tuple[str, ...]
     triggered_by: str
     allocation: Allocation | None = None
-    needs_high_energy: bool = False
+    complexity: str | None = None
 
     @classmethod
     def from_data(cls, data: dict[str, Any]) -> Stream:
@@ -161,7 +161,7 @@ class Stream:
             tuple(data["yields"]),
             data["triggered_by"],
             Allocation.from_data(allocation) if allocation else None,
-            data.get("needs_high_energy", False),
+            data.get("complexity"),
         )
 
 
@@ -268,7 +268,7 @@ class Task:
     """
 
     id: str
-    title: str
+    action: str
     parent: str | None
     stream: str | None = None
     committed_week: date | None = None
@@ -291,13 +291,19 @@ class Task:
     verifies: str | None = None
     non_negotiable: date | None = None
     recurs: str | None = None
+    details: str | None = None
+    complexity: str | None = None
+    created: date | None = None
+    started: date | None = None
+    cancelled: tuple[date, str] | None = None
+    consumed_by: tuple[str, ...] = ()
 
     @classmethod
     def from_data(cls, data: dict[str, Any], parent: str | None) -> Task:
         """Build a task from one entry of a validated list of tasks."""
         return cls(
             id=data["id"],
-            title=data["title"],
+            action=data["action"],
             parent=parent,
             stream=data.get("stream"),
             committed_week=_date_or_none(data.get("committed_week")),
@@ -314,7 +320,19 @@ class Task:
             hands_off=data.get("hands_off", False),
             riskiest=data.get("riskiest", False),
             importance=data.get("importance"),
-            steps=tuple((step["title"], step.get("done", False)) for step in data.get("steps", ())),
+            steps=tuple(
+                (step["action"], step.get("done", False)) for step in data.get("steps", ())
+            ),
+            details=data.get("details"),
+            complexity=data.get("complexity"),
+            created=_date_or_none(data.get("created")),
+            started=_date_or_none(data.get("started")),
+            cancelled=(
+                (parse_date(data["cancelled"]["date"]), data["cancelled"]["reason"])
+                if "cancelled" in data
+                else None
+            ),
+            consumed_by=tuple(data.get("consumed_by", ())),
             request_kind=data.get("request_kind"),
             prepares=data.get("prepares"),
             verifies=data.get("verifies"),
@@ -324,8 +342,9 @@ class Task:
 
     @property
     def is_open(self) -> bool:
-        """Whether the task is not completed for good; a recurring task never is."""
-        return self.completed is None or self.recurs is not None
+        """Whether the task is neither cancelled nor completed for good; a recurring task is
+        completed for good only by its cancellation."""
+        return self.cancelled is None and (self.completed is None or self.recurs is not None)
 
     @property
     def is_waiting(self) -> bool:
@@ -359,10 +378,13 @@ class Item:
     depends_on: tuple[str, ...] = ()
     estimate: tuple[timedelta, timedelta, timedelta] | None = None
     deadline: Deadline | None = None
+    success_criteria: tuple[str, ...] = ()
+    consumed_by: tuple[str, ...] = ()
 
     @classmethod
-    def from_data(cls, identifier: str, kind: ItemKind, data: dict[str, Any]) -> Item:
-        """Build an item from a validated file of the folder of its kind."""
+    def from_data(cls, kind: ItemKind, data: dict[str, Any]) -> Item:
+        """Build an item from a validated entry of a store of actions."""
+        identifier = data["id"]
         tasks = tuple(Task.from_data(entry, identifier) for entry in data.get("tasks", ()))
         return cls(
             id=identifier,
@@ -382,6 +404,8 @@ class Item:
             depends_on=tuple(data.get("depends_on", ())),
             estimate=_estimate(data.get("estimate")),
             deadline=Deadline.from_data(data.get("deadline")),
+            success_criteria=tuple(data.get("success_criteria", ())),
+            consumed_by=tuple(data.get("consumed_by", ())),
         )
 
     @property

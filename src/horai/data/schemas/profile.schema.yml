@@ -6,8 +6,14 @@ additionalProperties: false
 required: [_schema, name, streams, worth]
 properties:
   _schema: {const: 'horai:profile@1'}
-  name: {type: string}
+  name:
+    title: Name
+    description: the name of the domain
+    type: string
+    x-kind: markdown-line
   streams:
+    title: Streams
+    description: one entry per stream of the domain
     type: array
     minItems: 1
     items:
@@ -15,69 +21,109 @@ properties:
       additionalProperties: false
       required: [id, description, yields, triggered_by]
       properties:
-        id: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
+        id:
+          title: Identifier
+          description: a slug of the stream, by which blocks, appointments, tasks and milestones name it
+          $ref: 'urn:horai:schema:common:1#/$defs/stream_id'
         description:
+          title: Description
           description: what the stream does, opening on its most specific verb
           type: string
           minLength: 1
+          x-kind: markdown-line
         yields:
+          title: Yields
           description: what the work gives the agent; a stream may yield several outcomes
           type: array
           minItems: 1
           uniqueItems: true
           items: {enum: [results, means, knowledge, competence, network, coordination, organization, integrity, obligation]}
         triggered_by:
+          title: Triggered by
           description: what prompts the work, which suggests its allocation without fixing it
           enum: [selection, demand, calendar, accumulation, arrival, appointment]
-        allocation: {$ref: 'urn:horai:schema:common:1#/$defs/allocation'}
-        needs_high_energy:
-          description: whether the blocks of the stream belong at the hours of high energy of the profile
-          type: boolean
+        allocation:
+          title: Allocation
+          description: the time that the stream receives, as a share of the plannable time or as a reserve
+          $ref: 'urn:horai:schema:common:1#/$defs/allocation'
+        complexity:
+          title: Complexity
+          description: the demand of the work of the stream on the agent, the default of its tasks; the blocks of a stream of high complexity belong at the hours of high energy
+          enum: [low, medium, high]
   deliverable_types:
+    title: Deliverable types
+    description: one entry per type of deliverable, which supplies the defaults of the deliverables of that type
     type: array
     items:
       type: object
       additionalProperties: false
       required: [id, description, predictability, starting_phase]
       properties:
-        id: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-        description: {type: string, minLength: 1}
+        id:
+          title: Identifier
+          description: a slug of the type, which a deliverable names in `type`
+          $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+        description:
+          title: Description
+          description: what a deliverable of the type is
+          type: string
+          minLength: 1
+          x-kind: markdown-line
         predictability:
+          title: Predictability
           description: the class of the work of a deliverable of the type
           enum: [routine, exploratory]
         prior_margin:
+          title: Prior margin
           description: the ratio of time to budget not exceeded at the calibration quantile, before calibration
           type: number
           minimum: 1
-        starting_phase: {enum: [exploration, validation, delivery]}
+        starting_phase:
+          title: Starting phase
+          description: the phase in which a deliverable of the type starts
+          enum: [exploration, validation, delivery]
         stages:
+          title: Stages
           description: the milestones of a deliverable of the type, each created when the deliverable enters its phase
           type: array
           items: {$ref: '#/$defs/stage'}
   enabled_mechanisms:
+    title: Enabled mechanisms
     description: the optional mechanisms that run beside the core, each with its settings
     type: object
     propertyNames:
       enum: [tooling_control, milestone_graph, calibration, reactive_work, external_parties, delegation, imposed_deadlines, quantified_valuation, availability_model, modules]
     additionalProperties: {type: object}
   worth:
+    title: Worth
     description: the scale on which the worth of a milestone is stated
     type: object
     additionalProperties: false
     required: [scale]
     properties:
       scale:
+        title: Scale
         description: ordinal when items are only ordered by rank, cardinal when their worth is an amount
         enum: [ordinal, cardinal]
-      unit: {type: string, minLength: 1}
+      unit:
+        title: Unit
+        description: the unit in which a cardinal worth is stated; required with the cardinal scale
+        type: string
+        minLength: 1
+        x-kind: markdown-line
       worth_per_hour:
+        title: Worth per hour
         description: the worth of one hour of the agent, in the unit
         type: number
         exclusiveMinimum: 0
     if: {properties: {scale: {const: cardinal}}}
     then: {required: [unit, worth_per_hour]}
-  energy: {$ref: 'urn:horai:schema:common:1#/$defs/energy'}
+  energy:
+    title: Energy
+    description: the spans of high energy, as one list for every day or as one list per weekday
+    $ref: 'urn:horai:schema:common:1#/$defs/energy'
   recurrences:
+    title: Recurrences
     description: the named rules of recurrence that tasks may cite in `recurs`, beside the default rules daily, weekly and cycle
     type: object
     propertyNames:
@@ -86,15 +132,24 @@ properties:
         - not: {enum: [daily, weekly, cycle]}
     additionalProperties: {$ref: 'urn:horai:schema:common:1#/$defs/recurrence_period'}
   modules:
+    title: Modules
+    description: the modules in use, each with the stream that it serves
     type: array
     items:
       type: object
       additionalProperties: false
       required: [name, stream]
       properties:
-        name: {type: string}
-        stream: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
+        name:
+          title: Name
+          description: the name of the module
+          type: string
+        stream:
+          title: Stream
+          description: the stream that the module serves
+          $ref: 'urn:horai:schema:common:1#/$defs/stream_id'
   parameters:
+    title: Parameters
     description: overrides of the policies of the kernel, each with its reason
     type: object
     additionalProperties:
@@ -102,8 +157,15 @@ properties:
       additionalProperties: false
       required: [value, reason]
       properties:
-        value: {}
-        reason: {type: string, minLength: 1}
+        value:
+          title: Value
+          description: the value of the parameter that replaces its default, in the unit that the table of parameters states
+        reason:
+          title: Reason
+          description: why the profile overrides the default
+          type: string
+          minLength: 1
+          x-kind: markdown-line
 $defs:
   stage:
     description: a stage of a deliverable, whose milestone is named after the deliverable and the stage
@@ -111,14 +173,20 @@ $defs:
     additionalProperties: false
     required: [id, phase]
     properties:
-      id: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+      id:
+        title: Identifier
+        description: a slug of the stage; the milestone of the stage is named `<deliverable>-<stage>`
+        $ref: 'urn:horai:schema:common:1#/$defs/identifier'
       phase:
+        title: Phase
         description: the phase from which the stage exists as a milestone; exploration holds no milestone
         enum: [validation, delivery]
       predictability:
+        title: Predictability
         description: the class of the work of the stage, in place of that of the type
         enum: [routine, exploratory]
       prior_margin:
+        title: Prior margin
         description: the prior margin of the stage, in place of that of the type
         type: number
         minimum: 1

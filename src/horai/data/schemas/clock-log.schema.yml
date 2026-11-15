@@ -6,18 +6,33 @@ additionalProperties: false
 required: [_schema, month, entries]
 properties:
   _schema: {const: 'horai:clock-log@1'}
-  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  month:
+    title: Month
+    description: the month of the entries, which names the file
+    $ref: 'urn:horai:schema:common:1#/$defs/month'
   entries:
+    title: Entries
+    description: the clock entries of the month, one for each mark of the start or the stop of work
     type: array
     items:
       type: object
       additionalProperties: false
       required: [at, event]
       properties:
-        at: {$ref: 'urn:horai:schema:common:1#/$defs/timestamp'}
-        event: {enum: [start, stop]}
-        task: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
+        at:
+          title: At
+          description: the date and the hour of the mark, with the offset of the time zone, recorded by the tool
+          $ref: 'urn:horai:schema:common:1#/$defs/timestamp'
+        event:
+          title: Event
+          description: start when the work begins, stop when it ends; starting a task stops the task under way
+          enum: [start, stop]
+        task:
+          title: Task
+          description: for a start, the identifier of the task, of a milestone or a question for work without a task, or of an appointment for attending it
+          $ref: 'urn:horai:schema:common:1#/$defs/identifier'
         recalled:
+          title: Recalled
           description: whether the span was stated from memory instead of marked live
           type: boolean
       if: {properties: {event: {const: start}}}

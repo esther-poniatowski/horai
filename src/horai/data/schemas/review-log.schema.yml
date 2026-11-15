@@ -7,8 +7,13 @@ additionalProperties: false
 required: [_schema, month, entries]
 properties:
   _schema: {const: 'horai:review-log@1'}
-  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  month:
+    title: Month
+    description: the month of the entries, which names the file
+    $ref: 'urn:horai:schema:common:1#/$defs/month'
   entries:
+    title: Entries
+    description: the weekly reviews held in the month, one entry for each review
     type: array
     items:
       type: object
@@ -16,5 +21,6 @@ properties:
       required: [date]
       properties:
         date:
+          title: Date
           description: the date on which the review was held, which tasks name in `committed_week`
           $ref: 'urn:horai:schema:common:1#/$defs/date'

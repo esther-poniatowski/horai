@@ -21,7 +21,7 @@ The roadmap of horai lists the steps of each increment, with the state of each s
 - [x] **Loading**: declare the roots in the configuration, and discover the records of the hierarchy by their key `_schema` under them. (2026-11-13)
 - [x] **Records**: add the fields `importance` and `steps` to the task, and admit dependencies across parents in the schema, the checks and the selection. (2026-11-13)
 - [x] **Selection**: order the tasks of one parent by quadrant, then by importance, then by the riskiest mark. (2026-11-13)
-- [ ] **Geonexus rule**: amend the rule on task tracking of Geonexus for the areas that horai covers, under its instructions for agents and its commit gate.
+- [x] **Geonexus rule**: amend the rule on task tracking of Geonexus for the areas that horai covers, under its instructions for agents and its commit gate.
 - [x] **Pilot**: draft the central folder `planning/` of Geonexus, and migrate the task list of the CCS 2026 satellite into a standing parent beside it; the original list stays until the author has compared the two. (2026-11-13)
 - [x] **Gate**: decide the labels of the streams, the typical week, the exceptions held by the week, the energy hours and the types of deliverable, after the review of the drafted plan. (2026-11-13)
 - [x] **Names**: ratify the naming criterion and the renames of the [explicit names](docs/adr/explicit-names.md). (2026-11-13)
@@ -39,6 +39,7 @@ The roadmap of horai lists the steps of each increment, with the state of each s
 - [x] **Parties and derived deliverables**: implement the decision on [parties, derived deliverables and the lifetimes of the profile](docs/adr/parties-and-derived-deliverables.md), which closes the findings of the adversarial review. (2026-11-14)
 - [x] **Settings and yields**: implement the decision on [settings and yields](docs/adr/settings-and-yields.md): the folder `settings/`, and `yields` as a list of nine values. (2026-11-14)
 - [x] **Strategic review and recurrence rules**: write the procedure of the strategic review, and implement the periods and the named rules of `recurs`. (2026-11-14)
+- [x] **Stores of actions and life of a task**: implement the decision on [stores of actions and the life of a task](docs/adr/stores-of-actions-and-task-life.md) in the schemas, the loader, the rules, the command `stages`, the fixture plan, the notes, and the plan of the author. (2026-11-15)
 - [ ] **Suggested blocks**: compute the blocks of a typical week from the allocation of the streams, the spans, the appointments and the energy hours, as a proposal that the author edits.
 - [ ] **Forms**: publish the schemas of horai as a registry of Kleisis, and pin horai in the schema resources of Geonexus, so that Ekphrasis renders the records.
 - [ ] **Migration**: carry the plan of the author in Geonexus to the new formats, and settle the placeholders with the author.

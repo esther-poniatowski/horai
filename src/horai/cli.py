@@ -27,12 +27,12 @@ from pathlib import Path
 import typer
 
 from . import __version__, info
-from .domain.records import ClockEntry, Plan
+from .domain.records import WEEKDAYS, ClockEntry, Plan
 from .domain.time import parse_date, parse_timestamp
 from .io.clock_writer import ClockFileError, append_clock_entry
 from .io.config import Configuration, ConfigurationError, resolve_configuration
-from .io.loader import load_plan
-from .io.milestone_writer import MilestoneFileError, write_stage_milestone
+from .io.loader import Discovery, load_plan
+from .io.actions_writer import ActionsFileError, append_stage_milestone
 from .io.schemas import SchemaSet
 from .issues import Issue, Severity
 from .render.text import render_issues, render_selection, render_week
@@ -95,9 +95,12 @@ def _load(configuration: Configuration) -> tuple[Plan, list[Issue]]:
     return load_plan(
         configuration.plan,
         SchemaSet.load(),
-        roots=configuration.roots,
-        exclude=configuration.exclude,
-        base=configuration.root,
+        Discovery(
+            configuration.roots,
+            configuration.exclude,
+            configuration.root,
+            configuration.actions_file,
+        ),
     )
 
 
@@ -120,6 +123,15 @@ def cli_check(
         typer.echo(render_issues(issues))
     if any(issue.severity == Severity.ERROR for issue in issues):
         raise typer.Exit(1)
+
+
+def _low_energy(plan: Plan, moment: datetime) -> bool:
+    """Whether `moment` lies outside the hours of high energy that the profile states."""
+    if plan.profile is None or not plan.profile.energy:
+        return False
+    minute = moment.hour * 60 + moment.minute
+    hours = plan.profile.energy.get(WEEKDAYS[moment.weekday()], ())
+    return not any(start <= minute < end for start, end in hours)
 
 
 def _current_stream(plan: Plan, moment: datetime) -> str | None:
@@ -150,7 +162,8 @@ def cli_next(
             raise _fail("no block of the calendar holds this moment; name the stream with --stream")
     if stream is not None and plan.profile and stream not in plan.profile.streams:
         raise _fail(f"no stream {stream} in the profile")
-    typer.echo(render_selection(select(plan, on, stream, work), stream))
+    selection = select(plan, on, stream, work, low_energy=_low_energy(plan, now))
+    typer.echo(render_selection(selection, stream))
 
 
 @view_app.command("week")
@@ -268,6 +281,18 @@ def main_callback(  # pylint: disable=unused-argument  # typer reads the option
     """Organize tasks, priorities and schedules from the YAML records of a plan."""
 
 
+def _deliverable_folder(plan: Plan, deliverable: str, configuration: Configuration) -> Path:
+    """Return the folder whose store holds the milestones of `deliverable`.
+
+    A deliverable of the central folder has its milestones in the central store, `plan/`; a
+    distributed one, in the store of its own folder.
+    """
+    source = plan.sources.get(deliverable, "")
+    if source.startswith("plan/deliverables/") and (configuration.plan / source).is_file():
+        return configuration.plan / "plan"
+    return (configuration.root / source).parent
+
+
 # A command of Typer takes each option as a parameter.
 @app.command("stages")
 def cli_stages(  # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -278,7 +303,9 @@ def cli_stages(  # pylint: disable=too-many-arguments,too-many-positional-argume
         None, "--stream", help="Stream of the milestones whose deliverable has no shared stream."
     ),
     into: Path | None = typer.Option(
-        None, "--into", help="Folder of the new milestones; plan/milestones by default."
+        None,
+        "--into",
+        help="Folder whose store receives the milestones; that of the deliverable by default.",
     ),
     dry_run: bool = typer.Option(False, "--dry-run", help="List the missing stages only."),
     root: Path | None = ROOT_OPTION,
@@ -295,7 +322,6 @@ def cli_stages(  # pylint: disable=too-many-arguments,too-many-positional-argume
     if not missing:
         typer.echo("no stage is missing")
         return
-    folder = into or configuration.plan / "plan" / "milestones"
     unplaced = []
     for milestone in missing:
         chosen = milestone.stream or stream
@@ -305,11 +331,14 @@ def cli_stages(  # pylint: disable=too-many-arguments,too-many-positional-argume
         if dry_run:
             typer.echo(f"missing {milestone.name} ({chosen})")
             continue
+        store = (into or _deliverable_folder(plan, milestone.deliverable.id, configuration)) / (
+            configuration.actions_file
+        )
         try:
-            path = write_stage_milestone(folder, milestone, chosen)
-        except MilestoneFileError as error:
+            path = append_stage_milestone(store, milestone, chosen)
+        except ActionsFileError as error:
             raise _fail(str(error)) from error
-        typer.echo(f"created {path}: state its done_when")
+        typer.echo(f"added {milestone.name} to {path}")
     if unplaced:
         raise _fail(
             "the milestones of these deliverables share no stream; name it with --stream: "

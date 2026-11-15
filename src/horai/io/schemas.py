@@ -30,7 +30,7 @@ class SchemaSet:
     Examples
     --------
     >>> schemas = SchemaSet.load()
-    >>> "horai:milestone@1" in schemas.types()
+    >>> "horai:actions@1" in schemas.types()
     True
     """
 
@@ -58,7 +58,7 @@ class SchemaSet:
         return cls(documents)
 
     def types(self) -> list[str]:
-        """Return the identifiers of the record types, such as ``horai:milestone@1``."""
+        """Return the identifiers of the record types, such as ``horai:actions@1``."""
         return sorted(self._validators)
 
     def errors(self, schema_id: str, data: Any) -> Iterator[str]:

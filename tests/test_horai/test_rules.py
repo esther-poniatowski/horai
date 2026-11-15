@@ -241,6 +241,41 @@ def test_named_rule_of_the_profile(plan: Plan) -> None:
     assert "reference/recurrence" in _rules(plan)
 
 
+def test_cancelled_task_is_closed_and_releases_its_successor(plan: Plan) -> None:
+    _replace_task(plan, "fit-gating-model", cancelled=(DAY, "replaced by another fit"))
+    assert _first_tier_ids(plan)[0] == ["compare-geometries"]
+
+
+def test_dates_of_a_task_follow_its_life(plan: Plan) -> None:
+    _replace_task(plan, "fit-gating-model", started=date(2026, 11, 13))
+    assert ("task/started", "ctx-population-fit") in _located(plan)
+    _replace_task(
+        plan, "fit-gating-model", started=date(2026, 11, 12), completed=date(2026, 11, 10)
+    )
+    assert ("task/dates", "ctx-population-fit") in _located(plan)
+
+
+def test_loose_task_names_what_it_serves(plan: Plan) -> None:
+    task = next(t for t in plan.loose if t.id == "chapter-3-exercises")
+    plan.loose = tuple(
+        dataclasses.replace(t, consumed_by=("ctx-rank-bound", "inquiry")) if t is task else t
+        for t in plan.loose
+    )
+    assert "reference/missing" not in _rules(plan)
+    plan.loose = tuple(
+        dataclasses.replace(t, consumed_by=("absent",)) if t.id == task.id else t
+        for t in plan.loose
+    )
+    assert "reference/missing" in _rules(plan)
+
+
+def test_complex_tasks_follow_outside_the_energy_hours(plan: Plan) -> None:
+    _replace_task(plan, "prove-rank-bound", complexity="low")
+    tiers = select(plan, DAY, "inquiry", spans(plan.clock), low_energy=True).tiers
+    assert [c.task.id for c in tiers[0]] == ["prove-rank-bound"]
+    assert _first_tier_ids(plan)[0] == ["fit-gating-model"]
+
+
 def test_stream_with_committed_work_states_an_allocation(plan: Plan) -> None:
     _replace_item(plan, "ctx-population-fit", stream="upkeep")
     assert ("profile/allocation", "upkeep") in _located(plan)
@@ -331,7 +366,7 @@ def test_urgent_loose_task_precedes_the_milestones(plan: Plan) -> None:
         importance="high",
         scheduled=DAY,
     )
-    later = dataclasses.replace(urgent, id="tidy-figures", title="Tidy", importance="low")
+    later = dataclasses.replace(urgent, id="tidy-figures", action="Tidy", importance="low")
     _loose(plan, urgent)
     _loose(plan, later)
     tiers = _first_tier_ids(plan)

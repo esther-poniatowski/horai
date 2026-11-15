@@ -100,7 +100,7 @@ def _check_typical_day(plan: Plan, weekday: str, day: TypicalDay) -> Iterator[Is
 
 
 def _check_energy(plan: Plan) -> Iterator[Issue]:
-    """A block of a stream that needs high energy lies within the hours of high energy."""
+    """A block of a stream of high complexity lies within the hours of high energy."""
     week = plan.typical_week
     if week is None or plan.profile is None or not plan.profile.energy:
         return
@@ -109,7 +109,7 @@ def _check_energy(plan: Plan) -> Iterator[Issue]:
         high = plan.profile.energy.get(weekday, ())
         for block in day.blocks:
             stream = streams.get(block.stream)
-            if stream is None or not stream.needs_high_energy:
+            if stream is None or stream.complexity != "high":
                 continue
             if not _within(_interval(block.start, block.length), high):
                 message = (

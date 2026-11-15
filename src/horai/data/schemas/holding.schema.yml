@@ -6,4 +6,7 @@ additionalProperties: false
 required: [_schema, tasks]
 properties:
   _schema: {const: 'horai:holding@1'}
-  tasks: {$ref: 'urn:horai:schema:common:1#/$defs/held_tasks'}
+  tasks:
+    title: Tasks
+    description: the tasks that serve no milestone and name no stream, each with the date at which it entered the file
+    $ref: 'urn:horai:schema:common:1#/$defs/held_tasks'

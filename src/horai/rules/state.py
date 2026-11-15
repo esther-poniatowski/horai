@@ -93,6 +93,8 @@ def is_open_on(plan: Plan, task: Task, day: date) -> bool:
     Before any review is held, a week begins on each Monday. A task whose rule is unknown stays
     open, and the check reports the rule.
     """
+    if task.cancelled is not None:
+        return False
     if task.recurs is None or task.completed is None:
         return task.completed is None
     rule = recurrence_rule(plan, task.recurs)

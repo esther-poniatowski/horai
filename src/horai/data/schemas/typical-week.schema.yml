@@ -8,15 +8,19 @@ required: [_schema, predictable, poor_week]
 properties:
   _schema: {const: 'horai:typical-week@1'}
   predictable:
+    title: Predictable
     description: whether the free time of the coming week is known at the weekly review
     type: boolean
   poor_week:
+    title: Poor week
     description: the working time of a poor week, on which an unpredictable week is planned
     $ref: 'urn:horai:schema:common:1#/$defs/duration'
   weekly_hours:
+    title: Weekly hours
     description: the working time of a typical week, stated when no spans are stated
     $ref: 'urn:horai:schema:common:1#/$defs/duration'
   unplaced:
+    title: Unplaced appointments
     description: the appointments held without a fixed slot, which the calendar of dates places on dates, a number of times per period
     type: array
     items:
@@ -24,27 +28,48 @@ properties:
       additionalProperties: false
       required: [id, length, stream, party]
       properties:
-        id: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-        title: {type: string, minLength: 1}
-        length: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}
+        id:
+          title: Identifier
+          description: a slug of the appointment, unique in the plan, which a placing appointment of the dates names in `places`
+          $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+        title:
+          title: Title
+          description: the name of the appointment
+          type: string
+          minLength: 1
+          x-kind: markdown-line
+        length:
+          title: Length
+          description: the length of each occurrence, in ISO 8601, such as PT1H
+          $ref: 'urn:horai:schema:common:1#/$defs/duration'
         times:
+          title: Times
           description: the number of occurrences in a period; 1 when absent
           type: integer
           minimum: 1
         every:
+          title: Every
           description: the period, a number of weeks counted from `from`, or a calendar month; one week when absent
           type: string
           pattern: '^P([1-9][0-9]?W|1M)$'
         from:
+          title: From
           description: the first date of the first period of several weeks
           $ref: 'urn:horai:schema:common:1#/$defs/date'
-        stream: {$ref: 'urn:horai:schema:common:1#/$defs/stream_id'}
-        party: {$ref: 'urn:horai:schema:common:1#/$defs/party'}
+        stream:
+          title: Stream
+          description: the stream whose time the appointment takes
+          $ref: 'urn:horai:schema:common:1#/$defs/stream_id'
+        party:
+          title: Party
+          description: the party that fixes the appointment, by its identifier or by its name
+          $ref: 'urn:horai:schema:common:1#/$defs/party'
       if:
         required: [every]
         properties: {every: {pattern: '^P([2-9]|[1-9][0-9])W$'}}
       then: {required: [from]}
   days:
+    title: Days
     description: for each weekday, its available spans and what they hold
     type: object
     propertyNames: {$ref: 'urn:horai:schema:common:1#/$defs/day'}
@@ -53,9 +78,20 @@ properties:
       additionalProperties: false
       required: [spans]
       properties:
-        spans: {$ref: 'urn:horai:schema:common:1#/$defs/spans'}
-        appointed: {type: array, items: {$ref: 'urn:horai:schema:common:1#/$defs/recurring_appointment'}}
-        blocks: {type: array, items: {$ref: 'urn:horai:schema:common:1#/$defs/block'}}
+        spans:
+          title: Spans
+          description: the disjoint spans available on the weekday, each as a start and an end, such as 08:30-12:30
+          $ref: 'urn:horai:schema:common:1#/$defs/spans'
+        appointed:
+          title: Recurring appointments
+          description: the appointments of the weekday fixed by others, held every week, every few weeks, or on some occurrences of the weekday in each month
+          type: array
+          items: {$ref: 'urn:horai:schema:common:1#/$defs/recurring_appointment'}
+        blocks:
+          title: Blocks
+          description: the blocks of the weekday, each with a start, a length and one stream
+          type: array
+          items: {$ref: 'urn:horai:schema:common:1#/$defs/block'}
 oneOf:
   - required: [days]
   - required: [weekly_hours]

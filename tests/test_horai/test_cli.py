@@ -105,10 +105,11 @@ def test_start_creates_the_file_of_a_new_month(plan_folder: Path) -> None:
 def test_start_rejects_unknown_or_completed_tasks(plan_folder: Path) -> None:
     root = ["--root", str(plan_folder)]
     assert runner.invoke(app, ["start", "absent", *root]).exit_code == 2
-    path = plan_folder / "plan" / "questions" / "gating-under-noise.yml"
+    path = plan_folder / "plan" / "TODO.yml"
     path.write_text(
         path.read_text().replace(
-            "committed_week: 2026-11-09", "committed_week: 2026-11-09\n    completed: 2026-11-12"
+            "action: Simulate the gated network under input noise",
+            "action: Simulate the gated network under input noise\n        completed: 2026-11-12",
         )
     )
     assert runner.invoke(app, ["start", "simulate-noise", *root]).exit_code == 2
@@ -131,7 +132,19 @@ def test_stages_creates_the_missing_milestones(plan_folder: Path) -> None:
     assert listed.exit_code == 0 and "missing ctx-geometry-argument-plan (inquiry)" in listed.stdout
     created = runner.invoke(app, ["stages", *root])
     assert created.exit_code == 0, created.stdout
-    path = plan_folder / "plan" / "milestones" / "ctx-geometry-argument-plan.yml"
+    path = plan_folder / "plan" / "TODO.yml"
+    assert "id: ctx-geometry-argument-plan" in path.read_text()
     assert "stage: argument-plan" in path.read_text()
     assert runner.invoke(app, ["check", *root, *DAY]).exit_code == 0
     assert "no stage is missing" in runner.invoke(app, ["stages", *root]).stdout
+
+
+def test_stages_append_before_a_following_key(plan_folder: Path) -> None:
+    path = plan_folder / "plan" / "TODO.yml"
+    text = path.read_text()
+    milestones, rest = text.split("questions:", 1)
+    path.write_text(milestones + "questions:" + rest)
+    assert runner.invoke(app, ["stages", "--root", str(plan_folder)]).exit_code == 0
+    written = path.read_text()
+    assert written.index("id: ctx-geometry-argument-plan") < written.index("questions:")
+    assert written.startswith("_schema: horai:actions@1\nmilestones:\n")

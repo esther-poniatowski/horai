@@ -6,8 +6,18 @@ additionalProperties: false
 required: [_schema, title]
 properties:
   _schema: {const: 'horai:purpose@1'}
-  title: {type: string, minLength: 1}
+  title:
+    title: Title
+    description: the title of the purpose, from which its identifier is formed
+    type: string
+    minLength: 1
+    x-kind: markdown-line
   description:
+    title: Description
     description: a statement of the purpose for the reader, which no rule reads
     type: string
-  deadline: {$ref: 'urn:horai:schema:common:1#/$defs/deadline'}
+    x-kind: markdown
+  deadline:
+    title: Deadline
+    description: the date that a party relies on for the purpose, with its strictness
+    $ref: 'urn:horai:schema:common:1#/$defs/deadline'

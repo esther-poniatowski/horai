@@ -6,4 +6,7 @@ additionalProperties: false
 required: [_schema, entries]
 properties:
   _schema: {const: 'horai:inbox@1'}
-  entries: {$ref: 'urn:horai:schema:common:1#/$defs/entries_of_text'}
+  entries:
+    title: Entries
+    description: the work that arises during a block, one line each, such as an interruption, a task, an idea, a defect or a scheduled request
+    $ref: 'urn:horai:schema:common:1#/$defs/entries_of_text'

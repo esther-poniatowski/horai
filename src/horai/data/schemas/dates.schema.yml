@@ -7,8 +7,12 @@ additionalProperties: false
 required: [_schema, month]
 properties:
   _schema: {const: 'horai:dates@1'}
-  month: {$ref: 'urn:horai:schema:common:1#/$defs/month'}
+  month:
+    title: Month
+    description: the month of the file, which names it
+    $ref: 'urn:horai:schema:common:1#/$defs/month'
   unavailable:
+    title: Unavailable
     description: the ranges of whole dates on which the agent is unavailable, each filed in the month of its first date
     type: array
     items:
@@ -16,12 +20,22 @@ properties:
       additionalProperties: false
       required: [from]
       properties:
-        from: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
+        from:
+          title: From
+          description: the first date of the absence
+          $ref: 'urn:horai:schema:common:1#/$defs/date'
         to:
+          title: To
           description: the last date of the absence; the absence lasts one date when it is absent
           $ref: 'urn:horai:schema:common:1#/$defs/date'
-        reason: {type: string, minLength: 1}
+        reason:
+          title: Reason
+          description: why the agent is unavailable, shown in the week view
+          type: string
+          minLength: 1
+          x-kind: markdown-line
   days:
+    title: Days
     description: for each date of the month that departs from the typical week, its departures
     type: object
     propertyNames: {$ref: 'urn:horai:schema:common:1#/$defs/date'}
@@ -31,18 +45,22 @@ properties:
       minProperties: 1
       properties:
         blocks:
+          title: Blocks
           description: the blocks of the day, in place of those of the typical week
           type: array
           items: {$ref: 'urn:horai:schema:common:1#/$defs/block'}
         added_blocks:
+          title: Added blocks
           description: blocks added to those of the typical day
           type: array
           items: {$ref: 'urn:horai:schema:common:1#/$defs/block'}
         removed_blocks:
+          title: Removed blocks
           description: the starts of the typical blocks removed on this date
           type: array
           items: {$ref: 'urn:horai:schema:common:1#/$defs/time'}
         appointments:
+          title: Appointments
           description: the appointments of this date only
           type: array
           items:
@@ -51,10 +69,12 @@ properties:
               - not:
                   anyOf: [{required: [from]}, {required: [every]}, {required: [occurrences_in_month]}]
         cancelled:
+          title: Cancelled
           description: the identifiers of the recurring appointments cancelled on this date
           type: array
           items: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
         moved:
+          title: Moved
           description: the recurring appointments held at another hour on this date
           type: array
           items:
@@ -62,6 +82,15 @@ properties:
             additionalProperties: false
             required: [id, start]
             properties:
-              id: {$ref: 'urn:horai:schema:common:1#/$defs/identifier'}
-              start: {$ref: 'urn:horai:schema:common:1#/$defs/time'}
-              length: {$ref: 'urn:horai:schema:common:1#/$defs/duration'}
+              id:
+                title: Identifier
+                description: the identifier of the recurring appointment whose occurrence moves
+                $ref: 'urn:horai:schema:common:1#/$defs/identifier'
+              start:
+                title: Start
+                description: the new hour at which the occurrence starts, such as 14:00
+                $ref: 'urn:horai:schema:common:1#/$defs/time'
+              length:
+                title: Length
+                description: the new length of the occurrence, in ISO 8601, such as PT1H, when it changes
+                $ref: 'urn:horai:schema:common:1#/$defs/duration'

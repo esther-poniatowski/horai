@@ -1,7 +1,7 @@
 _schema: horai:profile@1
 name: research
 streams:
-  - {id: inquiry, description: advances the results of the research projects, yields: [results], triggered_by: selection, needs_high_energy: true, allocation: {mode: share, bound: exact, amount: 0.5}}
+  - {id: inquiry, description: advances the results of the research projects, yields: [results], triggered_by: selection, complexity: high, allocation: {mode: share, bound: exact, amount: 0.5}}
   - {id: tools, description: builds the tools and frameworks that the projects consume, yields: [means], triggered_by: demand, allocation: {mode: share, bound: at_most, amount: 0.15}}
   - {id: training, description: derives the mathematics that the projects will need, yields: [competence], triggered_by: calendar, allocation: {mode: share, bound: at_least, amount: 0.06}}
   - {id: bibliography, description: surveys the literature of the field, yields: [knowledge], triggered_by: calendar, allocation: {mode: share, bound: at_least, amount: 0.06}}

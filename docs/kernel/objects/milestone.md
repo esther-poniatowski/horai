@@ -12,7 +12,7 @@ aliases:
 
 A **milestone** is a verifiable result, stated with the test by which its completion is judged. ^milestone
 
-- **Definition of done.** The test is written before the work starts, and names an observable state. When the result is handed to an [external party](external-party.md), the test is the acceptance by that party. ^definition-of-done
+- **Definition of done.** The test is written before the work starts, as a list of success criteria, each an observable state that can be checked. When the result is handed to an [external party](external-party.md), one criterion is the acceptance by that party. A milestone whose result is the closure of its tasks, such as a group of follow-up actions, states no criterion, and is done once its tasks are closed, since a criterion would restate them. ^definition-of-done
 - **Grain.** A deliverable in a structured [phase](phase.md) holds `milestones_open` open milestones, so that the [graph](dependency.md#^milestone-graph) of all active deliverables stays within a few tens of nodes.
 - **Unit of worth.** A milestone is the smallest item whose completion stops a cost of delay or delivers a value. The worth of a result is therefore stated, and compared, at the milestone and not at the task, as the [selection rule](../processes/task-selection.md#^valuation-key) states.
 - **Carried attributes.** A milestone carries its stream, its budget, its predictability, the time consumed, its dependencies, the milestones that consume its output, and where they apply its [deadline](deadline.md), its rank or its [value](value.md), as the [milestone record](../../specification/milestone-record.md) documents.
